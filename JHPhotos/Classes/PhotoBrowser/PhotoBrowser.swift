@@ -115,8 +115,9 @@ open class PhotoBrowser: UIViewController {
     fileprivate func  releaseAllUnderlyingPhotos(_ preserveCurrent: Bool) {
         // release photots
         for photo in photos {
-            if !(photo?.isEqual(NSNull()))!  {
-                if preserveCurrent && (photo?.isEqual(self.photo(atIndex: self.currentPageIndex)))! {
+            let photo = photo as AnyObject
+            if !photo.isEqual(NSNull())  {
+                if preserveCurrent && photo.isEqual(self.photo(atIndex: self.currentPageIndex)) {
                     continue // skip current
                 }
                 let p = photo as? Photo
@@ -126,9 +127,10 @@ open class PhotoBrowser: UIViewController {
         
         // release thumbs
         for photo in thumbPhotos {
-            if !(photo?.isEqual(NSNull()))! {
-                let p = photo as? Photo
-                p?.unloadUnderlyingImage()
+            let photo = photo as AnyObject
+            if !photo.isEqual(NSNull()) {
+                let p = photo as! Photo
+                p.unloadUnderlyingImage()
             }
         }
     }
@@ -230,19 +232,20 @@ open class PhotoBrowser: UIViewController {
             self.navigationItem.leftBarButtonItem = cancelButton
         }
         else {
-            let vcs = self.navigationController?.viewControllers
-            let previousVC = vcs?[(vcs?.count)! - 2]
-            
-            previousViewControllerBackButton = previousVC?.navigationItem.backBarButtonItem; // remember previous
-            
-            let newBackButton = UIBarButtonItem.init(title: "返回", style: .plain, target: self, action: #selector(dismissButtonPressed(sender:)))
-            newBackButton.setBackgroundImage(nil, for: .normal, barMetrics: .default)
-            newBackButton.setBackgroundImage(nil, for: .normal, barMetrics: .compactPrompt)
-            newBackButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .default)
-            newBackButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .compactPrompt)
-            newBackButton.setTitleTextAttributes(nil, for: .normal)
-            newBackButton.setTitleTextAttributes(nil, for: .highlighted)
-            previousVC?.navigationItem.backBarButtonItem = newBackButton
+            if let vcs = self.navigationController?.viewControllers {
+                let previousVC = vcs[vcs.count - 2]
+                
+                previousViewControllerBackButton = previousVC.navigationItem.backBarButtonItem; // remember previous
+                
+                let newBackButton = UIBarButtonItem.init(title: "返回", style: .plain, target: self, action: #selector(dismissButtonPressed(sender:)))
+                newBackButton.setBackgroundImage(nil, for: .normal, barMetrics: .default)
+                newBackButton.setBackgroundImage(nil, for: .normal, barMetrics: .compactPrompt)
+                newBackButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .default)
+                newBackButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .compactPrompt)
+                newBackButton.setTitleTextAttributes(nil, for: .normal)
+                newBackButton.setTitleTextAttributes(nil, for: .highlighted)
+                previousVC.navigationItem.backBarButtonItem = newBackButton
+            }
         }
         
         // toolbar items
@@ -297,8 +300,9 @@ open class PhotoBrowser: UIViewController {
         }
         else {
             // We're in a navigation controller so get previous one!
-            if (self.navigationController?.viewControllers.count)! > 1 {
-                if let p = self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 2] {
+            if let nav = self.navigationController {
+                if nav.viewControllers.count > 1 {
+                    let p = nav.viewControllers[nav.viewControllers.count - 2] as UIViewController
                     return p.prefersStatusBarHidden
                 }
             }
@@ -523,7 +527,7 @@ open class PhotoBrowser: UIViewController {
     
     fileprivate func numberOfPhotos() -> Int {
         if photoCount == NSNotFound {
-            photoCount = (delegate?.numberOfPhotosInPhotoBrowser(self))!
+            photoCount = delegate?.numberOfPhotosInPhotoBrowser(self) ?? 0
         }
         if photoCount == NSNotFound {
             photoCount = 0
