@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="albumSelectCell" rowHeight="62" id="djl-US-YHx" customClass="PhotoAlbumSelectCell" customModule="JHPhotos_Example" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="62"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="djl-US-YHx" id="2Nx-Xx-bWl">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="61.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PhG-rp-aeV">
+                        <rect key="frame" x="15" y="5" width="52" height="52"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="52" id="7bA-3C-I5r"/>
+                            <constraint firstAttribute="height" constant="52" id="pAb-UP-hZa"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="相机胶卷" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LVx-AE-71V">
+                        <rect key="frame" x="82" y="21" width="66" height="20"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="91G-8z-xMm">
+                        <rect key="frame" x="157.5" y="23.5" width="21" height="14.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="LVx-AE-71V" firstAttribute="leading" secondItem="PhG-rp-aeV" secondAttribute="trailing" constant="15" id="AMc-9q-ybH"/>
+                    <constraint firstItem="LVx-AE-71V" firstAttribute="centerY" secondItem="2Nx-Xx-bWl" secondAttribute="centerY" id="FTV-Tg-f1K"/>
+                    <constraint firstItem="PhG-rp-aeV" firstAttribute="top" secondItem="2Nx-Xx-bWl" secondAttribute="top" constant="5" id="Gf2-Ev-8J0"/>
+                    <constraint firstItem="91G-8z-xMm" firstAttribute="centerY" secondItem="2Nx-Xx-bWl" secondAttribute="centerY" id="T5G-qw-roq"/>
+                    <constraint firstItem="PhG-rp-aeV" firstAttribute="leading" secondItem="2Nx-Xx-bWl" secondAttribute="leading" constant="15" id="m5o-bd-ZAM"/>
+                    <constraint firstItem="91G-8z-xMm" firstAttribute="leading" secondItem="LVx-AE-71V" secondAttribute="trailing" constant="10" id="xSE-39-ryz"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="albumCountLabel" destination="91G-8z-xMm" id="gEH-hq-OjD"/>
+                <outlet property="albumImageView" destination="PhG-rp-aeV" id="KdP-NG-sJd"/>
+                <outlet property="albumTitleLabel" destination="LVx-AE-71V" id="jnN-J3-ms0"/>
+            </connections>
+            <point key="canvasLocation" x="36" y="589"/>
+        </tableViewCell>
+    </objects>
+</document>

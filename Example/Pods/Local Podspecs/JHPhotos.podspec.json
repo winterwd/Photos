@@ -1,0 +1,39 @@
+{
+  "name": "JHPhotos",
+  "version": "0.1.0",
+  "summary": "JHPhotos for dj as Swift.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/winter/JHPhotos",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "winter": "winter.wei@hey900.com"
+  },
+  "source": {
+    "git": "https://git.thy360.com/ios-compose/jh_photos.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "JHPhotos/Classes/**/*.swift",
+  "resource_bundles": {
+    "JHPhotos": [
+      "JHPhotos/Assets/*.*"
+    ]
+  },
+  "frameworks": [
+    "UIKit",
+    "Photos"
+  ],
+  "dependencies": {
+    "Kingfisher": [
+      "~> 3.10"
+    ]
+  },
+  "pod_target_xcconfig": {
+    "SWIFT_VERSION": "3.0"
+  }
+}
