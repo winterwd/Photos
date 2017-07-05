@@ -360,7 +360,7 @@ open class PhotoBrowser: UIViewController {
         // If rotation occured while we're presenting a modal
         // and the index changed, make sure we show the right one now
         if currentPageIndex != pageIndexBeforeRotation {
-            self.jumpToPage(pageIndexBeforeRotation, animated: false)
+            self.jumpToPage(currentPageIndex, animated: false)
         }
         
         self.view.setNeedsLayout()
@@ -473,7 +473,6 @@ open class PhotoBrowser: UIViewController {
     }
     
     // first show index
-    //FIXME: show at index will a bug
     func setCurrentPageIndex(_ index: Int) {
         currentPageIndex = self.willSetCurrentPageIndex(index)
         if self.isViewLoaded {
@@ -930,7 +929,7 @@ fileprivate extension PhotoBrowser {
     
     func configurePage(_ page: ZoomingScrollView!, index: Int) {
         page.frame = self.frameForPage(atIndex: index)
-        
+        page.contentSize = page.frame.size
         page.index = index
         page.photo = self.photo(atIndex: index)
     }

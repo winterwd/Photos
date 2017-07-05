@@ -257,15 +257,15 @@ open class Photo: NSObject, JHPhoto {
             self.underlyingImage = image
             self.imageLoadingComplete()
         }
-        else if photoURL != nil {
+        else if let photoURL = photoURL {
             // Check what type of url it is
-            if (photoURL?.isFileReferenceURL())! {
+            if photoURL.isFileReferenceURL() {
                 // load from local file async
-                self._performLoadUnderlyingImageAndNotifyWithLocalFileURL(url: photoURL!)
+                self._performLoadUnderlyingImageAndNotifyWithLocalFileURL(url: photoURL)
             }
             else {
                 // load async from web 
-                self._performLoadUnderlyingImageAndNotifyWithWebURL(url: photoURL!)
+                self._performLoadUnderlyingImageAndNotifyWithWebURL(url: photoURL)
             }
         }
         else if asset != nil {

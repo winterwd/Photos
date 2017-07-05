@@ -157,10 +157,9 @@ class ZoomingScrollView: UIScrollView {
         photoImageView.image = nil
         
         // show if image is not empty
-        if !(photo?.emptyImage)! {
+        if let _ = photo?.emptyImage {
             if loadingError == nil {
-                let path = Bundle.init(for: PhotoBrowser.self).path(forResource: "JHPhotos.bundle/ImageError", ofType: "png")!
-                let image = UIImage(contentsOfFile: path)
+                let image = UIImage.my_bundleImage(named: "ImageError")
                 loadingError = UIImageView(image: image)
                 loadingError?.isUserInteractionEnabled = false
                 loadingError?.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin]
@@ -243,11 +242,11 @@ class ZoomingScrollView: UIScrollView {
         
         // sizes
         let boundsSize = self.bounds.size
-        let imageSize = photoImageView.image?.size
+        let imageSize = photoImageView.image!.size
      
         // calculate min
-        let xScale = boundsSize.width / (imageSize?.width)!
-        let yScale = boundsSize.height / (imageSize?.height)!
+        let xScale = boundsSize.width / imageSize.width
+        let yScale = boundsSize.height / imageSize.height
         var minScale = min(xScale, yScale)
         
         // calculate max
@@ -270,8 +269,8 @@ class ZoomingScrollView: UIScrollView {
         
         // if we're zooming to fill then centralise
         if self.zoomScale != minScale {
-            self.contentOffset = CGPoint(x: ((imageSize?.width)! * self.zoomScale - boundsSize.width) / 2.0,
-                                         y: ((imageSize?.height)! * self.zoomScale - boundsSize.height) / 2.0)
+            self.contentOffset = CGPoint(x: (imageSize.width * self.zoomScale - boundsSize.width) / 2.0,
+                                         y: (imageSize.height * self.zoomScale - boundsSize.height) / 2.0)
         }
         
         // disable scrolling initially until the first pinch to fix issues with swiping on an initially zoomed in photo
@@ -295,11 +294,11 @@ class ZoomingScrollView: UIScrollView {
                                             height: loadingIndicator.frame.size.height)
         }
         
-        if loadingError != nil {
-            loadingError?.frame = CGRect(x: (boundsSize.width - (loadingError?.frame.size.width)!) / 2,
-                                         y: (boundsSize.height - (loadingError?.frame.size.height)!) / 2,
-                                         width: (loadingError?.frame.size.width)!,
-                                         height: (loadingError?.frame.size.height)!)
+        if let loadingError = loadingError {
+            loadingError.frame = CGRect(x: (boundsSize.width - loadingError.frame.size.width) / 2,
+                                         y: (boundsSize.height - loadingError.frame.size.height) / 2,
+                                         width: loadingError.frame.size.width,
+                                         height: loadingError.frame.size.height)
         }
         super.layoutSubviews()
         

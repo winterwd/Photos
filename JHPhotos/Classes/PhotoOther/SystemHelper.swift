@@ -80,9 +80,10 @@ open class SystemHelper {
     private class func showSettingAlert(_ tip: String, cancel: SystemHelperResult? = nil) {
         self.showActionAlert(tip, action: {_ in
             let app = UIApplication.shared
-            let settingsURL = NSURL(string: UIApplicationOpenSettingsURLString)!
-            if app.canOpenURL(settingsURL as URL) {
-                app.openURL(settingsURL as URL)
+            if let settingsURL = URL(string: UIApplicationOpenSettingsURLString) {
+                if app.canOpenURL(settingsURL) {
+                    app.openURL(settingsURL)
+                }
             }
         }, cancel: cancel)
     }
