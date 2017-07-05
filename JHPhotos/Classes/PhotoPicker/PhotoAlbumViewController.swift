@@ -52,7 +52,7 @@ open class PhotoAlbumViewController: UICollectionViewController {
     }
     
     public class func photoAlbum(maxSelectCount count: Int, block: ((_ imageDatas: [Data]) -> Void)?) -> UINavigationController {
-        let nvc = UIStoryboard(name: "PhotoAlbum", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let nvc = UIStoryboard(name: "PhotoAlbum", bundle: SystemHelper.getMyLibraryBundle()).instantiateInitialViewController() as! UINavigationController
         let vc = nvc.topViewController as! PhotoAlbumViewController
         vc.maxSelectCount = count
         vc.resultBlock = block

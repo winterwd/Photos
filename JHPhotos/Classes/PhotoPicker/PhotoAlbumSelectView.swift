@@ -46,7 +46,7 @@ class PhotoAlbumSelectView: UIView {
     }
     
     private func setupSubViews() {
-        tableView.register(UINib(nibName: "PhotoAlbumSelectCell", bundle: nil), forCellReuseIdentifier: albumCellIdentifier)
+        tableView.register(UINib(nibName: "PhotoAlbumSelectCell", bundle: SystemHelper.getMyLibraryBundle()), forCellReuseIdentifier: albumCellIdentifier)
         
         self.coverView.frame = self.bounds
         self.coverView.addTarget(self, action: #selector(hide), for: .touchUpInside)
@@ -73,7 +73,7 @@ class PhotoAlbumSelectView: UIView {
     // MARK: - public method
     
     class func instance() -> PhotoAlbumSelectView {
-        let nib = UINib(nibName: "PhotoAlbumSelectView", bundle: nil)
+        let nib = UINib(nibName: "PhotoAlbumSelectView", bundle: SystemHelper.getMyLibraryBundle())
         return nib.instantiate(withOwner: nil, options: nil).first as! PhotoAlbumSelectView
     }
     

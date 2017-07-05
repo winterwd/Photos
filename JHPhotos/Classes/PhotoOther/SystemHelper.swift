@@ -171,4 +171,16 @@ open class SystemHelper {
         }
         return nil
     }
+    
+    
+    /// 获取当前framework的bundle
+    ///
+    /// - Returns: bundle
+    public class func getMyLibraryBundle() -> Bundle? {
+        let bundle = Bundle(for: SystemHelper.self)
+        if let url = bundle.url(forResource: "JHPhotos", withExtension: "bundle") {
+            return Bundle(url: url)
+        }
+        return nil
+    }
 }
