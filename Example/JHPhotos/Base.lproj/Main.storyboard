@@ -123,7 +123,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SZv-0w-2KN" customClass="UploadPhotoView" customModule="JHPhotos_Example" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SZv-0w-2KN" customClass="UploadPhotoView" customModule="JHPhotos">
                                 <rect key="frame" x="15" y="124" width="345" height="76"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -139,8 +139,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="uploadView" destination="SZv-0w-2KN" id="ep6-5N-Pq1"/>
-                        <outlet property="uploadViewHeight" destination="xLc-iG-3xV" id="Z9c-rb-z7g"/>
+                        <outlet property="uploadView" destination="SZv-0w-2KN" id="FmO-Ax-1A0"/>
+                        <outlet property="uploadViewHeight" destination="xLc-iG-3xV" id="NHT-K2-73e"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HL0-ZM-7F5" userLabel="First Responder" sceneMemberID="firstResponder"/>
