@@ -47,7 +47,7 @@ class UploadImageView: UIView {
         let button = UIButton(type: UIButtonType.custom)
         button.isHidden = true
         button.imageEdgeInsets = UIEdgeInsetsMake(-7, 15, 0, 0)
-        button.setImage(UIImage(named: "icon_upload_delete"), for: .normal)
+        button.setImage(UIImage.my_bundleImage(named: "icon_upload_delete"), for: .normal)
         return button
     }()
     

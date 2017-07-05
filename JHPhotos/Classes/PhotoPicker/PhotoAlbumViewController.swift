@@ -252,8 +252,8 @@ fileprivate extension PhotoAlbumViewController {
     func changeButtonState(_ sender: RightImageButton) {
         sender.isSelected = !sender.isSelected
         let hlImageName = sender.isSelected ? "icon_upload_more_s" : "icon_upload_more"
-        sender.setImage(UIImage(named: hlImageName), for: .normal)
-        sender.setImage(UIImage(named: hlImageName), for: .highlighted)
+        sender.setImage(UIImage.my_bundleImage(named: hlImageName), for: .normal)
+        sender.setImage(UIImage.my_bundleImage(named: hlImageName), for: .highlighted)
     }
     
     @IBAction func uploadAction(_ sender: UIBarButtonItem) {

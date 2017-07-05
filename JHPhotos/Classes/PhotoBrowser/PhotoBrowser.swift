@@ -181,8 +181,8 @@ open class PhotoBrowser: UIViewController {
         
         if isDisplaySelectionButton {
             
-            let selectedIconNameONImage = UIImage(named: "\(selectedIconName)ON")
-            let selectedIconNameOFFImage = UIImage(named: "\(selectedIconName)OFF")
+            let selectedIconNameONImage = UIImage.my_bundleImage(named: "\(selectedIconName)ON")
+            let selectedIconNameOFFImage = UIImage.my_bundleImage(named: "\(selectedIconName)OFF")
             selectedButton.setImage(selectedIconNameONImage, for: .selected)
             selectedButton.setImage(selectedIconNameOFFImage, for: .normal)
             selectedButton.sizeToFit()
@@ -200,9 +200,9 @@ open class PhotoBrowser: UIViewController {
         }
         
         if isDisplayNavArrows {
-            let previousButtonImage = UIImage(named: "\(arrowPathFormat)Left")
+            let previousButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)Left")
             previousButton = UIBarButtonItem(image: previousButtonImage, style: .plain, target: self, action: #selector(gotoPreviousPage))
-            let nextButtonImage = UIImage(named: "\(arrowPathFormat)Right")
+            let nextButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)Right")
             nextButton = UIBarButtonItem(image: nextButtonImage, style: .plain, target: self, action: #selector(gotoNextPage))
         }
         

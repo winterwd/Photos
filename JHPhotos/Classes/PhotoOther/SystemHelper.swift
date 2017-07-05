@@ -176,11 +176,24 @@ open class SystemHelper {
     /// 获取当前framework的bundle
     ///
     /// - Returns: bundle
-    public class func getMyLibraryBundle() -> Bundle? {
+    class func getMyLibraryBundle() -> Bundle? {
         let bundle = Bundle(for: SystemHelper.self)
         if let url = bundle.url(forResource: "JHPhotos", withExtension: "bundle") {
             return Bundle(url: url)
         }
         return nil
+    }
+}
+
+extension UIImage {
+    class func my_bundleImage(named: String) -> UIImage? {
+        if let bundle = SystemHelper.getMyLibraryBundle() {
+            return self.my_image(named: named, inBundle: bundle)
+        }
+        return nil
+    }
+    
+    class func my_image(named: String, inBundle bundle: Bundle) -> UIImage? {
+        return UIImage(named: named, in: bundle, compatibleWith: nil)
     }
 }

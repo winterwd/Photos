@@ -32,7 +32,7 @@ open class UploadPhotoView: UIView {
     
     fileprivate lazy var addButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: "icon_upload_other"), for: .normal)
+        button.setImage(UIImage.my_bundleImage(named: "icon_upload_other"), for: .normal)
         return button
     }()
     
