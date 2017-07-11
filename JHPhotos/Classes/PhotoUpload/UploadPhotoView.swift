@@ -10,7 +10,7 @@ import UIKit
 
 open class UploadPhotoView: UIView {
     
-    public var delegate: (JHUploadPhotoViewDelegate & JHUploadPhotoDataDelegate)?{
+    public weak var delegate: (JHUploadPhotoViewDelegate & JHUploadPhotoDataDelegate)?{
         didSet {
             if let obj = delegate {
                 viewController = SystemHelper.getCurrentPresentingVC(obj)
@@ -32,7 +32,7 @@ open class UploadPhotoView: UIView {
     
     fileprivate lazy var addButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage.my_bundleImage(named: "icon_upload_other"), for: .normal)
+        button.setImage(UIImage.my_bundleImage(named: "icon_upload_add"), for: .normal)
         return button
     }()
     

@@ -11,7 +11,7 @@ import Kingfisher
 
 class UploadImageView: UIView {
     
-    var delegate: JHUploadPhotoDataDelegate?
+    weak var delegate: JHUploadPhotoDataDelegate?
     
     var currentImage: UIImage?
     var clickAction: ((_ index: Int, _ isDeleted: Bool) -> Void)?

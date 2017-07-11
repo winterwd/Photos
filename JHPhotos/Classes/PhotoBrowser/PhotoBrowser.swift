@@ -64,8 +64,8 @@ open class PhotoBrowser: UIViewController {
     // Icon should be located in the app's main bundle
     // var customImageSelectedIconName: String?
     
-    fileprivate let arrowPathFormat: String = "UIBarButtonItemArrow"
-    fileprivate let selectedIconName: String = "ImageSelected"
+    fileprivate let arrowPathFormat: String = "icon_itemArrow_"
+    fileprivate let selectedIconName: String = "icon_imageSelected_"
     
     var delayToHideElements: TimeInterval = 5
     fileprivate var controlVisibilityTimer: Timer!
@@ -202,9 +202,9 @@ open class PhotoBrowser: UIViewController {
         }
         
         if isDisplayNavArrows {
-            let previousButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)Left")
+            let previousButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)left")
             previousButton = UIBarButtonItem(image: previousButtonImage, style: .plain, target: self, action: #selector(gotoPreviousPage))
-            let nextButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)Right")
+            let nextButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)right")
             nextButton = UIBarButtonItem(image: nextButtonImage, style: .plain, target: self, action: #selector(gotoNextPage))
         }
         

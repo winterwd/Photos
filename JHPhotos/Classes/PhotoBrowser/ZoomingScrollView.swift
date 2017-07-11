@@ -159,7 +159,7 @@ class ZoomingScrollView: UIScrollView {
         // show if image is not empty
         if let _ = photo?.emptyImage {
             if loadingError == nil {
-                let image = UIImage.my_bundleImage(named: "ImageError")
+                let image = UIImage.my_bundleImage(named: "icon_imageError")
                 loadingError = UIImageView(image: image)
                 loadingError?.isUserInteractionEnabled = false
                 loadingError?.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin]

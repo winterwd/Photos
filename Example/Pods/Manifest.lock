@@ -1,5 +1,5 @@
 PODS:
-  - JHPhotos (0.1.0):
+  - JHPhotos (0.1.1):
     - Kingfisher (~> 3.10)
   - Kingfisher (3.10.2)
 
@@ -11,7 +11,7 @@ EXTERNAL SOURCES:
     :path: "../JHPhotos.podspec"
 
 SPEC CHECKSUMS:
-  JHPhotos: 7eb7b05bcf593a09dd0763731a8eaa0b2128fd17
+  JHPhotos: c664617bff518f953fb74f4bd86b8eb33999a835
   Kingfisher: 7297492bf8cec9b2e2dee3519f2219948580d98e
 
 PODFILE CHECKSUM: 1c02b3ad9da5ce645d7beb12acf280353d14453b
