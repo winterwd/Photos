@@ -24,3 +24,29 @@ import Foundation
     
     //    @objc optional func photoBrowserDidFinishModalPresentation(_ photoBrowser: PhotoBrowser)
 }
+
+//public extension JHPhotoBrowserDelegate {
+//    func photoBrowser(_ photoBrowser: PhotoBrowser, thumbPhotoAtIndex: Int) -> Photo? {
+//        return nil
+//    }
+//    
+//    func photoBrowser(_ photoBrowser: PhotoBrowser, titleForPhotoAtIndex: Int) -> String? {
+//        return nil
+//    }
+//    
+//    func photoBrowser(_ photoBrowser: PhotoBrowser, didDisplayPhotoAtIndex: Int) {
+//        
+//    }
+//    
+//    func photoBrowser(_ photoBrowser: PhotoBrowser, actionButtonPressedForPhotoAtIndex: Int) {
+//        
+//    }
+//    
+//    func photoBrowser(_ photoBrowser: PhotoBrowser, isPhotoSelectedAtIndex: Int) -> Bool {
+//        return false
+//    }
+//    
+//    func photoBrowser(_ photoBrowser: PhotoBrowser, photoAtIndex: Int, selectedChanged: Bool) -> Bool {
+//        return true
+//    }
+//}

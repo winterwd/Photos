@@ -138,7 +138,7 @@ class UploadImageView: UIView {
         imageView.image = currentImage
         
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMddHHmmss"
+        formatter.dateFormat = "yyyyMMddHHmmssSSSS"
         let str = formatter.string(from: Date())
         let fileName = "\(str).jpg"
         

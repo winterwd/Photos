@@ -477,7 +477,7 @@ open class PhotoBrowser: UIViewController {
     }
     
     // first show index
-    func setCurrentPageIndex(_ index: Int) {
+    public func setCurrentPageIndex(_ index: Int) {
         currentPageIndex = self.willSetCurrentPageIndex(index)
         if self.isViewLoaded {
             self.jumpToPage(currentPageIndex, animated: false)
@@ -491,7 +491,7 @@ open class PhotoBrowser: UIViewController {
     // MARK: - data
     
     // Reloads the photo browser and refetches data
-    func reloadData() {
+    public func reloadData() {
         // reset
         photoCount = NSNotFound
         

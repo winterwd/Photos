@@ -15,6 +15,15 @@ open class UploadPhotoView: UIView {
             if let obj = delegate {
                 viewController = SystemHelper.getCurrentPresentingVC(obj)
                 uploadPhotoMaxCount = obj.maxDisplayUPloadPhotoNumber()
+                let item7 = uploadPhotoMaxCount % 7
+                let item4 = uploadPhotoMaxCount % 4
+                
+                if item4 == 0 || item7 == 0 {
+                    uploadPhotoLineItemCount = 4
+                }
+                else {
+                    uploadPhotoLineItemCount = 3
+                }
             }
         }
     }
@@ -26,13 +35,16 @@ open class UploadPhotoView: UIView {
     fileprivate var tempImageUrls: [String] = []
     
     fileprivate var uploadPhotoMaxCount = 0
+    fileprivate var uploadPhotoLineItemCount = 4
     
     fileprivate var imageViewWidth: CGFloat = 0
     fileprivate var imageViewWidthSpace: CGFloat = 0
+    fileprivate var imageViewOriginYFix: CGFloat = 5
     
     fileprivate lazy var addButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(UIImage.my_bundleImage(named: "icon_upload_add"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFill
         return button
     }()
     
@@ -56,10 +68,11 @@ open class UploadPhotoView: UIView {
         
         if imageViewWidth < 1 {
             let width = self.frame.width
-            imageViewWidth = (width - 30) / 4
+            let space = 10 * CGFloat(uploadPhotoLineItemCount - 1)
+            imageViewWidth = (width - space) / CGFloat(uploadPhotoLineItemCount)
             imageViewWidthSpace = imageViewWidth + 10
             
-            addButton.frame = CGRect(x: 0, y: 0, width: imageViewWidth, height: imageViewWidth)
+            addButton.frame = CGRect(x: 0, y: imageViewOriginYFix, width: imageViewWidth, height: imageViewWidth)
             
             delegate?.uploadPhotoView(viewHeight: imageViewWidthSpace)
         }
@@ -91,8 +104,8 @@ open class UploadPhotoView: UIView {
                 browserPhotos.append(Photo(url: Url))
             }
             
-            let x = imageViewWidthSpace * CGFloat(idx%4)
-            let y = imageViewWidthSpace * CGFloat(idx/4)
+            let x = imageViewWidthSpace * CGFloat(idx%uploadPhotoLineItemCount)
+            let y = imageViewWidthSpace * CGFloat(idx/uploadPhotoLineItemCount) + imageViewOriginYFix
             let view = UploadImageView(frame: CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth))
             view.tag = idx
             view.setImage(url)
@@ -116,13 +129,13 @@ open class UploadPhotoView: UIView {
         }
         else {
             addButton.isHidden = false
-            let x = imageViewWidthSpace * (CGFloat(idx%4))
-            let i = idx/4
-            let y = imageViewWidthSpace * CGFloat(i)
+            let x = imageViewWidthSpace * (CGFloat(idx%uploadPhotoLineItemCount))
+            let i = idx/uploadPhotoLineItemCount
+            let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
             updateAddButton(CGPoint(x: x, y: y))
         }
         
-        let height = imageViewWidthSpace * CGFloat(Int(CGFloat(idx)/4.0 + 0.75))
+        let height = imageViewWidthSpace * CGFloat(Int(CGFloat(idx/uploadPhotoLineItemCount) + 0.75))
         updateViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
     }
@@ -168,9 +181,9 @@ fileprivate extension UploadPhotoView {
     // 添加新的图片view
     func addImageView(imageData data: Data) {
         let count = imageViews.count
-        let x = imageViewWidthSpace * CGFloat(count % 4)
-        let i = count / 4
-        let y = imageViewWidthSpace * CGFloat(i)
+        let x = imageViewWidthSpace * CGFloat(count % uploadPhotoLineItemCount)
+        let i = count / uploadPhotoLineItemCount
+        let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
         
         let view = UploadImageView(frame: CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth))
         view.delegate = delegate
@@ -212,12 +225,12 @@ fileprivate extension UploadPhotoView {
             addButton.isHidden = false
         }
         
-        let x = imageViewWidthSpace * CGFloat(idx % 4)
-        let i = idx / 4
-        let y = imageViewWidthSpace * CGFloat(i)
+        let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
+        let i = idx / uploadPhotoLineItemCount
+        let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
         updateAddButton(CGPoint(x: x, y: y))
         
-        let tempS = CGFloat(lroundf(Float(idx)/4.0 + 0.5))
+        let tempS = CGFloat(lroundf(Float(idx/uploadPhotoLineItemCount) + 0.5))
         let height = imageViewWidthSpace * tempS
         updateViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
@@ -245,8 +258,8 @@ fileprivate extension UploadPhotoView {
         var idx = 0
         for obj in imageViews {
             obj.tag = idx
-            let x = imageViewWidthSpace * CGFloat(idx % 4)
-            let y = imageViewWidthSpace * CGFloat(idx / 4)
+            let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
+            let y = imageViewWidthSpace * CGFloat(idx / uploadPhotoLineItemCount) + imageViewOriginYFix
             updateImageView(imageView: obj, origin: CGPoint(x: x, y: y))
             idx += 1
         }
@@ -259,12 +272,12 @@ fileprivate extension UploadPhotoView {
             addButton.isHidden = false
         }
         
-        let x = imageViewWidthSpace * CGFloat(idx % 4)
-        let i = idx / 4
-        let y = imageViewWidthSpace * CGFloat(i)
+        let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
+        let i = idx / uploadPhotoLineItemCount
+        let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
         updateAddButton(CGPoint(x: x, y: y))
         
-        let tempS = CGFloat(lroundf(Float(idx)/4.0 + 0.5))
+        let tempS = CGFloat(lroundf(Float(idx/uploadPhotoLineItemCount) + 0.5))
         let height = imageViewWidthSpace * tempS
         updateViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
