@@ -285,10 +285,21 @@ fileprivate extension PhotoAlbumViewController {
 
 extension PhotoAlbumViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let image = info[UIImagePickerControllerEditedImage] as! UIImage
-        if let imageData = UIImageJPEGRepresentation(image, 0.5) {
-            resultBlock?([imageData])
+        
+        if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
+            if let imageData = UIImageJPEGRepresentation(image, 0.5) {
+                resultBlock?([imageData])
+            }
         }
+        else if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
+            if let imageData = UIImageJPEGRepresentation(image, 0.5) {
+                resultBlock?([imageData])
+            }
+        }
+        else {
+            print("Something went wrong")
+        }
+        
         picker.dismiss(animated: false) { 
             self.dismiss()
         }
