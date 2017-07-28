@@ -52,6 +52,7 @@ class ZoomingScrollView: UIScrollView {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+        photo?.cancelAnyLoading()
     }
     
     override init(frame: CGRect) {
