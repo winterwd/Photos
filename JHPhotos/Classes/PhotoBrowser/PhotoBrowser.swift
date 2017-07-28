@@ -110,6 +110,8 @@ public final class PhotoBrowser: UIViewController {
         NotificationCenter.default.removeObserver(self)
         self.releaseAllUnderlyingPhotos(false)
         KingfisherManager.shared.cache.clearMemoryCache()
+        
+        print("PhotoBrowser deinit")
     }
     
     fileprivate func  releaseAllUnderlyingPhotos(_ preserveCurrent: Bool) {
@@ -557,7 +559,7 @@ public final class PhotoBrowser: UIViewController {
         var photo: Photo?
         if index < thumbPhotos.count {
             if let p = thumbPhotos[index], p.isEqual(NSNull()) {
-                if let p = delegate?.photoBrowser!(self, thumbPhotoAtIndex: index) {
+                if let p = delegate?.photoBrowser(self, thumbPhotoAtIndex: index) {
                     photo = p
                     thumbPhotos[index] = photo
                 }
@@ -572,7 +574,7 @@ public final class PhotoBrowser: UIViewController {
     fileprivate func  photoIsSelected(atIndex index: Int) -> Bool {
         var value = false
         if isDisplaySelectionButton {
-            if let b = delegate?.photoBrowser?(self, isPhotoSelectedAtIndex: index) {
+            if let b = delegate?.photoBrowser(self, isPhotoSelectedAtIndex: index) {
                 value = b
             }
         }
@@ -581,7 +583,7 @@ public final class PhotoBrowser: UIViewController {
     
     fileprivate func  setPhotoSelected(_ selected: Bool, index: Int) {
         if isDisplaySelectionButton {
-            if let result = self.delegate?.photoBrowser?(self, photoAtIndex: index, selectedChanged: selected) {
+            if let result = self.delegate?.photoBrowser(self, photoAtIndex: index, selectedChanged: selected) {
                 if !result {
                     selectedButton.isSelected = !selectedButton.isSelected
                 }
@@ -652,7 +654,7 @@ public final class PhotoBrowser: UIViewController {
         let numberOfPhotos = self.numberOfPhotos()
         // Title
         if numberOfPhotos > 1 {
-            if let title = self.delegate?.photoBrowser?(self, titleForPhotoAtIndex: currentPageIndex) {
+            if let title = self.delegate?.photoBrowser(self, titleForPhotoAtIndex: currentPageIndex) {
                 self.title = title
             }
             else {
@@ -728,7 +730,7 @@ public final class PhotoBrowser: UIViewController {
         if let photo = self.photo(atIndex: currentPageIndex) {
             if self.numberOfPhotos() > 0 && photo.underlyingImage != nil {
                 // If they have defined a delegate method then just message them
-                delegate?.photoBrowser?(self, actionButtonPressedForPhotoAtIndex: currentPageIndex)
+                delegate?.photoBrowser(self, actionButtonPressedForPhotoAtIndex: currentPageIndex)
             }
         }
     }
@@ -989,7 +991,7 @@ fileprivate extension PhotoBrowser {
         
         // Notify delegate
         if index != previousPageIndex {
-            self.delegate?.photoBrowser?(self, didDisplayPhotoAtIndex: index)
+            self.delegate?.photoBrowser(self, didDisplayPhotoAtIndex: index)
             previousPageIndex = index
         }
         

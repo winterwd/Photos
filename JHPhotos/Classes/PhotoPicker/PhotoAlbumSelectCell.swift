@@ -21,8 +21,10 @@ class PhotoAlbumSelectCell: UITableViewCell {
         PhotoAlbumTool.requestImage(for: model.headImageAsset,
                                     size: self.albumImageView.frame.size,
                                     resizeMode: .exact,
-                                    contentMode: .aspectFill) { [unowned self] (image) in
-                                        self.albumImageView.image = image
+                                    contentMode: .aspectFill) { [weak self] (image) in
+                                        if let strongSelf = self {
+                                            strongSelf.albumImageView.image = image
+                                        }
                                     }
     }
 }

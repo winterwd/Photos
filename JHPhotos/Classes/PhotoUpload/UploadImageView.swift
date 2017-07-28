@@ -117,11 +117,13 @@ class UploadImageView: UIView {
                                   placeholder: nil,
                                   options: nil,
                                   progressBlock: nil,
-                                  completionHandler: { [unowned self] (image, error, cacheType, imageUrl) in
-                                    self.currentImage = image
-                                    if error != nil {
-                                        self.deleteButton.isHidden = true
-                                        self.actionButton.isHidden = true
+                                  completionHandler: { [weak self] (image, error, cacheType, imageUrl) in
+                                    if let strongSelf = self {
+                                        strongSelf.currentImage = image
+                                        if error != nil {
+                                            strongSelf.deleteButton.isHidden = true
+                                            strongSelf.actionButton.isHidden = true
+                                        }
                                     }
             })
             deleteButton.isHidden = false

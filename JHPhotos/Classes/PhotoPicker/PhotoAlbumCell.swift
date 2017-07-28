@@ -50,8 +50,10 @@ class PhotoAlbumCell: UICollectionViewCell {
         PhotoAlbumTool.requestImage(for: model.asset,
                                     size: self.imageView.frame.size,
                                     resizeMode: .exact,
-                                    contentMode: .aspectFill) { [unowned self] (image) in
-                                        self.imageView.image = image
+                                    contentMode: .aspectFill) { [weak self] (image) in
+                                        if let strongSelf = self {
+                                            strongSelf.imageView.image = image
+                                        }
                                     }
     }
 }
