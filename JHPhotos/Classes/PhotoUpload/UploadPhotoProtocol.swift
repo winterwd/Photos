@@ -9,12 +9,12 @@
 import UIKit
 import Foundation
 
-public typealias uploadProgress = (_ progress: Progress) -> Void
-public typealias uploadResult = (_ success: Bool) -> Void
+public typealias UploadProgress = (_ progress: Progress) -> Void
+public typealias UploadResult = (_ success: Bool) -> Void
 
 public protocol JHUploadPhotoDataDelegate: class {
     /// 上传图片data到服务器上
-    func startUpload(_ imageData: Data, params: [String : String], progress: uploadProgress?, result: uploadResult?)
+    func startUpload(_ imageData: Data, params: [String : String], progress: UploadProgress?, result: UploadResult?)
 }
 
 public protocol JHUploadPhotoViewDelegate: class {

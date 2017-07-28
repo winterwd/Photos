@@ -95,7 +95,7 @@ class UploadImageView: UIView {
         self.removeFromSuperview()
     }
     
-    func uploadResult(_ success: Bool) {
+    func UploadResult(_ success: Bool) {
         if !success {
             // 上传失败
             return
@@ -144,13 +144,13 @@ class UploadImageView: UIView {
         
         let params = ["fileName": fileName]
         
-        let progress: uploadProgress = { [unowned self] (p) in
+        let progress: UploadProgress = { [unowned self] (p) in
             let x = Float(p.completedUnitCount) / Float(p.totalUnitCount)
             self.progressView.setProgress(x, animated: true)
         }
         
-        let result: uploadResult = {[unowned self] (suc) in
-            self.uploadResult(suc)
+        let result: UploadResult = {[unowned self] (suc) in
+            self.UploadResult(suc)
             block(self, suc)
         }
         

@@ -26,7 +26,7 @@ let PHOTO_LOADING_DID_END_NOTIFICATION = NSNotification.Name(rawValue:"PHOTO_LOA
     @objc func cancelAnyLoading()
 }
 
-open class Photo: NSObject, JHPhoto {
+public class Photo: NSObject, JHPhoto {
     
     var underlyingImage: UIImage?
     var numberOfPhotos: Int = 0

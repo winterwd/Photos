@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class UploadPhotoView: UIView {
+public final class UploadPhotoView: UIView {
     
     public weak var delegate: (JHUploadPhotoViewDelegate & JHUploadPhotoDataDelegate)?{
         didSet {
@@ -63,7 +63,7 @@ open class UploadPhotoView: UIView {
         self.addSubview(addButton)
     }
     
-    override open func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         
         if imageViewWidth < 1 {
@@ -80,12 +80,12 @@ open class UploadPhotoView: UIView {
     
     // MARK: - public
     
-    init(_ frame: CGRect, delegate: JHUploadPhotoViewDelegate & JHUploadPhotoViewDelegate) {
+    public init(_ frame: CGRect, delegate: JHUploadPhotoViewDelegate & JHUploadPhotoViewDelegate) {
         super.init(frame: frame)
         self.delegate = delegate as? (JHUploadPhotoDataDelegate & JHUploadPhotoViewDelegate)
     }
 
-    func setupImageViews(_ imageUrls: [String]) {
+    public func setupImageViews(_ imageUrls: [String]) {
         if imageUrls.count == 0 {
             return
         }

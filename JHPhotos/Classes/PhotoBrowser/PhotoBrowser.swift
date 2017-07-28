@@ -9,7 +9,7 @@
 import UIKit
 import Kingfisher
 
-open class PhotoBrowser: UIViewController {
+public final class PhotoBrowser: UIViewController {
     
     fileprivate let padding: CGFloat = 10
 
@@ -135,7 +135,7 @@ open class PhotoBrowser: UIViewController {
         }
     }
     
-    override open func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         self.releaseAllUnderlyingPhotos(true)
         recycledPages.removeAllObjects()
         super.didReceiveMemoryWarning()
@@ -164,7 +164,7 @@ open class PhotoBrowser: UIViewController {
     
     // MARK: - View Loading
 
-    override open func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         self.automaticallyAdjustsScrollViewInsets = false
         self._initialisation()
@@ -312,7 +312,7 @@ open class PhotoBrowser: UIViewController {
 
     // MARK: - Appearance
     
-    override open var prefersStatusBarHidden: Bool {
+    override public var prefersStatusBarHidden: Bool {
         if !isLeaveStatusBarAlone {
             return isStatusBarShouldBeHidden
         }
@@ -321,18 +321,18 @@ open class PhotoBrowser: UIViewController {
         }
     }
     
-    override open var preferredStatusBarStyle : UIStatusBarStyle {
+    override public var preferredStatusBarStyle : UIStatusBarStyle {
         if !isLeaveStatusBarAlone && UI_USER_INTERFACE_IDIOM() == .phone {
             return previousStatusBarStyle
         }
         return UIStatusBarStyle.lightContent
     }
     
-    override open var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    override public var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         return .slide
     }
     
-    override open func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         // status bar
@@ -370,13 +370,13 @@ open class PhotoBrowser: UIViewController {
         self.view.setNeedsLayout()
     }
     
-    override open func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewIsActive = true
         isViewHasAppearedInitially = true
     }
     
-    override open func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         // Detect if rotation occurs while we're presenting a modal
         pageIndexBeforeRotation = currentPageIndex
         
@@ -399,7 +399,7 @@ open class PhotoBrowser: UIViewController {
         super.viewWillDisappear(animated)
     }
     
-    override open func willMove(toParentViewController parent: UIViewController?) {
+    override public func willMove(toParentViewController parent: UIViewController?) {
         if parent != nil && isHasBelongedToViewController {
             let e = NSException(name:NSExceptionName(rawValue: "PhotoBrowser Instance Reuse"),
                                 reason:"PhotoBrowser instances cannot be reused.",
@@ -408,7 +408,7 @@ open class PhotoBrowser: UIViewController {
         }
     }
     
-    override open func didMove(toParentViewController parent: UIViewController?) {
+    override public func didMove(toParentViewController parent: UIViewController?) {
         if parent == nil {
             isHasBelongedToViewController = true
         }
@@ -416,7 +416,7 @@ open class PhotoBrowser: UIViewController {
 
     // MARK: - Layout
     
-    override open func viewWillLayoutSubviews() {
+    override public func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         self.layoutVisiblePages()
     }

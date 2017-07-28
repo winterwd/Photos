@@ -11,7 +11,7 @@ import Photos
 
 public typealias SystemHelperResult = () -> Swift.Void
 
-open class SystemHelper {
+public class SystemHelper {
     
     // MARK: - Authorization
     

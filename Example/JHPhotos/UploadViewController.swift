@@ -16,8 +16,8 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
     
     var timerCount = 0
     var timer: Timer?
-    var progressBlocks: [uploadProgress?] = []
-    var resultBlocks: [uploadResult?] = []
+    var progressBlocks: [UploadProgress?] = []
+    var resultBlocks: [UploadResult?] = []
     let upProgress = Progress(totalUnitCount: 10)
     
     var uploadDatas: [String] = []
@@ -57,7 +57,7 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
         }
     }
     
-    func fakeUploadDataProgress(progress: uploadProgress?, result: uploadResult?) {
+    func fakeUploadDataProgress(progress: UploadProgress?, result: UploadResult?) {
         progressBlocks.append(progress)
         resultBlocks.append(result)
         timerCount = 0
@@ -66,7 +66,7 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
     
     // MARK: - delegate
     
-    func startUpload(_ imageData: Data, params: [String : String], progress: uploadProgress?, result: uploadResult?) {
+    func startUpload(_ imageData: Data, params: [String : String], progress: UploadProgress?, result: UploadResult?) {
         uploadDatas.append("test")
         fakeUploadDataProgress(progress: progress, result: result)
     }

@@ -12,7 +12,7 @@ import Photos
 private let cameraPickerIdentifier = "cameraPickerCell"
 private let albumPickerIdentifier = "albumPickerCell"
 
-open class PhotoAlbumViewController: UICollectionViewController {
+public final class PhotoAlbumViewController: UICollectionViewController {
     
     // MARK: - public property
     
@@ -59,7 +59,7 @@ open class PhotoAlbumViewController: UICollectionViewController {
         return nvc
     }
 
-    override open func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         titleButton.backgroundColor = UIColor.clear
         let width = (UIScreen.main.bounds.width - 3) / 4.0
@@ -70,11 +70,11 @@ open class PhotoAlbumViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDataSource
 
-    override open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return albumListCount + 1
     }
 
-    override open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.item == 0 {
             return collectionView.dequeueReusableCell(withReuseIdentifier: cameraPickerIdentifier, for: indexPath)
         }
@@ -94,7 +94,7 @@ open class PhotoAlbumViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDelegate
 
-    override open func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    override public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         if indexPath.item == 0 {
             return
