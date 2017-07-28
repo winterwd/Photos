@@ -8,10 +8,15 @@
 
 import UIKit
 
-@objc protocol TapDetectingImageViewDelegate {
-    @objc optional func imageView(_ imageView: UIImageView, singleTapDetected touchPoint: CGPoint)
-    @objc optional func imageView(_ imageView: UIImageView, doubleTapDetected touchPoint: CGPoint)
+protocol TapDetectingImageViewDelegate: class {
+    func imageView(_ imageView: UIImageView, singleTapDetected touchPoint: CGPoint)
+    func imageView(_ imageView: UIImageView, doubleTapDetected touchPoint: CGPoint)
 //    @objc optional func imageView(_ imageView: UIImageView, tripleTapDetected touchPoint: CGPoint)
+}
+
+extension TapDetectingImageViewDelegate {
+    func imageView(_ imageView: UIImageView, singleTapDetected touchPoint: CGPoint) {}
+    func imageView(_ imageView: UIImageView, doubleTapDetected touchPoint: CGPoint) {}
 }
 
 class TapDetectingImageView: UIImageView {
@@ -57,12 +62,12 @@ class TapDetectingImageView: UIImageView {
     
     @objc private func singleTapDetected(gesture: UITapGestureRecognizer) {
         let touchPoint = gesture.location(in: self)
-        tapDelegate?.imageView!(self, singleTapDetected: touchPoint)
+        tapDelegate?.imageView(self, singleTapDetected: touchPoint)
     }
     
     @objc private func doubleTapDetected(gesture: UITapGestureRecognizer) {
         let touchPoint = gesture.location(in: self)
-        tapDelegate?.imageView!(self, doubleTapDetected: touchPoint)
+        tapDelegate?.imageView(self, doubleTapDetected: touchPoint)
     }
     
 //    @objc private func tripleTapDetected(gesture: UITapGestureRecognizer) {

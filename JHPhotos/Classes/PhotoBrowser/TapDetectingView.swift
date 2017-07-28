@@ -8,10 +8,15 @@
 
 import UIKit
 
-@objc protocol TapDetectingViewDelegate {
-    @objc optional func view(_ view: UIView, singleTapDetected touch: UITouch)
-    @objc optional func view(_ view: UIView, doubleTapDetected touch: UITouch)
+protocol TapDetectingViewDelegate: class{
+    func view(_ view: UIView, singleTapDetected touch: UITouch)
+    func view(_ view: UIView, doubleTapDetected touch: UITouch)
 //    @objc optional func view(_ view: UIView, tripleTapDetected touch: UITouch)
+}
+
+extension TapDetectingViewDelegate {
+    func view(_ view: UIView, singleTapDetected touch: UITouch) {}
+    func view(_ view: UIView, doubleTapDetected touch: UITouch) {}
 }
 
 class TapDetectingView: UIView {
@@ -31,10 +36,10 @@ class TapDetectingView: UIView {
         let touch = touches.first!
         switch touch.tapCount {
         case 1:
-            tapDelegate?.view!(self, singleTapDetected: touch)
+            tapDelegate?.view(self, singleTapDetected: touch)
             break
         case 2:
-            tapDelegate?.view!(self, doubleTapDetected: touch)
+            tapDelegate?.view(self, doubleTapDetected: touch)
             break
 //        case 3:
 //            tapDelegate?.view!(self, tripleTapDetected: touch)
