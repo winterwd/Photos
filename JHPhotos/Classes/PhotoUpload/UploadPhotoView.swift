@@ -32,7 +32,6 @@ public final class UploadPhotoView: UIView {
     fileprivate weak var viewController: UIViewController?
     fileprivate var browserPhotos: [Photo] = []
     fileprivate var imageViews: [UploadImageView] = []
-    fileprivate var tempImageUrls: [String] = []
     
     fileprivate var uploadPhotoMaxCount = 0
     fileprivate var uploadPhotoLineItemCount = 4
@@ -92,10 +91,11 @@ public final class UploadPhotoView: UIView {
         
         // 清除之前的
         removeAllImageViews()
-        imageViews.removeAll()
-        browserPhotos.removeAll()
-        tempImageUrls.removeAll()
-        tempImageUrls = imageUrls
+        
+        let width = self.frame.width
+        let space = 10 * CGFloat(uploadPhotoLineItemCount - 1)
+        imageViewWidth = (width - space) / CGFloat(uploadPhotoLineItemCount)
+        imageViewWidthSpace = imageViewWidth + 10
         
         // 添加已经有的图片
         var idx = 0
@@ -104,9 +104,10 @@ public final class UploadPhotoView: UIView {
                 browserPhotos.append(Photo(url: Url))
             }
             
-            let x = imageViewWidthSpace * CGFloat(idx%uploadPhotoLineItemCount)
-            let y = imageViewWidthSpace * CGFloat(idx/uploadPhotoLineItemCount) + imageViewOriginYFix
+            let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
+            let y = imageViewWidthSpace * CGFloat(idx / uploadPhotoLineItemCount) + imageViewOriginYFix
             let view = UploadImageView(frame: CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth))
+            
             view.tag = idx
             view.setImage(url)
             self.addSubview(view)
@@ -120,7 +121,6 @@ public final class UploadPhotoView: UIView {
                     self.handleImageClickAction(index)
                 }
             }
-            
             idx += 1
         }
         
@@ -129,13 +129,14 @@ public final class UploadPhotoView: UIView {
         }
         else {
             addButton.isHidden = false
-            let x = imageViewWidthSpace * (CGFloat(idx%uploadPhotoLineItemCount))
-            let i = idx/uploadPhotoLineItemCount
+            let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
+            let i = idx / uploadPhotoLineItemCount
             let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
-            updateAddButton(CGPoint(x: x, y: y))
+            addButton.frame = CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth)
         }
         
-        let height = imageViewWidthSpace * CGFloat(Int(CGFloat(idx/uploadPhotoLineItemCount) + 0.75))
+        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
+        let height = imageViewWidthSpace * tempS
         updateViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
     }
@@ -163,6 +164,7 @@ fileprivate extension UploadPhotoView {
             view.reloadInputViews()
         }
         imageViews.removeAll()
+        browserPhotos.removeAll()
         
         addButton.isHidden = false
         updateAddButton(CGPoint(x: 0, y: 0))
@@ -230,7 +232,7 @@ fileprivate extension UploadPhotoView {
         let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
         updateAddButton(CGPoint(x: x, y: y))
         
-        let tempS = CGFloat(lroundf(Float(idx/uploadPhotoLineItemCount) + 0.5))
+        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
         let height = imageViewWidthSpace * tempS
         updateViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
@@ -277,7 +279,7 @@ fileprivate extension UploadPhotoView {
         let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
         updateAddButton(CGPoint(x: x, y: y))
         
-        let tempS = CGFloat(lroundf(Float(idx/uploadPhotoLineItemCount) + 0.5))
+        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
         let height = imageViewWidthSpace * tempS
         updateViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)

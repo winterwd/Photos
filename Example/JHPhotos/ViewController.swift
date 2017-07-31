@@ -118,6 +118,10 @@ class ViewController: UIViewController {
         case 2:
             selectImageView.showView()
             break
+        case 3:
+            let images = ["http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_q.jpg", "http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_q.jpg"]
+            self.performSegue(withIdentifier: "UploadViewController", sender: images)
+            break
         default:
             break
         }
@@ -180,6 +184,14 @@ class ViewController: UIViewController {
         
         photos = results
         thumbsPhotos = thumbResults
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "UploadViewController" {
+            if let vc = segue.destination as? UploadViewController {
+                vc.uploadDatas = sender as! [String]
+            }
+        }
     }
 }
 

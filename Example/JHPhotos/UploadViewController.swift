@@ -22,10 +22,16 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
     
     var uploadDatas: [String] = []
     
+    deinit {
+        print("---> UploadViewController deinit")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         uploadView.delegate = self as JHUploadPhotoDataDelegate & JHUploadPhotoViewDelegate
-//        uploadView.isDirectDisplayPhotoAlbum = false
+        if uploadDatas.count > 0 {
+            uploadView.setupImageViews(uploadDatas)
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
