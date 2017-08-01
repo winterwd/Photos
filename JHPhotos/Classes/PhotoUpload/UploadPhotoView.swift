@@ -124,6 +124,7 @@ public final class UploadPhotoView: UIView {
             idx += 1
         }
         
+        var fix: Float = 0.0;
         if needUploadPhotoCount() == 0 {
             addButton.isHidden = true
         }
@@ -133,9 +134,10 @@ public final class UploadPhotoView: UIView {
             let i = idx / uploadPhotoLineItemCount
             let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
             addButton.frame = CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth)
+            fix = 0.5
         }
         
-        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
+        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + fix))
         let height = imageViewWidthSpace * tempS
         updateViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
