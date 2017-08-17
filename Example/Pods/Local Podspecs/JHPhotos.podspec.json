@@ -1,6 +1,6 @@
 {
   "name": "JHPhotos",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "summary": "JHPhotos for dj as Swift.",
   "description": "TODO: Add long description of the pod here.",
   "homepage": "http://www.jianshu.com/u/06f42a993882",
@@ -13,10 +13,10 @@
   },
   "source": {
     "git": "https://git.thy360.com/ios-compose/jh_photos.git",
-    "tag": "0.1.2"
+    "tag": "0.1.3"
   },
   "platforms": {
-    "ios": "9.0"
+    "ios": "8.0"
   },
   "source_files": "JHPhotos/Classes/**/*.swift",
   "resource_bundles": {

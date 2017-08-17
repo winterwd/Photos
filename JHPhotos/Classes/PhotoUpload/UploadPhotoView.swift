@@ -30,6 +30,15 @@ public final class UploadPhotoView: UIView {
     public var isDirectDisplayPhotoAlbum = true // 是否直接进入相册选择照片
     
     fileprivate weak var viewController: UIViewController?
+    
+    fileprivate var photoCollectionView: DragCellCollectionView!
+    fileprivate var viewLayout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 10;
+        layout.minimumInteritemSpacing = 10;
+        return layout;
+    }()
+    
     fileprivate var browserPhotos: [Photo] = []
     fileprivate var imageViews: [UploadImageView] = []
     
@@ -58,23 +67,33 @@ public final class UploadPhotoView: UIView {
     }
     
     func setupViews() {
-        addButton.addTarget(self, action: #selector(selectImage(sender:)), for: .touchUpInside)
-        self.addSubview(addButton)
+//        addButton.addTarget(self, action: #selector(selectImage(sender:)), for: .touchUpInside)
+//        self.addSubview(addButton)
+        photoCollectionView = DragCellCollectionView(frame: CGRect.zero, collectionViewLayout: viewLayout)
+        self.addSubview(photoCollectionView);
+        photoCollectionView.myDelegate = self as? DragCellCollectionViewDelegate;
+        photoCollectionView.myDataSource = self as? DragCellCollectionViewDataSource
     }
     
     override public func layoutSubviews() {
         super.layoutSubviews()
+        let width = self.bounds.width - 2 * 15
+        let height = self.bounds.height - 2 * 15
+        photoCollectionView.frame = CGRect(x: 15, y: 15, width: width, height: height)
         
-        if imageViewWidth < 1 {
-            let width = self.frame.width
-            let space = 10 * CGFloat(uploadPhotoLineItemCount - 1)
-            imageViewWidth = (width - space) / CGFloat(uploadPhotoLineItemCount)
-            imageViewWidthSpace = imageViewWidth + 10
-            
-            addButton.frame = CGRect(x: 0, y: imageViewOriginYFix, width: imageViewWidth, height: imageViewWidth)
-            
-            delegate?.uploadPhotoView(viewHeight: imageViewWidthSpace)
-        }
+        let itemW = width / 4.0
+        viewLayout.itemSize = CGSize(width: itemW, height: itemW)
+        
+//        if imageViewWidth < 1 {
+//            let width = self.frame.width
+//            let space = 10 * CGFloat(uploadPhotoLineItemCount - 1)
+//            imageViewWidth = (width - space) / CGFloat(uploadPhotoLineItemCount)
+//            imageViewWidthSpace = imageViewWidth + 10
+//            
+//            addButton.frame = CGRect(x: 0, y: imageViewOriginYFix, width: imageViewWidth, height: imageViewWidth)
+//            
+//            delegate?.uploadPhotoView(viewHeight: imageViewWidthSpace)
+//        }
     }
     
     // MARK: - public
@@ -139,13 +158,13 @@ public final class UploadPhotoView: UIView {
         
         let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + fix))
         let height = imageViewWidthSpace * tempS
-        updateViewHeight(height)
+        updateSelfViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
     }
 }
 
 fileprivate extension UploadPhotoView {
-    func updateViewHeight(_ height: CGFloat) {
+    func updateSelfViewHeight(_ height: CGFloat) {
         var frame = self.frame
         frame.size.height = height
         self.frame = frame
@@ -236,7 +255,7 @@ fileprivate extension UploadPhotoView {
         
         let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
         let height = imageViewWidthSpace * tempS
-        updateViewHeight(height)
+        updateSelfViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
     }
     
@@ -283,7 +302,7 @@ fileprivate extension UploadPhotoView {
         
         let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
         let height = imageViewWidthSpace * tempS
-        updateViewHeight(height)
+        updateSelfViewHeight(height)
         delegate?.uploadPhotoView(viewHeight: height)
     }
     
