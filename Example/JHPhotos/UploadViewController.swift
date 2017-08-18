@@ -12,7 +12,7 @@ import JHPhotos
 class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploadPhotoViewDelegate{
 
     @IBOutlet weak var uploadView: UploadPhotoView!
-    @IBOutlet weak var uploadViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var bgViewHeight: NSLayoutConstraint!
     
     var timerCount = 0
     var timer: Timer?
@@ -79,13 +79,13 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
     
     /// 需要展示 上传图片的总数量
     func maxDisplayUPloadPhotoNumber() -> Int {
-        return 8 - uploadDatas.count
+        return 8
     }
     
     /// 返回 uploadPhotoView 高度
     func uploadPhotoView(viewHeight height: CGFloat) {
         print("uploadPhotoView height \(height)")
-        uploadViewHeight.constant = height
+        bgViewHeight.constant = height + 40
     }
     
     /// 删除/上传失败

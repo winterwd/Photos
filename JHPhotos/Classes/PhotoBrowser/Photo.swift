@@ -13,16 +13,14 @@ import Kingfisher
 let PHOTO_PROGRESS_NOTIFICATION = NSNotification.Name(rawValue: "PHOTO_PROGRESS_NOTIFICATION")
 let PHOTO_LOADING_DID_END_NOTIFICATION = NSNotification.Name(rawValue:"PHOTO_LOADING_DID_END_NOTIFICATION")
 
-@objc protocol JHPhoto: class {
-    
-    var numberOfPhotos: Int { get }
+protocol JHPhoto {
     var underlyingImage: UIImage? { get }
     
     func loadUnderlyingImageAndNotify()
     func performLoadUnderlyingImageAndNotify()
     func unloadUnderlyingImage()
     
-    @objc var emptyImage: Bool { get }
+    var emptyImage: Bool { get }
     func cancelAnyLoading()
 }
 
@@ -31,10 +29,7 @@ extension JHPhoto {
 }
 
 public class Photo: NSObject, JHPhoto {
-    
     var underlyingImage: UIImage?
-    var numberOfPhotos: Int = 0
-    
     var emptyImage: Bool = true
     
     private var image: UIImage?

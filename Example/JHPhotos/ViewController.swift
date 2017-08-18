@@ -119,7 +119,8 @@ class ViewController: UIViewController {
             selectImageView.showView()
             break
         case 3:
-            let images = ["http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_q.jpg", "http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_q.jpg"]
+            let images = ["http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_b.jpg",
+                          "http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_b.jpg"]
             self.performSegue(withIdentifier: "UploadViewController", sender: images)
             break
         default:

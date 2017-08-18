@@ -86,6 +86,7 @@
 		C89C9A7D1F146A8A00B22D29 /* icon_imageSelected_OFF@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageSelected_OFF@3x.png"; sourceTree = "<group>"; };
 		C89C9A7E1F146A8A00B22D29 /* icon_imageSelected_OFF@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageSelected_OFF@2x.png"; sourceTree = "<group>"; };
 		C8A49EF61F457BF8002B8856 /* DragCellCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCellCollectionView.swift; sourceTree = "<group>"; };
+		C8A49EF71F457F8C002B8856 /* UploadImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageCell.swift; sourceTree = "<group>"; };
 		C8A711591F0CBD33008C0B43 /* UploadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
 		CAEE656F2FDC09718FC1CE8A /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		CC236F014BD469B1940743FA /* Pods-JHPhotos_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JHPhotos_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JHPhotos_Tests/Pods-JHPhotos_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -298,6 +299,7 @@
 				C88E36EC1F0C80B400B875D4 /* UploadImageView.swift */,
 				C88E36ED1F0C80B400B875D4 /* UploadPhotoProtocol.swift */,
 				C88E36EE1F0C80B400B875D4 /* UploadPhotoView.swift */,
+				C8A49EF71F457F8C002B8856 /* UploadImageCell.swift */,
 				C8A49EF61F457BF8002B8856 /* DragCellCollectionView.swift */,
 			);
 			path = PhotoUpload;

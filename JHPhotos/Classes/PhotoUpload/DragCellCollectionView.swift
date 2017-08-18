@@ -21,21 +21,36 @@ public protocol DragCellCollectionViewDataSource: UICollectionViewDataSource {
 
 public final class DragCellCollectionView: UICollectionView {
     
-    weak public var myDelegate: DragCellCollectionViewDelegate?
-    weak public var myDataSource: DragCellCollectionViewDataSource?
+    weak public var myDelegate: DragCellCollectionViewDelegate? {
+        didSet {
+            self.delegate = myDelegate
+        }
+    }
+    weak public var myDataSource: DragCellCollectionViewDataSource? {
+        didSet {
+            self.dataSource = myDataSource
+        }
+    }
     
     fileprivate var minimumPressDuration: CFTimeInterval = 1
     
     public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
-        self.addLongPressGestureRecognizer()
+        setupSome()
     }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.addLongPressGestureRecognizer()
+        setupSome()
     }
     
+    fileprivate func setupSome() {
+        self.backgroundColor = UIColor.white
+        self.isScrollEnabled = false
+        self.showsVerticalScrollIndicator = false
+        self.showsHorizontalScrollIndicator = false
+        addLongPressGestureRecognizer()
+    }
 }
 
 // MARK: - LongPressGestureRecognizer
@@ -56,8 +71,8 @@ fileprivate extension DragCellCollectionView {
         case .changed:
             self.gestureChange(longPressGesture: longPressGesture)
                 break
-        case .cancelled:
-            self.gestureCancelled(longPressGesture: longPressGesture)
+        case .ended:
+            self.gestureEnded(longPressGesture: longPressGesture)
                 break
         default:
             break
@@ -65,14 +80,14 @@ fileprivate extension DragCellCollectionView {
     }
     
     func gestureBegan(longPressGesture: UILongPressGestureRecognizer) {
-        
+        print("-----> gestureBegan")
     }
     
     func gestureChange(longPressGesture: UILongPressGestureRecognizer) {
-        
+        print("-----> gestureChange")
     }
     
-    func gestureCancelled(longPressGesture: UILongPressGestureRecognizer) {
-        
+    func gestureEnded(longPressGesture: UILongPressGestureRecognizer) {
+        print("-----> gestureEnded")
     }
 }

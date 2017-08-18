@@ -15,15 +15,6 @@ public final class UploadPhotoView: UIView {
             if let obj = delegate {
                 viewController = SystemHelper.getCurrentPresentingVC(obj)
                 uploadPhotoMaxCount = obj.maxDisplayUPloadPhotoNumber()
-                let item7 = uploadPhotoMaxCount % 7
-                let item4 = uploadPhotoMaxCount % 4
-                
-                if item4 == 0 || item7 == 0 {
-                    uploadPhotoLineItemCount = 4
-                }
-                else {
-                    uploadPhotoLineItemCount = 3
-                }
             }
         }
     }
@@ -31,30 +22,25 @@ public final class UploadPhotoView: UIView {
     
     fileprivate weak var viewController: UIViewController?
     
+    fileprivate let cellReuseIdentifier = "UploadImageCell"
     fileprivate var photoCollectionView: DragCellCollectionView!
-    fileprivate var viewLayout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 10;
-        layout.minimumInteritemSpacing = 10;
-        return layout;
+    fileprivate var viewLayout: UICollectionViewFlowLayout! = {
+        let viewLayout = UICollectionViewFlowLayout()
+        viewLayout.minimumLineSpacing = 10
+        viewLayout.minimumInteritemSpacing = 10
+        return viewLayout
     }()
-    
-    fileprivate var browserPhotos: [Photo] = []
-    fileprivate var imageViews: [UploadImageView] = []
     
     fileprivate var uploadPhotoMaxCount = 0
-    fileprivate var uploadPhotoLineItemCount = 4
-    
-    fileprivate var imageViewWidth: CGFloat = 0
-    fileprivate var imageViewWidthSpace: CGFloat = 0
-    fileprivate var imageViewOriginYFix: CGFloat = 5
-    
-    fileprivate lazy var addButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setImage(UIImage.my_bundleImage(named: "icon_upload_add"), for: .normal)
-        button.imageView?.contentMode = .scaleAspectFill
-        return button
+    fileprivate var browserPhotos: [Photo] = []
+    fileprivate var uploadCellPhotos: [UploadCellImage] = []
+    fileprivate var addCellImage: UploadCellImage = {
+        let image = UIImage.my_bundleImage(named: "icon_upload_add")
+        let data =  Data()
+        return UploadCellImage(image, canAdd: true)
     }()
+    
+    fileprivate var selfWidth: CGFloat = 0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -67,33 +53,34 @@ public final class UploadPhotoView: UIView {
     }
     
     func setupViews() {
-//        addButton.addTarget(self, action: #selector(selectImage(sender:)), for: .touchUpInside)
-//        self.addSubview(addButton)
-        photoCollectionView = DragCellCollectionView(frame: CGRect.zero, collectionViewLayout: viewLayout)
+        // 解决collectionView 下移64问题
+        let view = UIView(frame: self.bounds)
+        view.backgroundColor = UIColor.clear
+        self.addSubview(view)
+        
+        uploadCellPhotos.append(addCellImage)
+        
+        let width = self.bounds.width
+        let itemW = (width-30.0) / 4.0
+        viewLayout.itemSize = CGSize(width: itemW, height: itemW)
+        photoCollectionView = DragCellCollectionView(frame: CGRect(x: 0, y: 0, width: width, height: itemW), collectionViewLayout: viewLayout)
         self.addSubview(photoCollectionView);
-        photoCollectionView.myDelegate = self as? DragCellCollectionViewDelegate;
-        photoCollectionView.myDataSource = self as? DragCellCollectionViewDataSource
+        photoCollectionView.myDelegate = self as DragCellCollectionViewDelegate
+        photoCollectionView.myDataSource = self as DragCellCollectionViewDataSource
+        photoCollectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        
+        self.layer.masksToBounds = false
     }
     
     override public func layoutSubviews() {
         super.layoutSubviews()
-        let width = self.bounds.width - 2 * 15
-        let height = self.bounds.height - 2 * 15
-        photoCollectionView.frame = CGRect(x: 15, y: 15, width: width, height: height)
-        
-        let itemW = width / 4.0
-        viewLayout.itemSize = CGSize(width: itemW, height: itemW)
-        
-//        if imageViewWidth < 1 {
-//            let width = self.frame.width
-//            let space = 10 * CGFloat(uploadPhotoLineItemCount - 1)
-//            imageViewWidth = (width - space) / CGFloat(uploadPhotoLineItemCount)
-//            imageViewWidthSpace = imageViewWidth + 10
-//            
-//            addButton.frame = CGRect(x: 0, y: imageViewOriginYFix, width: imageViewWidth, height: imageViewWidth)
-//            
-//            delegate?.uploadPhotoView(viewHeight: imageViewWidthSpace)
-//        }
+        if selfWidth < 1 {
+            let width = self.bounds.width
+            selfWidth = width
+            let itemW = (width-30.0) / 4.0
+            viewLayout.itemSize = CGSize(width: itemW, height: itemW)
+            self.updateSelfViewHeight()
+        }
     }
     
     // MARK: - public
@@ -108,87 +95,61 @@ public final class UploadPhotoView: UIView {
             return
         }
         
-        // 清除之前的
-        removeAllImageViews()
-        
-        let width = self.frame.width
-        let space = 10 * CGFloat(uploadPhotoLineItemCount - 1)
-        imageViewWidth = (width - space) / CGFloat(uploadPhotoLineItemCount)
-        imageViewWidthSpace = imageViewWidth + 10
-        
-        // 添加已经有的图片
-        var idx = 0
+        var cellImages: [UploadCellImage]! = []
         for url in imageUrls {
             if let Url = NSURL(string: url) {
                 browserPhotos.append(Photo(url: Url))
+                cellImages.append(UploadCellImage(url))
             }
-            
-            let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
-            let y = imageViewWidthSpace * CGFloat(idx / uploadPhotoLineItemCount) + imageViewOriginYFix
-            let view = UploadImageView(frame: CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth))
-            
-            view.tag = idx
-            view.setImage(url)
-            self.addSubview(view)
-            imageViews.append(view)
-            
-            view.clickAction = { [unowned self] (index, isDeleted) in
-                if isDeleted {
-                    self.updateImageViewsForRemove(index)
-                }
-                else {
-                    self.handleImageClickAction(index)
-                }
-            }
-            idx += 1
         }
-        
-        var fix: Float = 0.0;
-        if needUploadPhotoCount() == 0 {
-            addButton.isHidden = true
+        uploadCellPhotos.insert(contentsOf: cellImages, at: 0)
+        let index = uploadCellPhotos.count - 1
+        if index == uploadPhotoMaxCount {
+            uploadCellPhotos.removeLast()
+        }
+
+        photoCollectionView.reloadData()
+    }
+}
+
+extension UploadPhotoView: DragCellCollectionViewDelegate, DragCellCollectionViewDataSource {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return uploadCellPhotos.count
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! UploadImageCell
+        cell.setImage(uploadCellPhotos[indexPath.item])
+        return cell
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let obj = uploadCellPhotos[indexPath.item]
+        if obj.canAddNewImage {
+            self.startSelectImage()
         }
         else {
-            addButton.isHidden = false
-            let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
-            let i = idx / uploadPhotoLineItemCount
-            let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
-            addButton.frame = CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth)
-            fix = 0.5
+            self.handlePhotoBrowser(indexPath.item)
         }
-        
-        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + fix))
-        let height = imageViewWidthSpace * tempS
-        updateSelfViewHeight(height)
-        delegate?.uploadPhotoView(viewHeight: height)
     }
 }
 
 fileprivate extension UploadPhotoView {
-    func updateSelfViewHeight(_ height: CGFloat) {
+    
+    func updateSelfViewHeight() {
+        let itemH = viewLayout.itemSize.height
+        let lineCount = uploadCellPhotos.count/4 + 1
+        let height = itemH * CGFloat(lineCount) + 10.0 * CGFloat(lineCount-1)
         var frame = self.frame
         frame.size.height = height
         self.frame = frame
-    }
-    
-    func updateAddButton(_ origin: CGPoint) {
-        var frame = addButton.frame
-        frame.origin = origin
-        addButton.frame = frame
+        photoCollectionView.frame = self.bounds
+        delegate?.uploadPhotoView(viewHeight: height)
     }
     
     func needUploadPhotoCount() -> Int {
-        return uploadPhotoMaxCount - imageViews.count
-    }
-    
-    func removeAllImageViews() {
-        for view in imageViews {
-            view.reloadInputViews()
-        }
-        imageViews.removeAll()
-        browserPhotos.removeAll()
-        
-        addButton.isHidden = false
-        updateAddButton(CGPoint(x: 0, y: 0))
+        let num = uploadPhotoMaxCount - uploadCellPhotos.count + 1
+        return max(0, num)
     }
     
     func addImageDatas(_ datas: [Data]) {
@@ -196,125 +157,27 @@ fileprivate extension UploadPhotoView {
             return
         }
         
+        var cellImages: [UploadCellImage]! = []
         for data in datas {
-            addImageView(imageData: data)
-        }
-    }
-    
-    // 添加新的图片view
-    func addImageView(imageData data: Data) {
-        let count = imageViews.count
-        let x = imageViewWidthSpace * CGFloat(count % uploadPhotoLineItemCount)
-        let i = count / uploadPhotoLineItemCount
-        let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
-        
-        let view = UploadImageView(frame: CGRect(x: x, y: y, width: imageViewWidth, height: imageViewWidth))
-        view.delegate = delegate
-        self.addSubview(view)
-        imageViews.append(view)
-        updateImageViewsForAddButton()
-        
-        view.clickAction = { [unowned self] (index, isDeleted) in
-            if isDeleted {
-                self.updateImageViewsForRemove(index)
-            }
-            else {
-                self.handleImageClickAction(index)
+            if let image = UIImage(data:data) {
+                browserPhotos.append(Photo(image: image))
+                cellImages.append(UploadCellImage(image))
             }
         }
+        var index = uploadCellPhotos.count - 1
+        uploadCellPhotos.insert(contentsOf: cellImages, at: index)
         
-        view.uploadImage(imageData: data, block: { [unowned self] (objView, success) in
-            if success {
-                self.browserPhotos.append(Photo(image: objView.currentImage!))
-            }
-            else {
-                self.updateImageViewsForUploadFailed(objView.tag)
-            }
-        })
+        index = uploadCellPhotos.count - 1
+        if index == uploadPhotoMaxCount {
+            uploadCellPhotos.removeLast()
+        }
+        updateSelfViewHeight()
+        photoCollectionView.reloadData()
     }
     
-    func updateImageViewsForAddButton() {
-        var idx = 0
-        for obj in imageViews {
-            obj.tag = idx
-            idx += 1
-        }
-        
-        if uploadPhotoMaxCount == idx {
-            addButton.isHidden = true
-            return
-        }
-        else {
-            addButton.isHidden = false
-        }
-        
-        let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
-        let i = idx / uploadPhotoLineItemCount
-        let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
-        updateAddButton(CGPoint(x: x, y: y))
-        
-        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
-        let height = imageViewWidthSpace * tempS
-        updateSelfViewHeight(height)
-        delegate?.uploadPhotoView(viewHeight: height)
-    }
-    
-    func updateImageViewsForUploadFailed(_ index: Int) {
-        print("上传图片失败  \(index)")
-        imageViews[index].removeFromSuperview()
-        imageViews.remove(at: index)
-        delegate?.uploadPhotoViewForDeleteOrFailed(index)
-        
-        updateAllImageViewsForDeleteOrFailed()
-    }
-    
-    func updateImageViewsForRemove(_ index: Int) {
-        print("删除图片 \(index)")
-        browserPhotos.remove(at: index)
-        imageViews.remove(at: index)
-        delegate?.uploadPhotoViewForDeleteOrFailed(index)
-        
-        updateAllImageViewsForDeleteOrFailed()
-    }
-    
-    func updateAllImageViewsForDeleteOrFailed() {
-        var idx = 0
-        for obj in imageViews {
-            obj.tag = idx
-            let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
-            let y = imageViewWidthSpace * CGFloat(idx / uploadPhotoLineItemCount) + imageViewOriginYFix
-            updateImageView(imageView: obj, origin: CGPoint(x: x, y: y))
-            idx += 1
-        }
-        
-        if uploadPhotoMaxCount == idx {
-            addButton.isHidden = true
-            return
-        }
-        else {
-            addButton.isHidden = false
-        }
-        
-        let x = imageViewWidthSpace * CGFloat(idx % uploadPhotoLineItemCount)
-        let i = idx / uploadPhotoLineItemCount
-        let y = imageViewWidthSpace * CGFloat(i) + imageViewOriginYFix
-        updateAddButton(CGPoint(x: x, y: y))
-        
-        let tempS = CGFloat(lroundf(Float(idx / uploadPhotoLineItemCount) + 0.5))
-        let height = imageViewWidthSpace * tempS
-        updateSelfViewHeight(height)
-        delegate?.uploadPhotoView(viewHeight: height)
-    }
-    
-    func updateImageView(imageView: UploadImageView, origin: CGPoint) {
-        var frame = imageView.frame
-        frame.origin = origin
-        imageView.frame = frame
-    }
-    
-    // MARK: - action
+    // MARK: - action 选择图片
 
-    @objc func selectImage(sender: UIButton) {
+    func startSelectImage() {
         if let vc = viewController {
             if !isDirectDisplayPhotoAlbum {
                 let selectImageView = SelectImageView(vc, maxSelectCount: needUploadPhotoCount())
@@ -339,7 +202,7 @@ fileprivate extension UploadPhotoView {
         }
     }
     
-    func handleImageClickAction(_ index: Int) {
+    func handlePhotoBrowser(_ index: Int) {
         // 启动图片浏览器
         let photoBrowser = PhotoBrowser(delgegate: self)
         photoBrowser.setCurrentPageIndex(index)
