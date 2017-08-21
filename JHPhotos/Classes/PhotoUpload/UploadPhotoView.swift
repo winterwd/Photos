@@ -34,10 +34,12 @@ public final class UploadPhotoView: UIView {
     fileprivate var uploadPhotoMaxCount = 0
     fileprivate var browserPhotos: [Photo] = []
     fileprivate var uploadCellPhotos: [UploadCellImage] = []
-    fileprivate var addCellImage: UploadCellImage = {
-        let image = UIImage.my_bundleImage(named: "icon_upload_add")
-        let data =  Data()
-        return UploadCellImage(image, canAdd: true)
+    
+    fileprivate lazy var addButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage.my_bundleImage(named: "icon_upload_add"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFill
+        return button
     }()
     
     fileprivate var selfWidth: CGFloat = 0
@@ -58,8 +60,6 @@ public final class UploadPhotoView: UIView {
         view.backgroundColor = UIColor.clear
         self.addSubview(view)
         
-        uploadCellPhotos.append(addCellImage)
-        
         let width = self.bounds.width
         let itemW = (width-30.0) / 4.0
         viewLayout.itemSize = CGSize(width: itemW, height: itemW)
@@ -69,6 +69,9 @@ public final class UploadPhotoView: UIView {
         photoCollectionView.myDataSource = self as DragCellCollectionViewDataSource
         photoCollectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
         
+        
+        addButton.addTarget(self, action: #selector(startSelectImage), for: .touchUpInside)
+        self.addSubview(addButton)
         self.layer.masksToBounds = false
     }
     
@@ -95,19 +98,13 @@ public final class UploadPhotoView: UIView {
             return
         }
         
-        var cellImages: [UploadCellImage]! = []
+        uploadCellPhotos.removeAll()
         for url in imageUrls {
             if let Url = NSURL(string: url) {
                 browserPhotos.append(Photo(url: Url))
-                cellImages.append(UploadCellImage(url))
+                uploadCellPhotos.append(UploadCellImage(url))
             }
         }
-        uploadCellPhotos.insert(contentsOf: cellImages, at: 0)
-        let index = uploadCellPhotos.count - 1
-        if index == uploadPhotoMaxCount {
-            uploadCellPhotos.removeLast()
-        }
-
         photoCollectionView.reloadData()
     }
 }
@@ -124,13 +121,7 @@ extension UploadPhotoView: DragCellCollectionViewDelegate, DragCellCollectionVie
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let obj = uploadCellPhotos[indexPath.item]
-        if obj.canAddNewImage {
-            self.startSelectImage()
-        }
-        else {
-            self.handlePhotoBrowser(indexPath.item)
-        }
+        self.handlePhotoBrowser(indexPath.item)
     }
 }
 
@@ -138,8 +129,24 @@ fileprivate extension UploadPhotoView {
     
     func updateSelfViewHeight() {
         let itemH = viewLayout.itemSize.height
-        let lineCount = uploadCellPhotos.count/4 + 1
-        let height = itemH * CGFloat(lineCount) + 10.0 * CGFloat(lineCount-1)
+        
+        let lineCount = uploadCellPhotos.count/4
+        let columnCount = uploadCellPhotos.count%4
+        
+        var extra = 1
+        if needUploadPhotoCount() != 0 {
+            addButton.isHidden = false
+            let buttonX: CGFloat = (itemH + 10.0) * CGFloat(columnCount)
+            let buttonY: CGFloat = (itemH + 10.0) * CGFloat(lineCount)
+            addButton.frame = CGRect(x: buttonX, y: buttonY, width: itemH, height: itemH)
+        }
+        else {
+            // 不能再继续上传了
+            extra = 0
+            addButton.isHidden = true
+        }
+        
+        let height = itemH * CGFloat(lineCount + extra * 1) + 10.0 * CGFloat(lineCount - 1 + extra)
         var frame = self.frame
         frame.size.height = height
         self.frame = frame
@@ -148,7 +155,7 @@ fileprivate extension UploadPhotoView {
     }
     
     func needUploadPhotoCount() -> Int {
-        let num = uploadPhotoMaxCount - uploadCellPhotos.count + 1
+        let num = uploadPhotoMaxCount - uploadCellPhotos.count
         return max(0, num)
     }
     
@@ -164,20 +171,15 @@ fileprivate extension UploadPhotoView {
                 cellImages.append(UploadCellImage(image))
             }
         }
-        var index = uploadCellPhotos.count - 1
+        let index = uploadCellPhotos.count
         uploadCellPhotos.insert(contentsOf: cellImages, at: index)
-        
-        index = uploadCellPhotos.count - 1
-        if index == uploadPhotoMaxCount {
-            uploadCellPhotos.removeLast()
-        }
         updateSelfViewHeight()
         photoCollectionView.reloadData()
     }
     
     // MARK: - action 选择图片
 
-    func startSelectImage() {
+    @objc func startSelectImage() {
         if let vc = viewController {
             if !isDirectDisplayPhotoAlbum {
                 let selectImageView = SelectImageView(vc, maxSelectCount: needUploadPhotoCount())

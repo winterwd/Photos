@@ -20,20 +20,20 @@ class ViewController: UIViewController {
     var thumbsPhotos: [Photo]!
     
     let webPhotos: [Photo] = {
-        let photo1 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_b.jpg")!)
-        let photo2 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_b.jpg")!)
-        let photo3 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3364/3338617424_7ff836d55f_b.jpg")!)
-        let photo4 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3590/3329114220_5fbc5bc92b_b.jpg")!)
-        let photo5 = Photo(url: NSURL(string: "http://farm3.static.flickr.com/2449/4052876281_6e068ac860_b.jpg")!)
+        let photo1 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3567/3523321514_371d9ac42f_b.jpg")!)
+        let photo2 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3629/3339128908_7aecabc34b_b.jpg")!)
+        let photo3 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3364/3338617424_7ff836d55f_b.jpg")!)
+        let photo4 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3590/3329114220_5fbc5bc92b_b.jpg")!)
+        let photo5 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/2449/4052876281_6e068ac860_b.jpg")!)
         return [photo1, photo2, photo3, photo4, photo5]
     }()
     
     let webThumbsPhotos: [Photo] = {
-        let photo1 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_q.jpg")!)
-        let photo2 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_q.jpg")!)
-        let photo3 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3364/3338617424_7ff836d55f_q.jpg")!)
-        let photo4 = Photo(url: NSURL(string: "http://farm4.static.flickr.com/3590/3329114220_5fbc5bc92b_q.jpg")!)
-        let photo5 = Photo(url: NSURL(string: "http://farm3.static.flickr.com/2449/4052876281_6e068ac860_q.jpg")!)
+        let photo1 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3567/3523321514_371d9ac42f_q.jpg")!)
+        let photo2 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3629/3339128908_7aecabc34b_q.jpg")!)
+        let photo3 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3364/3338617424_7ff836d55f_q.jpg")!)
+        let photo4 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/3590/3329114220_5fbc5bc92b_q.jpg")!)
+        let photo5 = Photo(url: NSURL(string: "http://farm6.static.flickr.com/2449/4052876281_6e068ac860_q.jpg")!)
         return [photo1, photo2, photo3, photo4, photo5]
     }()
     
@@ -119,8 +119,8 @@ class ViewController: UIViewController {
             selectImageView.showView()
             break
         case 3:
-            let images = ["http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_b.jpg",
-                          "http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_b.jpg"]
+            let images = ["http://www.qqjia.com/z/02/tu5082_4.jpg",
+                          "http://www.qqjia.com/z/02/tu5082_5.jpg"]
             self.performSegue(withIdentifier: "UploadViewController", sender: images)
             break
         default:

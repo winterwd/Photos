@@ -13,7 +13,6 @@ struct UploadCellImage {
     var cellImage: UIImage?
     var cellImageData: Data?
     var cellImageUrl: String?
-    var canAddNewImage: Bool = false
     
     init(_ url: String?) {
         cellImageUrl = url
@@ -24,11 +23,6 @@ struct UploadCellImage {
     }
     
     init(_ image: UIImage?) {
-        cellImage = image
-    }
-    
-    init(_ image: UIImage?, canAdd: Bool) {
-        canAddNewImage = canAdd
         cellImage = image
     }
 }
@@ -86,12 +80,7 @@ class UploadImageCell: UICollectionViewCell {
     // MARK: - set image 
     
     func setImage(_ cellImage: UploadCellImage) {
-        if cellImage.canAddNewImage {
-            imageView.image = cellImage.cellImage
-            coverView.isHidden = true
-            progressView.isHidden = true
-        }
-        else if let url = cellImage.cellImageUrl {
+        if let url = cellImage.cellImageUrl {
             if let Url = URL(string: url) {
                 let res = ImageResource(downloadURL: Url)
                 imageView.kf.setImage(with: res)
