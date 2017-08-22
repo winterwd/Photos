@@ -12,6 +12,12 @@ import JHPhotos
 
 class ViewController: UIViewController {
     
+    var tableView: UITableView = {
+        let tableView = UITableView()
+        return tableView
+    }()
+    
+    
     var photos: [Photo]! {
         didSet {
             self.updateDatas(photos.count)
@@ -190,7 +196,7 @@ class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "UploadViewController" {
             if let vc = segue.destination as? UploadViewController {
-                vc.uploadDatas = sender as! [String]
+                vc.imageUrls = sender as! [String]
             }
         }
     }

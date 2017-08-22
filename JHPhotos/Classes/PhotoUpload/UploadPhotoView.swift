@@ -103,6 +103,8 @@ public final class UploadPhotoView: UIView {
             if let Url = NSURL(string: url) {
                 browserPhotos.append(Photo(url: Url))
                 uploadCellPhotos.append(UploadCellImage(url))
+                let data = Data()
+                self.delegate?.willUploadSingle(data)
             }
         }
         photoCollectionView.reloadData()
@@ -117,6 +119,10 @@ extension UploadPhotoView: DragCellCollectionViewDelegate, DragCellCollectionVie
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! UploadImageCell
         cell.setImage(uploadCellPhotos[indexPath.item])
+        
+        cell.deletedAction = { [weak self] () in
+            self?.deleteImageCell(indexPath.item)
+        }
         return cell
     }
     
@@ -169,12 +175,21 @@ fileprivate extension UploadPhotoView {
             if let image = UIImage(data:data) {
                 browserPhotos.append(Photo(image: image))
                 cellImages.append(UploadCellImage(image))
+                self.delegate?.willUploadSingle(data)
             }
         }
         let index = uploadCellPhotos.count
         uploadCellPhotos.insert(contentsOf: cellImages, at: index)
         updateSelfViewHeight()
         photoCollectionView.reloadData()
+    }
+    
+    func deleteImageCell(_ index: Int) {
+        browserPhotos.remove(at: index)
+        uploadCellPhotos.remove(at: index)
+        updateSelfViewHeight()
+        photoCollectionView.reloadData()
+        self.delegate?.deletePhotoView(index)
     }
     
     // MARK: - action 选择图片

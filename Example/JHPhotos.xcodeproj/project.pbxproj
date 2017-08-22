@@ -78,7 +78,6 @@
 		C88E36E81F0C80B400B875D4 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
 		C88E36E91F0C80B400B875D4 /* RightImageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightImageButton.swift; sourceTree = "<group>"; };
 		C88E36EB1F0C80B400B875D4 /* SelectImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectImageView.swift; sourceTree = "<group>"; };
-		C88E36EC1F0C80B400B875D4 /* UploadImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageView.swift; sourceTree = "<group>"; };
 		C88E36ED1F0C80B400B875D4 /* UploadPhotoProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoProtocol.swift; sourceTree = "<group>"; };
 		C88E36EE1F0C80B400B875D4 /* UploadPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoView.swift; sourceTree = "<group>"; };
 		C89C9A7B1F1465EB00B22D29 /* icon_upload_add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_add@2x.png"; sourceTree = "<group>"; };
@@ -296,7 +295,6 @@
 			isa = PBXGroup;
 			children = (
 				C88E36EB1F0C80B400B875D4 /* SelectImageView.swift */,
-				C88E36EC1F0C80B400B875D4 /* UploadImageView.swift */,
 				C88E36ED1F0C80B400B875D4 /* UploadPhotoProtocol.swift */,
 				C88E36EE1F0C80B400B875D4 /* UploadPhotoView.swift */,
 				C8A49EF71F457F8C002B8856 /* UploadImageCell.swift */,

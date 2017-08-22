@@ -658,7 +658,7 @@ public final class PhotoBrowser: UIViewController {
                 self.title = title
             }
             else {
-                self.title = "\(currentPageIndex+1) of \(numberOfPhotos)"
+                self.title = "\(currentPageIndex+1)/\(numberOfPhotos)"
             }
         }
         else { self.title = "" }
