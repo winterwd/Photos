@@ -31,6 +31,9 @@ public protocol JHUploadPhotoViewDelegate: class {
     /// 删除
     func deletePhotoView(_ index: Int)
     
+    /// 移动
+    func moveItemAt(_ sourceIndex: Int, to destinationIndex: Int)
+    
     /// 删除/上传失败
     func uploadPhotoViewForDeleteOrFailed(_ index: Int)
 }

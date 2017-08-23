@@ -35,7 +35,7 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
         }
         
         let navItem = UIBarButtonItem(title: "上传", style: .plain, target: self, action: #selector(startUploadAll))
-        navItem.tintColor = UIColor.blue
+        navItem.tintColor = UIColor(red:0.00,green:0.44,blue:1.00,alpha:1.00)
         self.navigationItem.rightBarButtonItem = navItem
     }
     
@@ -105,5 +105,14 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
     func deletePhotoView(_ index: Int) {
         print("deletePhotoView at \(index)")
         willUploadDatas.remove(at: index)
+    }
+    
+    /// 移动
+    func moveItemAt(_ sourceIndex: Int, to destinationIndex: Int) {
+        // sourceIndex 这个地方的数据 移动到了destinationIndex
+        let item = willUploadDatas[sourceIndex]
+        willUploadDatas.remove(at: sourceIndex)
+        willUploadDatas.insert(item, at: destinationIndex)
+        print("datas = \(willUploadDatas)")
     }
 }

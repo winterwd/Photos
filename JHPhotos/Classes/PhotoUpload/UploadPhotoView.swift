@@ -132,7 +132,8 @@ extension UploadPhotoView: DragCellCollectionViewDelegate, DragCellCollectionVie
     }
     
     public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndex: Int, to destinationIndex: Int) {
-        print("moveItemAt = \(sourceIndex+1), to = \(destinationIndex+1)")
+        //print("moveItemAt = \(sourceIndex+1), to = \(destinationIndex+1)")
+        self.delegate?.moveItemAt(sourceIndex, to: destinationIndex)
     }
     
     public func collectionView(_ collectionView: UICollectionView, deleteItemAt index: Int) {
