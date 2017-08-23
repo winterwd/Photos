@@ -33,6 +33,9 @@ class UploadViewController: UIViewController, JHUploadPhotoDataDelegate, JHUploa
         if imageUrls.count > 0 {
             uploadView.setupImageViews(imageUrls)
         }
+        else {
+            uploadView.isDirectDisplayPhotoAlbum = false
+        }
         
         let navItem = UIBarButtonItem(title: "上传", style: .plain, target: self, action: #selector(startUploadAll))
         navItem.tintColor = UIColor(red:0.00,green:0.44,blue:1.00,alpha:1.00)
