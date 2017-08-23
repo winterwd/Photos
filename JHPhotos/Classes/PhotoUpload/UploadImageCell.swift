@@ -30,7 +30,7 @@ struct UploadCellImage {
 
 class UploadImageCell: UICollectionViewCell {
     
-    var deletedAction: (() -> Void)?
+//    var deletedAction: (() -> Void)?
     
 //    lazy var coverView: UIView = {
 //        let view = UIView()
@@ -55,13 +55,13 @@ class UploadImageCell: UICollectionViewCell {
 //        return progressView
 //    }()
     
-    lazy var deleteButton: UIButton = {
-        let button = UIButton(type: UIButtonType.custom)
-        button.isHidden = true
-        button.setImage(UIImage.my_bundleImage(named: "icon_upload_delete"), for: .normal)
-        button.imageEdgeInsets = UIEdgeInsetsMake(-14, 14, 0, 0)
-        return button
-    }()
+//    lazy var deleteButton: UIButton = {
+//        let button = UIButton(type: UIButtonType.custom)
+//        button.isHidden = true
+//        button.setImage(UIImage.my_bundleImage(named: "icon_upload_delete"), for: .normal)
+//        button.imageEdgeInsets = UIEdgeInsetsMake(-14, 14, 0, 0)
+//        return button
+//    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -77,12 +77,12 @@ class UploadImageCell: UICollectionViewCell {
         super.layoutSubviews()
         imageView.frame = self.bounds
 //        coverView.frame = self.bounds
-        let width = self.bounds.width;
+//        let width = self.bounds.width;
 //        progressView.frame = CGRect(x: 5, y: width / 2.0, width: width - 10, height: 2)
 //        // 设置高度为之前3倍
 //        progressView.transform = CGAffineTransform(scaleX: 1.0, y: 3.0)
 
-        deleteButton.frame = CGRect(x: width - 29, y: -1, width: 30, height: 30)
+//        deleteButton.frame = CGRect(x: width - 29, y: -1, width: 30, height: 30)
     }
     
     private func setupSubView() {
@@ -90,13 +90,13 @@ class UploadImageCell: UICollectionViewCell {
 //        self.addSubview(coverView)
 //        self.addSubview(progressView)
         
-        deleteButton.addTarget(self, action: #selector(deleteAction), for: .touchUpInside)
-        self.addSubview(deleteButton)
+//        deleteButton.addTarget(self, action: #selector(deleteAction), for: .touchUpInside)
+//        self.addSubview(deleteButton)
     }
     
-    @objc func deleteAction() {
-        deletedAction?()
-    }
+//    @objc func deleteAction() {
+//        deletedAction?()
+//    }
     
     func UploadResult(_ success: Bool) {
         if !success {
@@ -104,7 +104,7 @@ class UploadImageCell: UICollectionViewCell {
             return
         }
         
-        deleteButton.isHidden = false
+//        deleteButton.isHidden = false
 //        coverView.isHidden = true
 //        progressView.isHidden = true
     }
@@ -112,29 +112,30 @@ class UploadImageCell: UICollectionViewCell {
     // MARK: - set image 
     
     func setImage(_ cellImage: UploadCellImage) {
-        var hideDeleteBtn = true
+        self.isHidden = false
+//        var hideDeleteBtn = true
         if let url = cellImage.cellImageUrl {
             if let Url = URL(string: url) {
                 let res = ImageResource(downloadURL: Url)
                 imageView.kf.setImage(with: res)
 //                coverView.isHidden = true
 //                progressView.isHidden = true
-                hideDeleteBtn = false
+//                hideDeleteBtn = false
             }
         }
         else if let image = cellImage.cellImage {
             imageView.image = image
 //            coverView.isHidden = true
 //            progressView.isHidden = true
-            hideDeleteBtn = false
+//            hideDeleteBtn = false
         }
         else if let data = cellImage.cellImageData {
             let image = UIImage(data: data)
             imageView.image = image
 //            coverView.isHidden = true
 //            progressView.isHidden = true
-            hideDeleteBtn = false
+//            hideDeleteBtn = false
         }
-        deleteButton.isHidden = hideDeleteBtn
+//        deleteButton.isHidden = hideDeleteBtn
     }
 }

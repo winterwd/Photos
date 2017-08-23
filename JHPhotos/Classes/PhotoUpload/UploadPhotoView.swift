@@ -22,12 +22,13 @@ public final class UploadPhotoView: UIView {
     
     fileprivate weak var viewController: UIViewController?
     
+    fileprivate let minSpace: CGFloat = 5
     fileprivate let cellReuseIdentifier = "UploadImageCell"
     fileprivate var photoCollectionView: DragCellCollectionView!
     fileprivate var viewLayout: UICollectionViewFlowLayout! = {
         let viewLayout = UICollectionViewFlowLayout()
-        viewLayout.minimumLineSpacing = 10
-        viewLayout.minimumInteritemSpacing = 10
+        viewLayout.minimumLineSpacing = 5
+        viewLayout.minimumInteritemSpacing = 5
         return viewLayout
     }()
     
@@ -80,7 +81,7 @@ public final class UploadPhotoView: UIView {
         if selfWidth < 1 {
             let width = self.bounds.width
             selfWidth = width
-            let itemW = (width-30.0) / 4.0
+            let itemW = (width-(3.0 * minSpace)) / 4.0
             viewLayout.itemSize = CGSize(width: itemW, height: itemW)
             self.updateSelfViewHeight()
         }
@@ -120,14 +121,22 @@ extension UploadPhotoView: DragCellCollectionViewDelegate, DragCellCollectionVie
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! UploadImageCell
         cell.setImage(uploadCellPhotos[indexPath.item])
         
-        cell.deletedAction = { [weak self] () in
-            self?.deleteImageCell(indexPath.item)
-        }
+//        cell.deletedAction = { [weak self] () in
+//            self?.deleteImageCell(indexPath.item)
+//        }
         return cell
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.handlePhotoBrowser(indexPath.item)
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndex: Int, to destinationIndex: Int) {
+        print("moveItemAt = \(sourceIndex+1), to = \(destinationIndex+1)")
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, deleteItemAt index: Int) {
+        deleteImageCell(index)
     }
 }
 
@@ -142,8 +151,8 @@ fileprivate extension UploadPhotoView {
         var extra = 1
         if needUploadPhotoCount() != 0 {
             addButton.isHidden = false
-            let buttonX: CGFloat = (itemH + 10.0) * CGFloat(columnCount)
-            let buttonY: CGFloat = (itemH + 10.0) * CGFloat(lineCount)
+            let buttonX: CGFloat = (itemH + minSpace) * CGFloat(columnCount)
+            let buttonY: CGFloat = (itemH + minSpace) * CGFloat(lineCount)
             addButton.frame = CGRect(x: buttonX, y: buttonY, width: itemH, height: itemH)
         }
         else {
@@ -152,7 +161,7 @@ fileprivate extension UploadPhotoView {
             addButton.isHidden = true
         }
         
-        let height = itemH * CGFloat(lineCount + extra * 1) + 10.0 * CGFloat(lineCount - 1 + extra)
+        let height = itemH * CGFloat(lineCount + extra * 1) + minSpace * CGFloat(lineCount - 1 + extra)
         var frame = self.frame
         frame.size.height = height
         self.frame = frame
