@@ -18,10 +18,11 @@ public final class PhotoBrowser: UIViewController {
 
     var isZoomPhotosToFill: Bool = true // display Photo zoom to fill
     var isDisplayNavArrows: Bool = true // 底部工具栏 图片方向
-    var isDisplaySelectionButton: Bool = false
+    var isDisplaySelectionButton: Bool = false 
     var isEnableSwipeToDismiss: Bool = true // 向上/下轻扫 退出
     var isAlwaysShowControls: Bool = false // 总是显示导航栏和工具栏
     var isSingleTapToHideNavbar = true // 单击隐藏/显示导航栏
+    var isCanEditPhoto = false // 是否可以编辑当前图片（是否显示编辑按钮）
     
     // Data
     fileprivate var photoCount: Int = NSNotFound
