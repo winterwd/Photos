@@ -15,6 +15,8 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A711591F0CBD33008C0B43 /* UploadViewController.swift */; };
+		C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */; };
+		C8EFCB441F4ECAAE003F5DEF /* CropToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */; };
 		DB613E28EA37D7AEE8B2E8DC /* Pods_JHPhotos_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1FB4B95A24F1A4DBB403A3 /* Pods_JHPhotos_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -88,6 +90,9 @@
 		C8A49EF61F457BF8002B8856 /* DragCellCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCellCollectionView.swift; sourceTree = "<group>"; };
 		C8A49EF71F457F8C002B8856 /* UploadImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageCell.swift; sourceTree = "<group>"; };
 		C8A711591F0CBD33008C0B43 /* UploadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
+		C8EFCB401F4EBFC7003F5DEF /* CropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
+		C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
+		C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropToolbar.swift; sourceTree = "<group>"; };
 		CAEE656F2FDC09718FC1CE8A /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		CC236F014BD469B1940743FA /* Pods-JHPhotos_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JHPhotos_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JHPhotos_Tests/Pods-JHPhotos_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		D4BC88ACF5DCABF0BDBD2AB1 /* Pods-JHPhotos_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JHPhotos_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JHPhotos_Example/Pods-JHPhotos_Example.debug.xcconfig"; sourceTree = "<group>"; };
@@ -162,6 +167,7 @@
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				C8A711591F0CBD33008C0B43 /* UploadViewController.swift */,
+				C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -209,6 +215,8 @@
 		C85808F41F4D751400A21B06 /* PhotoEdit */ = {
 			isa = PBXGroup;
 			children = (
+				C8EFCB401F4EBFC7003F5DEF /* CropView.swift */,
+				C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */,
 				C85808F51F4D7C7A00A21B06 /* CropOverlayView.swift */,
 			);
 			path = PhotoEdit;
@@ -518,6 +526,8 @@
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */,
+				C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */,
+				C8EFCB441F4ECAAE003F5DEF /* CropToolbar.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

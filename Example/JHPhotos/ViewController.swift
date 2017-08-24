@@ -74,7 +74,10 @@ class ViewController: UIViewController {
     }
     
     @IBAction func navButtonItemAction(_ sender: UIBarButtonItem) {
-        if sender.tag == 0 {
+        if sender.tag == 3 {
+            self.navigationController?.pushViewController(TestViewController(), animated: true)
+        }
+        else if sender.tag == 0 {
             if showSource == "相册" {
                 showSource = "网络"
                 sender.title = showSource

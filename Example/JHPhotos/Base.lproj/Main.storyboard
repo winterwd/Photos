@@ -112,12 +112,20 @@
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>
-                        <barButtonItem key="rightBarButtonItem" tag="2" title="上传" id="WB2-C7-9qm">
-                            <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <connections>
-                                <segue destination="eTH-uP-MAk" kind="show" id="YBJ-j6-aKX"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem tag="2" title="上传" id="WB2-C7-9qm">
+                                <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <segue destination="eTH-uP-MAk" kind="show" id="YBJ-j6-aKX"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem tag="3" title="栅格" id="eET-Et-pwb">
+                                <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <action selector="navButtonItemAction:" destination="vXZ-lx-hvc" id="fhf-02-e25"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <segue destination="eTH-uP-MAk" kind="show" identifier="UploadViewController" id="qiF-8l-Fdd"/>
