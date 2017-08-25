@@ -8,18 +8,17 @@
 
 import UIKit
 
-class CropToolbar: UIView {
+public class CropToolbar: UIView {
     
-    var doneButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(CropToolbar.doneImage(), for: .normal)
-        button.tintColor = UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
-        return button
-    }()
+    var cancelBttonAction: (() -> Void)?
+    var rotateBttonAction: (() -> Void)?
+    var resetBttonAction: (() -> Void)?
+    var doneBttonAction: (() -> Void)?
     
     var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(CropToolbar.cancelImage(), for: .normal)
+        button.tag = 1000
         return button
     }()
     
@@ -28,26 +27,103 @@ class CropToolbar: UIView {
         button.contentMode = .center
         button.setImage(CropToolbar.rotateImage(), for: .normal)
         button.tintColor = UIColor.white
+        button.tag = 1001
         return button
     }()
     
-    var restButton: UIButton = {
+    var resetButton: UIButton = {
         let button = UIButton(type: .system)
         button.contentMode = .center
         button.setImage(CropToolbar.resetImage(), for: .normal)
         button.tintColor = UIColor.white
         button.isEnabled = false
+        button.tag = 1002
+        return button
+    }()
+    
+    var doneButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(CropToolbar.doneImage(), for: .normal)
+        button.tintColor = UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+        button.tag = 1003
         return button
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setup()
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        setup()
     }
-
+    
+    private func setup() {
+        self.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
+        
+        self.addSubview(cancelButton)
+        self.addSubview(rotateButton)
+        self.addSubview(resetButton)
+        self.addSubview(doneButton)
+        
+        cancelButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
+        rotateButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
+        resetButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
+        doneButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
+    }
+    
+    @objc private func buttonAction(_ sender: UIButton) {
+        switch sender.tag {
+        case 1000:  cancelBttonAction?();  break
+        case 1001:  rotateBttonAction?();  break
+        case 1002:  resetBttonAction?();  break
+        case 1003:  doneBttonAction?();  break
+        default:
+            break
+        }
+    }
+    
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        
+        // 宽度大于高度，就是竖屏
+        let boundsSize = self.bounds.size
+        let verticalLayout = boundsSize.width > boundsSize.height
+        
+        if verticalLayout {
+            // 竖屏
+            let height: CGFloat = 44.0
+            let width: CGFloat = boundsSize.width / 4.0
+            var frame = CGRect(x: 0, y: 0, width: width, height: height)
+            cancelButton.frame = frame
+            
+            frame.origin.x = width
+            rotateButton.frame = frame
+            
+            frame.origin.x = 2 * width
+            resetButton.frame = frame
+            
+            frame.origin.x = boundsSize.width - width
+            doneButton.frame = frame
+        }
+        else {
+            // 横屏
+            let width: CGFloat = 44.0
+            let height: CGFloat = boundsSize.height / 4.0
+            var frame = CGRect(x: 0, y: 0, width: width, height: height)
+            cancelButton.frame = frame
+            
+            frame.origin.y = height
+            rotateButton.frame = frame
+            
+            frame.origin.y = 2 * height
+            resetButton.frame = frame
+            
+            frame.origin.y = boundsSize.height - height
+            doneButton.frame = frame
+        }
+    }
 }
 
 fileprivate extension CropToolbar {
@@ -106,7 +182,7 @@ fileprivate extension CropToolbar {
         polygonPath.close()
         UIColor.white.setFill()
         polygonPath.fill()
-
+        
         let bezierPath = UIBezierPath()
         bezierPath.move(to: CGPoint(x: 10, y: 3))
         bezierPath.addCurve(to: CGPoint(x: 17.5, y: 11.0), controlPoint1: CGPoint(x: 15, y: 3), controlPoint2: CGPoint(x: 17.5, y: 5.91))
@@ -139,7 +215,7 @@ fileprivate extension CropToolbar {
         bezierPath.addCurve(to: CGPoint(x: 7.65, y: 1.76), controlPoint1: CGPoint(x: 5.28, y: 4.08), controlPoint2: CGPoint(x: 6.32, y: 2.74))
         bezierPath.addCurve(to: CGPoint(x: 13, y: 0), controlPoint1: CGPoint(x: 9.15, y: 0.65), controlPoint2: CGPoint(x: 11, y: 0))
         bezierPath.addCurve(to: CGPoint(x: 22, y: 9), controlPoint1: CGPoint(x: 17.97, y: 0), controlPoint2: CGPoint(x: 22, y: 4.03))
-
+        
         bezierPath.close()
         UIColor.white.setFill()
         bezierPath.fill()
