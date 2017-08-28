@@ -38,7 +38,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NwE-JT-OfO">
-                                <rect key="frame" x="115" y="195" width="144" height="117"/>
+                                <rect key="frame" x="115.5" y="195" width="144" height="117"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="144" id="RQK-7q-iQw"/>
                                     <constraint firstAttribute="height" constant="117" id="ewT-eB-taY"/>
@@ -50,7 +50,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pfb-JB-2Uf">
-                                <rect key="frame" x="115" y="78" width="144" height="117"/>
+                                <rect key="frame" x="115.5" y="78" width="144" height="117"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="117" id="BXs-Ok-zkT"/>
                                     <constraint firstAttribute="width" constant="144" id="tig-dd-z1s"/>
@@ -62,7 +62,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TJt-GI-jKR">
-                                <rect key="frame" x="115" y="312" width="144" height="117"/>
+                                <rect key="frame" x="115.5" y="312" width="144" height="117"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="117" id="Ab6-e9-sqZ"/>
                                     <constraint firstAttribute="width" constant="144" id="c7A-id-iwh"/>
@@ -74,7 +74,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GMb-Uh-Hnb">
-                                <rect key="frame" x="136.5" y="429" width="101" height="117"/>
+                                <rect key="frame" x="137" y="429" width="101" height="117"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="117" id="svj-Uh-pBq"/>
                                 </constraints>

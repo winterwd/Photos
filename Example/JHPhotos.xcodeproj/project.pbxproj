@@ -14,6 +14,8 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		C84DC40E1F4FD207009934DF /* CropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB401F4EBFC7003F5DEF /* CropView.swift */; };
+		C84DC40F1F4FF292009934DF /* CropOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85808F51F4D7C7A00A21B06 /* CropOverlayView.swift */; };
 		C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A711591F0CBD33008C0B43 /* UploadViewController.swift */; };
 		C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */; };
 		C8EFCB441F4ECAAE003F5DEF /* CropToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */; };
@@ -525,7 +527,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				C84DC40F1F4FF292009934DF /* CropOverlayView.swift in Sources */,
 				C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */,
+				C84DC40E1F4FD207009934DF /* CropView.swift in Sources */,
 				C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */,
 				C8EFCB441F4ECAAE003F5DEF /* CropToolbar.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,

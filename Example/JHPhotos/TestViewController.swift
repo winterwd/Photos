@@ -21,7 +21,7 @@ class TestViewController: UIViewController {
         // Do any additional setup after loading the view.
         self.view.backgroundColor = UIColor.black
         
-        let gridView = CropOverlayView(frame: CGRect(x: 50, y: 100, width: 250, height: 300))
+        let gridView = CropOverlayView(frame: CGRect(x: 80, y: 100, width: 250, height: 300))
         
         self.view.addSubview(gridView)
         
@@ -43,8 +43,8 @@ class TestViewController: UIViewController {
         else {
             // 横屏
             let width: CGFloat = 44.0
-            let height: CGFloat = boundsSize.height
-            toolbar.frame = CGRect(x: 0, y: 0, width: width, height: height)
+            let height: CGFloat = boundsSize.height - 32
+            toolbar.frame = CGRect(x: 0, y: 32, width: width, height: height)
         }
     }
 
