@@ -24,7 +24,7 @@ enum CropViewOverlayEdge {
     case left
 }
 
-protocol CropViewDelegate: class {
+public protocol CropViewDelegate: class {
     func cropViewDidBecomeResettable(cropView: CropView)
     func cropViewDidBecomeNonResettable(cropView: CropView)
 }
@@ -35,11 +35,11 @@ extension CropViewDelegate {
 }
 
 public class CropView: UIView {
+    public weak var delegate: CropViewDelegate?
     
     var angle = 0
     var restoreAngle = 0
     var tappedEdge = CropViewOverlayEdge.none
-    var canReset = false
     var aspectRatio = CGSize.zero
     var simpleRenderMode = false
     var cropBoxFrame = CGRect.zero
@@ -47,6 +47,8 @@ public class CropView: UIView {
     var panOriginPoint = CGPoint.zero
     var originalCropBoxSize = CGSize.zero
     var originalContentOffset = CGPoint.zero
+    
+    var gridOverlayHidden = false
     
     var editing = false
     var cropBoxLastEditedSize = CGSize.zero
@@ -61,12 +63,13 @@ public class CropView: UIView {
     var rotationContentSize = CGSize.zero
     var rotationBoundSize = CGSize.zero
     
+    var croppingViewsHidden = false
+    var canBeReset = false
     var resetTimer: Timer?
     
     /// 点击重置按钮时，纵横比是否也会被重置
     public var resetAspectRatioEnabled = true
     
-    var imageCropFrame = CGRect.zero
     var restoreImageCropFrame = CGRect.zero
     
     var image: UIImage?
@@ -115,9 +118,9 @@ public class CropView: UIView {
         return view
     }()
     
-    init(_ image: UIImage) {
+    init(image originImage: UIImage) {
         super.init(frame: CGRect.zero)
-        self.image = image
+        self.image = originImage
         self.setup()
     }
     
@@ -179,12 +182,12 @@ extension CropView {
         layoutInitialImage()
         
         if restoreAngle != 0 {
-            angle = restoreAngle
+            set(angle: restoreAngle)
             restoreAngle = 0
         }
         
         if !restoreImageCropFrame.isEmpty {
-            imageCropFrame = restoreImageCropFrame
+            set(imageCropFrame: restoreImageCropFrame)
             restoreImageCropFrame = CGRect.zero
         }
         
@@ -203,8 +206,8 @@ extension CropView {
         let scaledImageSize = CGSize(width: floor(scale * imageSize.width), height: floor(scale * imageSize.height))
         
         var cropBoxSize = CGSize.zero
-        let hasAspectRation = self.hasAspectRation()
-        if hasAspectRation {
+        let hasAspectRatio = self.hasAspectRatio()
+        if hasAspectRatio {
             let rationScale = aspectRatio.width / aspectRatio.height
             let fullSizeRation = CGSize(width: boundsSize.width * rationScale, height: boundsSize.height * rationScale)
             let fitScale = min(boundsSize.width/fullSizeRation.width, boundsSize.height/fullSizeRation.height)
@@ -218,7 +221,7 @@ extension CropView {
         scrollView.maximumZoomScale = 15.0
         
         var frame = CGRect.zero
-        frame.size = hasAspectRation ? cropBoxSize : scaledSize
+        frame.size = hasAspectRatio ? cropBoxSize : scaledSize
         frame.origin.x = bounds.minX + floor((bounds.width - frame.width) * 0.5)
         frame.origin.y = bounds.minY + floor((bounds.height - frame.height) * 0.5)
         self.set(cropBoxFrame: frame)
@@ -340,6 +343,42 @@ extension CropView {
         checkForCanReset()
     }
     
+    func resetLayoutToDefault(animated: Bool) {
+        // If resetting the crop view includes resetting the aspect ratio,
+        // reset it to zero here. But set the ivar directly since there's no point
+        // in performing the relayout calculations right before a reset.
+        let hasAspectRatio = self.hasAspectRatio()
+        if hasAspectRatio && resetAspectRatioEnabled {
+            aspectRatio = CGSize.zero
+        }
+        
+        if !animated || angle != 0 {
+            // Reset all of the rotation transforms
+            angle = 0
+            
+            // Set the scroll to 1.0f to reset the transform scale
+            scrollView.zoomScale = 1.0
+            
+            // Reset everything
+            var imageRect = CGRect.zero
+            if let image = self.image {
+                imageRect = CGRect(origin: CGPoint.zero, size: image.size)
+            }
+            backgroundImageView.frame = imageRect
+            backgroundImageView.transform = CGAffineTransform.identity
+            backgroundContainerView.frame = imageRect
+            backgroundContainerView.transform = CGAffineTransform.identity
+            foregroundImageView.frame = imageRect
+            foregroundImageView.transform = CGAffineTransform.identity
+            
+            // Reset the layout
+            layoutInitialImage()
+            
+            // Enable / Disable the reset button
+            checkForCanReset()
+        }
+    }
+    
     func prepareforRotation() {
         self.rotationContentOffset = self.scrollView.contentOffset;
         self.rotationContentSize   = self.scrollView.contentSize;
@@ -456,6 +495,143 @@ extension CropView {
         set(aspectRatio: aspectRatio, animated: false)
     }
     
+    func set(gridOverlayHidden yesOrNO: Bool) {
+        set(gridOverlayHidden: yesOrNO, animated: false)
+    }
+    
+    func set(gridOverlayHidden yesOrNO: Bool, animated: Bool) {
+        gridOverlayHidden = yesOrNO
+        
+        if animated {
+            gridOverlayView.alpha = yesOrNO ? 1.0 : 0.0
+            UIView.animate(withDuration: 0.4, animations: {
+                self.gridOverlayView.alpha = yesOrNO ? 0.0 : 1.0
+            })
+        }
+        else {
+            gridOverlayView.alpha = yesOrNO ? 0.0 : 1.0
+        }
+    }
+    
+    func setBackgroundImageView(hidden: Bool, animated: Bool) {
+        if !animated {
+            backgroundImageView.isHidden = hidden
+            return
+        }
+        let beforeAlpha: CGFloat = hidden ? 1.0 : 0.0
+        let toAlpha: CGFloat = hidden ? 0.0 : 1.0
+        backgroundImageView.isHidden = false
+        backgroundImageView.alpha = beforeAlpha
+        UIView.animate(withDuration: 0.5, animations: { 
+            self.backgroundImageView.alpha = toAlpha
+        }) { (_) in
+            if hidden {
+                self.backgroundImageView.isHidden = true
+            }
+        }
+    }
+    
+    func cropBoxAspectRatioIsPortrait() -> Bool {
+        let cropBoxFrame = self.cropBoxFrame
+        return cropBoxFrame.width < cropBoxFrame.height
+    }
+    
+    func imageViewFrame() -> CGRect {
+        var frame = CGRect.zero
+        frame.origin.x = -scrollView.contentOffset.x
+        frame.origin.y = -scrollView.contentOffset.y
+        frame.size = scrollView.contentSize
+        return frame
+    }
+    
+    func imageCropFrame() -> CGRect {
+        let imageSize = self.imageSize()
+        let contentSize = scrollView.contentSize
+        let cropBoxFrame = self.cropBoxFrame
+        let contentOffset = scrollView.contentOffset
+        let edgeInsets = scrollView.contentInset
+        
+        var frame = CGRect.zero
+        frame.origin.x = floor((contentOffset.x + edgeInsets.left) * (imageSize.width/contentSize.width))
+        frame.origin.x = max(0, frame.minX)
+        
+        frame.origin.y = floor((contentOffset.y + edgeInsets.top) * (imageSize.height/contentSize.height))
+        frame.origin.y = max(0, frame.minY)
+        
+        frame.size.width = ceil(cropBoxFrame.width * (imageSize.width/contentSize.width))
+        frame.size.width = min(imageSize.width, frame.width)
+        
+        frame.size.height = floor(cropBoxFrame.height * (imageSize.height/contentSize.height))
+        frame.size.height = min(imageSize.height, frame.height)
+        return frame
+    }
+    
+    func set(imageCropFrame frame: CGRect) {
+        if self.superview == nil {
+            restoreImageCropFrame = frame
+            return
+        }
+        updateTo(imageCropFrame: frame)
+    }
+    
+    func set(croppingViewsHidden yesOrNO: Bool) {
+        set(gridOverlayHidden: yesOrNO, animated: false)
+    }
+    
+    func set(croppingViewsHidden yesOrNO: Bool, animated: Bool) {
+        if self.croppingViewsHidden == yesOrNO {
+            return
+        }
+        self.croppingViewsHidden = yesOrNO;
+        let alpha: CGFloat = yesOrNO ? 0.0 : 1.0
+        if !animated {
+            backgroundImageView.alpha = alpha;
+            foregroundContainerView.alpha = alpha;
+            gridOverlayView.alpha = alpha;
+
+            toggleTranslucencyView(visible: !yesOrNO)
+            return;
+        }
+        
+        foregroundContainerView.alpha = alpha;
+        backgroundImageView.alpha = alpha;
+        UIView.animate(withDuration: 0.4) { 
+            self.toggleTranslucencyView(visible: !yesOrNO)
+            self.gridOverlayView.alpha = alpha;
+        }
+    }
+    
+    func set(canBeReset yesOrNO: Bool) {
+        if yesOrNO == self.canBeReset {
+            return
+        }
+        self.canBeReset = yesOrNO
+        
+        if yesOrNO {
+            delegate?.cropViewDidBecomeResettable(cropView: self)
+        }
+        else {
+            delegate?.cropViewDidBecomeNonResettable(cropView: self)
+        }
+    }
+    
+    func set(angle: Int) {
+        // The initial layout would not have been performed yet.
+        // Save the value and it will be applied when it has
+        var newAngle = angle
+        if (angle % 90) != 0 {
+            newAngle = 0
+        }
+        
+        if self.superview == nil {
+            self.restoreAngle = newAngle
+            return
+        }
+        
+        while (labs(self.angle) != labs(newAngle)) {
+            rotateImageNinetyDegrees(animated: false)
+        }
+    }
 }
 
 // MARK: - Editing
@@ -858,7 +1034,7 @@ extension CropView {
         }
     }
     
-    func hasAspectRation() -> Bool {
+    func hasAspectRatio() -> Bool {
         return aspectRatio.width > CGFloat.ulpOfOne && aspectRatio.height > CGFloat.ulpOfOne
     }
     
@@ -942,6 +1118,31 @@ extension CropView {
     }
 }
 
+// MARK: - Resettable State
+
+extension CropView {
+    func checkForCanReset() {
+        var canReset = false
+        if angle != 0 { // image has been rotated
+            canReset = true
+        }
+        else if (scrollView.zoomScale > scrollView.minimumZoomScale + CGFloat.ulpOfOne) {
+            // image has been zoomed
+            canReset = true
+        }
+        else if (!cropBoxFrame.size.equalTo(originalCropBoxSize)) {
+            // crop has been changed
+            canReset = true
+        }
+        else if (!scrollView.contentOffset.equalTo(originalContentOffset)) {
+            canReset = true
+        }
+        set(canBeReset: canReset)
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+
 extension CropView: UIGestureRecognizerDelegate {
     
     @objc func gridPanGestureRecognized(_ recognizer: UIPanGestureRecognizer) {
@@ -980,29 +1181,44 @@ extension CropView: UIGestureRecognizerDelegate {
     }
 }
 
+// MARK: - UIScrollViewDelegate
+
 extension CropView: UIScrollViewDelegate {
-
-}
-
-// MARK: - Resettable State
-
-extension CropView {
-    func checkForCanReset() {
-        if angle != 0 { // image has been rotated
-            canReset = true
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? { return backgroundContainerView }
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {  matchForegroundToBackground() }
+    
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        startEditing()
+        set(canBeReset: true)
+    }
+    
+    public func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
+        startEditing()
+        set(canBeReset: true)
+    }
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        startResetTimer()
+        checkForCanReset()
+    }
+    
+    public func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        startResetTimer()
+        checkForCanReset()
+    }
+    
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        if scrollView.isTracking {
+            cropBoxLastEditedZoomScale = scrollView.zoomScale
+            cropBoxLastEditedMinZoomScale = scrollView.minimumZoomScale
         }
-        else if (scrollView.zoomScale > scrollView.minimumZoomScale + CGFloat.ulpOfOne) {
-            // image has been zoomed
-            canReset = true
+        matchForegroundToBackground()
+    }
+    
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            startResetTimer()
         }
-        else if (!cropBoxFrame.size.equalTo(originalCropBoxSize)) {
-            // crop has been changed
-            canReset = true
-        }
-        else if (!scrollView.contentOffset.equalTo(originalContentOffset)) {
-            canReset = true
-        }
-        canReset = false
     }
 }
 
