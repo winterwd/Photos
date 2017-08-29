@@ -84,6 +84,14 @@ public class CropToolbar: UIView {
         }
     }
     
+    func resetButtonEnabled() -> Bool {
+        return resetButton.isEnabled
+    }
+    
+    func set(resetButtonEnabled enabled: Bool) {
+        resetButton.isEnabled = enabled
+    }
+    
     override public func layoutSubviews() {
         super.layoutSubviews()
         

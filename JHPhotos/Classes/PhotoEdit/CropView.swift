@@ -29,7 +29,7 @@ public protocol CropViewDelegate: class {
     func cropViewDidBecomeNonResettable(cropView: CropView)
 }
 
-extension CropViewDelegate {
+public extension CropViewDelegate {
     func cropViewDidBecomeResettable(cropView: CropView) {}
     func cropViewDidBecomeNonResettable(cropView: CropView) {}
 }
@@ -663,18 +663,22 @@ extension CropView {
         }
     }
     
-    func setSimpleRender(_ simpleMode: Bool, animated: Bool) {
-        if simpleMode == self.simpleRenderMode {
+    func set(simpleRenderMode yesOrNo: Bool) {
+        set(simpleRenderMode: yesOrNo, animated: false)
+    }
+    
+    func set(simpleRenderMode yesOrNo: Bool, animated: Bool) {
+        if yesOrNo == self.simpleRenderMode {
             return
         }
-        self.simpleRenderMode = simpleMode
+        self.simpleRenderMode = yesOrNo
         self.set(editing: false)
         if !animated {
-            toggleTranslucencyView(visible: !simpleMode)
+            toggleTranslucencyView(visible: !yesOrNo)
             return
         }
         UIView.animate(withDuration: 0.25) {
-            self.toggleTranslucencyView(visible: !simpleMode)
+            self.toggleTranslucencyView(visible: !yesOrNo)
         }
     }
 
