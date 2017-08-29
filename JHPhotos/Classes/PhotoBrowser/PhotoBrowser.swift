@@ -115,7 +115,7 @@ public final class PhotoBrowser: UIViewController {
         print("PhotoBrowser deinit")
     }
     
-    fileprivate func  releaseAllUnderlyingPhotos(_ preserveCurrent: Bool) {
+    fileprivate func releaseAllUnderlyingPhotos(_ preserveCurrent: Bool) {
         // release photots
         for photo in photos {
             let photo = photo as AnyObject

@@ -3,7 +3,7 @@
 //  JHPhotos
 //
 //  Created by winter on 2017/8/23.
-//  Copyright © 2017年 CocoaPods. All rights reserved.
+//  Copyright © 2017年 DJ. All rights reserved.
 //
 
 import UIKit

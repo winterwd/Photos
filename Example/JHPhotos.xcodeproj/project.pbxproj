@@ -17,6 +17,7 @@
 		C84DC40E1F4FD207009934DF /* CropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB401F4EBFC7003F5DEF /* CropView.swift */; };
 		C84DC40F1F4FF292009934DF /* CropOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85808F51F4D7C7A00A21B06 /* CropOverlayView.swift */; };
 		C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A711591F0CBD33008C0B43 /* UploadViewController.swift */; };
+		C8E19F051F553F74002405CC /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8E19F041F553F74002405CC /* CropViewController.swift */; };
 		C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */; };
 		C8EFCB441F4ECAAE003F5DEF /* CropToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */; };
 		DB613E28EA37D7AEE8B2E8DC /* Pods_JHPhotos_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1FB4B95A24F1A4DBB403A3 /* Pods_JHPhotos_Example.framework */; };
@@ -92,6 +93,7 @@
 		C8A49EF61F457BF8002B8856 /* DragCellCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCellCollectionView.swift; sourceTree = "<group>"; };
 		C8A49EF71F457F8C002B8856 /* UploadImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageCell.swift; sourceTree = "<group>"; };
 		C8A711591F0CBD33008C0B43 /* UploadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
+		C8E19F041F553F74002405CC /* CropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
 		C8EFCB401F4EBFC7003F5DEF /* CropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
 		C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropToolbar.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				C8EFCB401F4EBFC7003F5DEF /* CropView.swift */,
 				C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */,
 				C85808F51F4D7C7A00A21B06 /* CropOverlayView.swift */,
+				C8E19F041F553F74002405CC /* CropViewController.swift */,
 			);
 			path = PhotoEdit;
 			sourceTree = "<group>";
@@ -375,7 +378,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0820;
-				ORGANIZATIONNAME = CocoaPods;
+				ORGANIZATIONNAME = DJ;
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -532,6 +535,7 @@
 				C84DC40E1F4FD207009934DF /* CropView.swift in Sources */,
 				C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */,
 				C8EFCB441F4ECAAE003F5DEF /* CropToolbar.swift in Sources */,
+				C8E19F051F553F74002405CC /* CropViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
