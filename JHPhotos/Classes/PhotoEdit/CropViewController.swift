@@ -9,17 +9,15 @@
 import UIKit
 
 public protocol CropViewControllerDelegate: class {
-    func cropViewController(_ cropViewController: CropViewController, didCropToRect: CGRect, angle: Int)
-    func cropViewController(_ cropviewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int)
-    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int)
     func cropViewController(_ cropViewController: CropViewController, didFinishCancelled: Bool)
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int)
+//    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int)
 }
 
 public extension CropViewControllerDelegate {
-    func cropViewController(_ cropViewController: CropViewController, didCropToRect: CGRect, angle: Int) {}
-    func cropViewController(_ cropviewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) {}
-    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int) {}
     func cropViewController(_ cropViewController: CropViewController, didFinishCancelled: Bool) {}
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) {}
+//    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int) {}
 }
 
 public final class CropViewController: UIViewController {
@@ -154,19 +152,25 @@ public final class CropViewController: UIViewController {
         hidden = hidden && !(self.view.superview == nil);
         return hidden;
     }
-    
-    
 }
 
 // MARK: - Button Feedback
 
 fileprivate extension CropViewController {
     func cancelButtonTapped() {
+        self.delegate?.cropViewController(self, didFinishCancelled: true)
         
+        if let nav = self.navigationController {
+            nav.popViewController(animated: true)
+        }
+        else {
+            self.modalTransitionStyle = .coverVertical
+            self.presentingViewController?.dismiss(animated: true, completion: nil)
+        }
     }
     
     func rotateButtonTapped() {
-        
+        cropView.rotateImageNinetyDegrees(animated: true)
     }
     
     func resetButtonTapped() {

@@ -26,9 +26,7 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         imageView.addGestureRecognizer(tapRecognizer)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
+    func layoutImageView() {
         if let image = self.imageView.image {
             let padding: CGFloat = 20.0
             let bounds = self.view.bounds
@@ -52,6 +50,11 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
                 imageView.center = CGPoint(x: bounds.midX, y: bounds.midY)
             }
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        layoutImageView()
     }
     
     @objc func didTapImageView() {
@@ -84,4 +87,15 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
 
 extension TestViewController: CropViewControllerDelegate {
     
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) {
+        imageView.image = didCropToImage
+        layoutImageView()
+        
+        imageView.isHidden = true
+        cropViewController.dismissAnimated(fromParentViewController: self, croppedImage: didCropToImage, toView: self.imageView, toFrame: CGRect.zero, setup: { 
+            self.layoutImageView()
+        }) { 
+            self.imageView.isHidden = false
+        }
+    }
 }
