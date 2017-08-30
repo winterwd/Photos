@@ -13,7 +13,7 @@ public final class CropOverlayView: UIView {
     /// 隐藏内部网格线
     fileprivate var gridHidden:Bool = false {
         didSet {
-            setGrid(gridHidden, animated: false)
+            setGrid(hidden: gridHidden, animated: false)
         }
     }
     
@@ -71,7 +71,7 @@ public final class CropOverlayView: UIView {
     /// - Parameters:
     ///   - hidden: 显示和隐藏内部网格线
     ///   - animated: 是否交叉渐变动画
-    public func setGrid(_ hidden: Bool, animated: Bool) {
+    public func setGrid(hidden: Bool, animated: Bool) {
         if !animated {
             for line in horizontalGridLines {
                 line.alpha = hidden ? 0.0 : 1.0
@@ -95,9 +95,10 @@ public final class CropOverlayView: UIView {
 
 fileprivate extension CropOverlayView {
     
-    func createNewLine() -> UIView {
+    func createNewLine(forGrid yesOrNO: Bool) -> UIView {
         let line = UIView(frame: CGRect.zero)
-        line.backgroundColor = UIColor.white
+        let alpha: CGFloat = yesOrNO ? 0.6 : 1.0
+        line.backgroundColor = UIColor.init(white: 1, alpha: alpha)
         self.addSubview(line)
         return line
     }
@@ -107,7 +108,7 @@ fileprivate extension CropOverlayView {
             line.removeFromSuperview()
         }
         if isDisplay {
-            horizontalGridLines.append(contentsOf: [createNewLine(), createNewLine()])
+            horizontalGridLines.append(contentsOf: [createNewLine(forGrid: true), createNewLine(forGrid: true)])
         }
         else {
             horizontalGridLines.removeAll()
@@ -120,7 +121,7 @@ fileprivate extension CropOverlayView {
             line.removeFromSuperview()
         }
         if isDisplay {
-            verticalGridLines.append(contentsOf: [createNewLine(), createNewLine()])
+            verticalGridLines.append(contentsOf: [createNewLine(forGrid: true), createNewLine(forGrid: true)])
         }
         else {
             verticalGridLines.removeAll()
@@ -146,10 +147,10 @@ fileprivate extension CropOverlayView {
         for i in 0...3 {
             outerLineViews.append(createNewBorderLine())
             if i <= 1 {
-                topLeftLineViews.append(createNewLine())
-                topRightLineViews.append(createNewLine())
-                bottomLeftLineViews.append(createNewLine())
-                bottomRightLineViews.append(createNewLine())
+                topLeftLineViews.append(createNewLine(forGrid: false))
+                topRightLineViews.append(createNewLine(forGrid: false))
+                bottomLeftLineViews.append(createNewLine(forGrid: false))
+                bottomRightLineViews.append(createNewLine(forGrid: false))
             }
         }
         

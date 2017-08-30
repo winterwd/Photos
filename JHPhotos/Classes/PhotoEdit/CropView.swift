@@ -138,8 +138,8 @@ public class CropView: UIView {
         scrollView.frame = self.bounds
         scrollView.delegate = self
         self.addSubview(scrollView)
-        scrollView.touchesBegan = {}
-        scrollView.touchedEnd = {}
+        scrollView.touchesBegan = { [weak self] in self?.startEditing() }
+        scrollView.touchedEnd = { [weak self] in self?.startResetTimer() }
         
         backgroundImageView = UIImageView(image: image)
         backgroundImageView.layer.minificationFilter = kCAFilterLinear
@@ -668,7 +668,7 @@ extension CropView {
         }
         self.editing = editing
         
-        gridOverlayView.setGrid(!editing, animated: animated)
+        gridOverlayView.setGrid(hidden: !editing && gridOverlayHidden, animated: animated)
         if !editing {
             moveCroppedContentToCenter(animated: animated)
             captureStateForImageRotation()
@@ -1191,14 +1191,14 @@ extension CropView: UIGestureRecognizerDelegate {
     }
     
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer.isEqual(gridPanGestureRecognizer) {
+        if !gestureRecognizer.isEqual(gridPanGestureRecognizer) {
             return true
         }
         let tapPoint = gestureRecognizer.location(in: self)
         let frame = gridOverlayView.frame
         let innerFrame = frame.insetBy(dx: 22, dy: 22)
         let outerFrame = frame.insetBy(dx: -22, dy: -22)
-        if innerFrame.contains(tapPoint) || outerFrame.contains(tapPoint) {
+        if innerFrame.contains(tapPoint) || !outerFrame.contains(tapPoint) {
             return false
         }
         return true
@@ -1216,7 +1216,7 @@ extension CropView: UIGestureRecognizerDelegate {
 
 extension CropView: UIScrollViewDelegate {
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? { return backgroundContainerView }
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {  matchForegroundToBackground() }
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) { matchForegroundToBackground() }
     
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         startEditing()
