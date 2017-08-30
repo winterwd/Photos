@@ -15,7 +15,7 @@ public protocol CropViewControllerDelegate: class {
     func cropViewController(_ cropViewController: CropViewController, didFinishCancelled: Bool)
 }
 
-extension CropViewControllerDelegate {
+public extension CropViewControllerDelegate {
     func cropViewController(_ cropViewController: CropViewController, didCropToRect: CGRect, angle: Int) {}
     func cropViewController(_ cropviewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) {}
     func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int) {}
@@ -135,14 +135,16 @@ public final class CropViewController: UIViewController {
     
     public override var prefersStatusBarHidden: Bool {
         // If we belong to a UINavigationController, defer to its own status bar style
-        if self.navigationController != nil {
-            return self.navigationController.prefersStatusBarHidden
+        if let nav = self.navigationController {
+            return nav.prefersStatusBarHidden
         }
         
         // If our presenting controller has already hidden the status bar,
         // hide the status bar by default
-        if self.presentingViewController.prefersStatusBarHidden {
-            return true;
+        if let vc = self.presentingViewController {
+            if vc.prefersStatusBarHidden {
+                return true;
+            }
         }
         
         var hidden = true
@@ -151,8 +153,9 @@ public final class CropViewController: UIViewController {
         // Not currently waiting to the added to a super view
         hidden = hidden && !(self.view.superview == nil);
         return hidden;
-
     }
+    
+    
 }
 
 // MARK: - Button Feedback
@@ -162,15 +165,18 @@ fileprivate extension CropViewController {
         
     }
     
-    func doneButtonTapped() {
-    
+    func rotateButtonTapped() {
+        
     }
     
     func resetButtonTapped() {
-    
+        let animated = cropView.angle == 0
+//        if resetAspectRatioEnabled() {
+//        }
+        cropView.resetLayoutToDefault(animated: animated)
     }
     
-    func rotateButtonTapped() {
+    func doneButtonTapped() {
         
     }
 }
@@ -179,15 +185,15 @@ fileprivate extension CropViewController {
 
 extension CropViewController {
     
-    public func presentAnimated(fromParentViewController viewController: UIViewController, fromView: UIView, fromFrame: CGRect, setup: (()->Void)?) {
+    public func presentAnimated(fromParentViewController viewController: UIViewController, fromView: UIView?, fromFrame: CGRect, setup: (()->Void)?) {
         presentAnimated(fromParentViewController: viewController, fromView: fromView, fromFrame: fromFrame, setup: setup, completion: nil)
     }
     
-    public func presentAnimated(fromParentViewController viewController: UIViewController, fromView: UIView, fromFrame: CGRect, setup: (()->Void)?, completion: (()->Void)?) {
+    public func presentAnimated(fromParentViewController viewController: UIViewController, fromView: UIView?, fromFrame: CGRect, setup: (()->Void)?, completion: (()->Void)?) {
         presentAnimated(fromParentViewController: viewController, fromImage: nil, fromView: fromView, fromFrame: fromFrame, angle: 0, toImageFrame: CGRect.zero, setup: setup, completion: completion)
     }
     
-    public func presentAnimated(fromParentViewController viewController: UIViewController, fromImage image: UIImage?, fromView: UIView, fromFrame: CGRect, angle: Int, toImageFrame toFrame: CGRect, setup: (()->Void)?, completion: (()->Void)?) {
+    public func presentAnimated(fromParentViewController viewController: UIViewController, fromImage image: UIImage?, fromView: UIView?, fromFrame: CGRect, angle: Int, toImageFrame toFrame: CGRect, setup: (()->Void)?, completion: (()->Void)?) {
         if image != nil {
             transitioning.image = image
         }
@@ -338,6 +344,20 @@ extension CropViewController {
 
 extension CropViewController {
     
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let bounds = self.view.bounds
+        let verticalLayout = bounds.width < bounds.height
+        cropView.frame = frameForCropView(verticalLayout: verticalLayout)
+        cropView.moveCroppedContentToCenter(animated: false)
+        
+        UIView.performWithoutAnimation {
+            toolbar.statusBarVisible = !self.prefersStatusBarHidden
+            toolbar.frame = frameForToolBar(verticalLayout: verticalLayout)
+            toolbar.setNeedsLayout()
+        }
+    }
+    
     func setupCropView() {
         let boundsSize = self.view.bounds.size
         let frame = frameForCropView(verticalLayout: boundsSize.width < boundsSize.height)
@@ -410,100 +430,5 @@ extension CropViewController {
             frame.size.height = 44.0
         }
         return frame
-    }
-}
-
-// MARK: - UIViewControllerContextTransitioning
-
-class CropTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
-    var isDissmissing = false
-    var image: UIImage?
-    
-    var fromView: UIView?
-    var toView: UIView?
-    
-    var fromFrame = CGRect.zero
-    var toFrame = CGRect.zero
-    
-    var prepareForTransitionHandler: (() -> Void)?
-    
-    func reset() {
-        self.image = nil
-        self.toView = nil
-        self.fromView = nil
-        self.fromFrame = CGRect.zero
-        self.toFrame = CGRect.zero
-        self.prepareForTransitionHandler = nil
-    }
-    
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.45
-    }
-    
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        // Get the master view where the animation takes place
-        let containerView = transitionContext.containerView
-        
-        // Get the origin/destination view controllers
-        if let fromViewController = transitionContext.viewController(forKey: .from), let toViewController = transitionContext.viewController(forKey: .to) {
-            
-            // Work out which one is the crop view controller
-            let cropViewController = self.isDissmissing ? fromViewController : toViewController
-            let previousController = self.isDissmissing ? toViewController : fromViewController
-            
-            // Just in case, match up the frame sizes
-            cropViewController.view.frame = containerView.bounds
-            if self.isDissmissing {
-                containerView.insertSubview(previousController.view, belowSubview: cropViewController.view)
-            }
-            else {
-                containerView.addSubview(cropViewController.view)
-            }
-            
-            // Perform any last UI updates now so we can potentially factor them into our calculations, but after
-            // the container views have been set up
-            self.prepareForTransitionHandler?()
-            
-            // If origin/destination views were supplied, use them to supplant the
-            // frames
-            if !self.isDissmissing && self.fromView != nil {
-                if let fromView = self.fromView, let superview = self.fromView?.superview {
-                    self.fromFrame = superview.convert(fromView.frame, to: containerView)
-                }
-            }
-            else if self.isDissmissing && self.toView != nil {
-                if let toView = self.toView, let superview = self.toView?.superview {
-                    self.toFrame = superview.convert(toView.frame, to: containerView)
-                }
-            }
-            
-            var imageView: UIImageView?
-            if (self.isDissmissing && !self.toFrame.isEmpty) || (!self.isDissmissing && !self.fromFrame.isEmpty) {
-                let view = UIImageView(image: self.image)
-                view.frame = self.fromFrame
-                containerView.addSubview(view)
-                imageView = view
-            }
-            
-            cropViewController.view.alpha = self.isDissmissing ? 1.0 : 0.0
-            if let view = imageView {
-                UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.7, options: .layoutSubviews, animations: { 
-                    view.frame = self.toFrame
-                }, completion: { (_) in
-                    UIView.animate(withDuration: 0.1, animations: { 
-                        view.alpha = 0.0
-                    }, completion: { (_) in
-                        view.removeFromSuperview()
-                    })
-                })
-            }
-            
-            UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: { 
-                cropViewController.view.alpha = self.isDissmissing ? 0.0 : 1.0
-            }, completion: { (_) in
-                self.reset()
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-            })
-        }
     }
 }

@@ -9,59 +9,79 @@
 import UIKit
 import JHPhotos
 
-class TestViewController: UIViewController {
+class TestViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-    let toolbar: CropToolbar = {
-        return CropToolbar()
+    var imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.isUserInteractionEnabled = true
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        self.view.backgroundColor = UIColor.black
         
-        let gridView = CropOverlayView(frame: CGRect(x: 80, y: 100, width: 250, height: 300))
-        
-        self.view.addSubview(gridView)
-        
-        self.view.addSubview(toolbar)
+        self.view.addSubview(imageView)
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapImageView))
+        imageView.addGestureRecognizer(tapRecognizer)
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        // 宽度小于高度，就是竖屏
-        let boundsSize = self.view.bounds.size
-        let verticalLayout = boundsSize.width < boundsSize.height
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
-        if verticalLayout {
-            // 竖屏
-            let height: CGFloat = 44.0
-            let width: CGFloat = boundsSize.width
-            toolbar.frame = CGRect(x: 0, y: boundsSize.height - height, width: width, height: height)
+        if let image = self.imageView.image {
+            let padding: CGFloat = 20.0
+            let bounds = self.view.bounds
+            var viewFrame = bounds
+            viewFrame.size.width -= padding * 2.0
+            viewFrame.size.height -= padding * 2.0
+            
+            var imageFrame = CGRect.zero
+            imageFrame.size = image.size
+            
+            if imageFrame.width > viewFrame.width || imageFrame.height > viewFrame.height {
+                let scale = min(viewFrame.width/imageFrame.width, viewFrame.height/imageFrame.height)
+                imageFrame.size.width *= scale
+                imageFrame.size.height *= scale
+                imageFrame.origin.x = (bounds.width - imageFrame.width) * 0.5
+                imageFrame.origin.y = (bounds.height - imageFrame.height) * 0.5
+                imageView.frame = imageFrame
+            }
+            else {
+                imageView.frame = imageFrame
+                imageView.center = CGPoint(x: bounds.midX, y: bounds.midY)
+            }
         }
-        else {
-            // 横屏
-            let width: CGFloat = 44.0
-            let height: CGFloat = boundsSize.height - 32
-            toolbar.frame = CGRect(x: 0, y: 32, width: width, height: height)
-        }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @objc func didTapImageView() {
+        if let image = imageView.image {
+            let cropController = CropViewController(image: image, delegate: self)
+            let viewFrame = self.view.convert(imageView.frame, to: self.navigationController?.view)
+            cropController.presentAnimated(fromParentViewController: self, fromImage: image, fromView: nil, fromFrame: viewFrame, angle: 0, toImageFrame: CGRect.zero, setup: { 
+                self.imageView.isHidden = true
+            }, completion: nil)
+        }
     }
-    */
+    
+    @IBAction func addPhotoButtonTapped(_ sender: AnyObject?) {
+        let imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.allowsEditing = false
+        imagePicker.delegate = self
+        present(imagePicker, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        
+        dismiss(animated: true) {
+            let cropViewController = CropViewController(image: image)
+            self.present(cropViewController, animated: true, completion: nil)
+        }
+    }
+}
 
+extension TestViewController: CropViewControllerDelegate {
+    
 }

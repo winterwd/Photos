@@ -119,10 +119,11 @@
                                     <segue destination="eTH-uP-MAk" kind="show" id="YBJ-j6-aKX"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem tag="3" title="栅格" id="eET-Et-pwb">
+                            <barButtonItem tag="3" title="编辑" id="eET-Et-pwb">
                                 <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <action selector="navButtonItemAction:" destination="vXZ-lx-hvc" id="fhf-02-e25"/>
+                                    <segue destination="0hb-2O-0x1" kind="show" id="WJY-le-Ggj"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -178,7 +179,48 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HL0-ZM-7F5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="808.79999999999995" y="35.532233883058474"/>
+            <point key="canvasLocation" x="25" y="766"/>
+        </scene>
+        <!--CropViewController-->
+        <scene sceneID="YEE-Sb-lGf">
+            <objects>
+                <viewController title="CropViewController" id="0hb-2O-0x1" customClass="TestViewController" customModule="JHPhotos_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="GV2-rH-XOm"/>
+                        <viewControllerLayoutGuide type="bottom" id="l1c-W2-s02"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="TOW-Ou-nbP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap (+) to crop an image." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k2d-bT-mDZ">
+                                <rect key="frame" x="65.5" y="323" width="244" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="60q-4u-2T1"/>
+                                    <constraint firstAttribute="width" constant="244" id="dA6-Vh-jwF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="k2d-bT-mDZ" firstAttribute="centerX" secondItem="TOW-Ou-nbP" secondAttribute="centerX" id="Ab8-El-XmM"/>
+                            <constraint firstItem="k2d-bT-mDZ" firstAttribute="centerY" secondItem="TOW-Ou-nbP" secondAttribute="centerY" id="NXa-11-Vag"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Crop" id="1tb-XA-hua">
+                        <barButtonItem key="leftBarButtonItem" systemItem="add" id="sS0-hs-gNs">
+                            <connections>
+                                <action selector="addPhotoButtonTapped:" destination="0hb-2O-0x1" id="Wni-vO-okg"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IuO-Su-Itu" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="793" y="36"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>

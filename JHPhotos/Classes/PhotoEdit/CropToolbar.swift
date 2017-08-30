@@ -8,12 +8,14 @@
 
 import UIKit
 
-public class CropToolbar: UIView {
+class CropToolbar: UIView {
     
     var cancelBttonAction: (() -> Void)?
     var rotateBttonAction: (() -> Void)?
     var resetBttonAction: (() -> Void)?
     var doneBttonAction: (() -> Void)?
+    
+    var statusBarVisible = false
     
     var cancelButton: UIButton = {
         let button = UIButton(type: .system)
@@ -117,15 +119,16 @@ public class CropToolbar: UIView {
         }
         else {
             // 横屏
+            let offsetY: CGFloat = statusBarVisible ? 20.0 : 0.0
             let width: CGFloat = 44.0
-            let height: CGFloat = boundsSize.height / 4.0
-            var frame = CGRect(x: 0, y: 0, width: width, height: height)
+            let height: CGFloat = (boundsSize.height - offsetY) / 4.0
+            var frame = CGRect(x: 0, y: offsetY, width: width, height: height)
             cancelButton.frame = frame
             
-            frame.origin.y = height
+            frame.origin.y = height + offsetY
             rotateButton.frame = frame
             
-            frame.origin.y = 2 * height
+            frame.origin.y = 2 * height + offsetY
             resetButton.frame = frame
             
             frame.origin.y = boundsSize.height - height
