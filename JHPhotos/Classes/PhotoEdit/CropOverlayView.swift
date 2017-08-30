@@ -132,26 +132,25 @@ fileprivate extension CropOverlayView {
     func setup() {
         self.clipsToBounds = false
         
-        func createNewBorderLine() -> UIView {
-            let line = UIView(frame: CGRect.zero)
-            line.backgroundColor = UIColor.white
-            line.backgroundColor = UIColor.white
-            line.layer.shadowColor  = UIColor.black.cgColor
-            line.layer.shadowOffset = CGSize.zero
-            line.layer.shadowRadius = 1.5
-            line.layer.shadowOpacity = 0.8
-            self.addSubview(line)
-            return line
-        }
+//        func createNewBorderLine() -> UIView {
+//            let line = UIView(frame: CGRect.zero)
+//            line.backgroundColor = UIColor.white
+//            line.layer.shadowColor  = UIColor.black.cgColor
+//            line.layer.shadowOffset = CGSize.zero
+//            line.layer.shadowRadius = 1.5
+//            line.layer.shadowOpacity = 0.8
+//            self.addSubview(line)
+//            return line
+//        }
         
         for i in 0...3 {
-            outerLineViews.append(createNewBorderLine())
             if i <= 1 {
                 topLeftLineViews.append(createNewLine(forGrid: false))
                 topRightLineViews.append(createNewLine(forGrid: false))
                 bottomLeftLineViews.append(createNewLine(forGrid: false))
                 bottomRightLineViews.append(createNewLine(forGrid: false))
             }
+            outerLineViews.append(createNewLine(forGrid: false))
         }
         
         displayHorizontalGridLines = true
@@ -178,6 +177,7 @@ fileprivate extension CropOverlayView {
         }
         
         // 四角
+        let wh: CGFloat = 3.0
         let cornerLines = [topLeftLineViews, topRightLineViews, bottomRightLineViews, bottomLeftLineViews]
         for i in 0...3 {
             let cornerLine = cornerLines[i]
@@ -185,20 +185,20 @@ fileprivate extension CropOverlayView {
             var horizontalFrame = CGRect.zero
             switch i {
             case 0: // top left
-                verticalFrame = CGRect(x: -3.0, y: -3.0, width: 3.0, height: CropOverLayerCornerWidth + 3.0)
-                horizontalFrame = CGRect(x: 0, y: -3.0, width: CropOverLayerCornerWidth + 3.0, height: 3.0)
+                verticalFrame = CGRect(x: -wh, y: -wh, width: wh, height: CropOverLayerCornerWidth + wh)
+                horizontalFrame = CGRect(x: 0, y: -wh, width: CropOverLayerCornerWidth + wh, height: wh)
                 break
             case 1: // top right
-                verticalFrame = CGRect(x: size.width, y: -3.0, width: 3.0, height: CropOverLayerCornerWidth + 3.0)
-                horizontalFrame = CGRect(x: size.width - CropOverLayerCornerWidth, y: -3.0, width: CropOverLayerCornerWidth, height: 3.0)
+                verticalFrame = CGRect(x: size.width, y: -wh, width: wh, height: CropOverLayerCornerWidth + wh)
+                horizontalFrame = CGRect(x: size.width - CropOverLayerCornerWidth, y: -wh, width: CropOverLayerCornerWidth, height: wh)
                 break
             case 2: // bottom right
-                verticalFrame = CGRect(x: size.width, y: size.height-CropOverLayerCornerWidth, width: 3.0, height: CropOverLayerCornerWidth + 3.0)
-                horizontalFrame = CGRect(x: size.width - CropOverLayerCornerWidth, y: size.height, width: CropOverLayerCornerWidth, height: 3.0)
+                verticalFrame = CGRect(x: size.width, y: size.height-CropOverLayerCornerWidth, width: wh, height: CropOverLayerCornerWidth + wh)
+                horizontalFrame = CGRect(x: size.width - CropOverLayerCornerWidth, y: size.height, width: CropOverLayerCornerWidth, height: wh)
                 break
             case 3: // bottom left
-                verticalFrame = CGRect(x: -3.0, y: size.height-CropOverLayerCornerWidth, width: 3.0, height: CropOverLayerCornerWidth)
-                horizontalFrame = CGRect(x: -3.0, y: size.height, width: CropOverLayerCornerWidth + 3.0, height: 3.0)
+                verticalFrame = CGRect(x: -wh, y: size.height-CropOverLayerCornerWidth, width: wh, height: CropOverLayerCornerWidth)
+                horizontalFrame = CGRect(x: -wh, y: size.height, width: CropOverLayerCornerWidth + wh, height: wh)
                 break
             default:
                 break

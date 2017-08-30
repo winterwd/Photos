@@ -1113,7 +1113,7 @@ extension CropView {
         }
         
         var bottomRightRect = topRightRect
-        bottomRightRect.origin.x = bottomLeftRect.minY
+        bottomRightRect.origin.y = bottomLeftRect.minY
         if bottomRightRect.contains(point) {
             return .bottomRight
         }
