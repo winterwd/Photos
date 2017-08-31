@@ -9,14 +9,30 @@
 import UIKit
 
 public protocol CropViewControllerDelegate: class {
-    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled: Bool)
-    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int)
+    
+    /// 编辑取消回调
+    ///
+    /// - Parameters:
+    ///   - cropViewController: cropViewController
+    ///   - didCancelled: 是否取消编辑
+    func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool)
+    
+    /// 编辑完成回调
+    ///
+    /// - Parameters:
+    ///   - cropViewController: cropViewController
+    ///   - didCropToImage: 裁剪完成后的图片
+    ///   - rect: 裁剪完成后的图片
+    ///   - angle: 图片旋转角度 90/-90/180/-180/270/-270
+    /// - Returns: 是否调用 cropViewController 提供的'dismissAnimated(:)'
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool
+    
 //    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int)
 }
 
 public extension CropViewControllerDelegate {
-    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled: Bool) {}
-    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) {}
+    func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool) {}
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool { return false }
 //    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int) {}
 }
 
@@ -60,6 +76,7 @@ public final class CropViewController: UIViewController {
         setupToolbar()
         
         self.transitioningDelegate = self
+        self.modalTransitionStyle = .crossDissolve
         self.view.backgroundColor = cropView.backgroundColor
     }
     
@@ -158,7 +175,7 @@ public final class CropViewController: UIViewController {
 
 fileprivate extension CropViewController {
     func cancelButtonTapped() {
-        self.delegate?.cropViewController(self, didFinishCancelled: true)
+        self.delegate?.cropViewController(self, didCancelled: true)
         
         if let nav = self.navigationController {
             nav.popViewController(animated: true)
@@ -181,7 +198,25 @@ fileprivate extension CropViewController {
     }
     
     func doneButtonTapped() {
+        let cropFrame = cropView.imageCropFrame()
+        let angle = cropView.angle
+        var delegateHandled = false
         
+        var resultImage: UIImage!
+        if angle == 0 && cropFrame.equalTo(CGRect(origin: CGPoint.zero, size: self.image.size)) {
+            resultImage = image
+        }
+        else {
+            resultImage = image.croppedImage(frame: cropFrame, angle: angle, circularClip: false)
+        }
+        
+        if let d = delegate {
+            delegateHandled = d.cropViewController(self, didCropToImage: resultImage, rect: cropFrame, angle: angle)
+        }
+        
+        if !delegateHandled {
+            self.presentingViewController?.dismiss(animated: true, completion: nil)
+        }
     }
 }
 
@@ -252,7 +287,7 @@ extension CropViewController {
 
 extension CropViewController: UIViewControllerTransitioningDelegate {
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if (self.navigationController != nil) || self.modalTransitionStyle == .coverVertical {
+        if (self.navigationController != nil) || (self.modalTransitionStyle == .coverVertical) {
             return nil
         }
         cropView.set(simpleRenderMode: true)
@@ -274,7 +309,7 @@ extension CropViewController: UIViewControllerTransitioningDelegate {
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if (self.navigationController != nil) || self.modalTransitionStyle == .coverVertical {
+        if (self.navigationController != nil) || (self.modalTransitionStyle == .coverVertical) {
             return nil
         }
         
@@ -318,6 +353,9 @@ extension CropViewController {
     }
     
     func angle() -> Int {
+        if cropView == nil {
+            return 0
+        }
         return cropView.angle
     }
     

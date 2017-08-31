@@ -92,7 +92,7 @@ extension UIImage {
             return UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
         }
         else {
-            return UIImage()
+            return self
         }
     }
     

@@ -77,9 +77,9 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        
+    
         dismiss(animated: true) {
-            let cropViewController = CropViewController(image: image)
+            let cropViewController = CropViewController(image: image, delegate: self)
             self.present(cropViewController, animated: true, completion: nil)
         }
     }
@@ -87,15 +87,20 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
 
 extension TestViewController: CropViewControllerDelegate {
     
-    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) {
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool {
         imageView.image = didCropToImage
         layoutImageView()
         
-        imageView.isHidden = true
-        cropViewController.dismissAnimated(fromParentViewController: self, croppedImage: didCropToImage, toView: self.imageView, toFrame: CGRect.zero, setup: { 
-            self.layoutImageView()
+        imageView.isHidden = false
+        cropViewController.dismissAnimated(fromParentViewController: self,
+                                           croppedImage: didCropToImage,
+                                           toView: self.imageView,
+                                           toFrame: CGRect.zero,
+                                           setup: {
+                                            self.layoutImageView()
         }) { 
-            self.imageView.isHidden = false
+//            self.imageView.isHidden = false
         }
+        return true
     }
 }
