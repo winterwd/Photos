@@ -57,7 +57,9 @@ public final class CropOverlayView: UIView {
     
     public override func didMoveToSuperview() {
         super.didMoveToSuperview()
-        layoutLines()
+        if self.superview != nil {
+            layoutLines()
+        }
     }
     
     public override var frame: CGRect {
