@@ -258,8 +258,8 @@ extension CropView {
         let newPoint = CGPoint(x: max(contentFrame.minX, point.x), y: max(contentFrame.minY, point.y))
         
         // The delta between where we first tapped, and where our finger is now
-        let xDelta = ceil(newPoint.x - panOriginPoint.x)
-        let yDelta = ceil(newPoint.y - panOriginPoint.y)
+        let xDelta = (newPoint.x - panOriginPoint.x)
+        let yDelta = (newPoint.y - panOriginPoint.y)
         
         // Current aspect ratio of the crop box in case we need to clamp it
         // let aspectRatio = originFrame.width / originFrame.height
@@ -465,14 +465,14 @@ extension CropView {
         }
         var newCropBoxFrame = frame
         let contentFrame = self.contentBounds()
-        let xOrigin: CGFloat = ceil(contentFrame.minX)
+        let xOrigin: CGFloat = (contentFrame.minX)
         let xDelta: CGFloat = frame.minX - xOrigin
         newCropBoxFrame.origin.x = floor(max(frame.minX, xOrigin))
         if xDelta < -CGFloat.ulpOfOne {
             newCropBoxFrame.size.width += xDelta
         }
         
-        let yOrigin: CGFloat = ceil(contentFrame.minY)
+        let yOrigin: CGFloat = (contentFrame.minY)
         let yDelta: CGFloat = frame.minY - xOrigin
         newCropBoxFrame.origin.y = floor(max(frame.minY, yOrigin))
         if xDelta < -CGFloat.ulpOfOne {
@@ -650,7 +650,7 @@ extension CropView {
         frame.origin.y = floor((contentOffset.y + edgeInsets.top) * (imageSize.height/contentSize.height))
         frame.origin.y = max(0, frame.minY)
         
-        frame.size.width = ceil(_cropBoxFrame.width * (imageSize.width/contentSize.width))
+        frame.size.width = (_cropBoxFrame.width * (imageSize.width/contentSize.width))
         frame.size.width = min(imageSize.width, frame.width)
         
         frame.size.height = floor(_cropBoxFrame.height * (imageSize.height/contentSize.height))
@@ -810,13 +810,13 @@ extension CropView {
         let foucsPoint = CGPoint(x: frame.midX, y: frame.midY)
         let midPoint = CGPoint(x: contentRect.midX, y: contentRect.midY)
         
-        let width: CGFloat = ceil(frame.width * scale)
-        let height: CGFloat = ceil(frame.height * scale)
+        let width: CGFloat = (frame.width * scale)
+        let height: CGFloat = (frame.height * scale)
         var cropFrame = CGRect.zero
         cropFrame.size.width = width
         cropFrame.size.height = height
-        cropFrame.origin.x = contentRect.minX + ceil((contentRect.width - width) * 0.5)
-        cropFrame.origin.y = contentRect.minY + ceil((contentRect.height - height) * 0.5)
+        cropFrame.origin.x = contentRect.minX + ((contentRect.width - width) * 0.5)
+        cropFrame.origin.y = contentRect.minY + ((contentRect.height - height) * 0.5)
         
         // Work out the point on the scroll content that the focusPoint is aiming at
         let contentTargetPoint = CGPoint(x: (foucsPoint.x + scrollView.contentOffset.x) * scale, y: (foucsPoint.y + scrollView.contentOffset.y) * scale)
