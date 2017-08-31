@@ -390,10 +390,18 @@ extension CropView {
             set(editing: false, animated: false)
         }
         set(simpleRenderMode: true)
-        UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .beginFromCurrentState, animations: { 
-            self.layoutInitialImage()
-        }) { (_) in
-            self.set(simpleRenderMode: false, animated: true)
+        
+        delayFunc(seconds: 0.01) { 
+            UIView.animate(withDuration: 0.5,
+                           delay: 0.0,
+                           usingSpringWithDamping: 1.0,
+                           initialSpringVelocity: 1.0,
+                           options: .beginFromCurrentState,
+                           animations: {
+                            self.layoutInitialImage()
+            }) { (_) in
+                self.set(simpleRenderMode: false, animated: true)
+            }
         }
     }
     
@@ -719,11 +727,13 @@ extension CropView {
         let foucsPoint = CGPoint(x: frame.midX, y: frame.midY)
         let midPoint = CGPoint(x: contentRect.midX, y: contentRect.midY)
         
+        let width: CGFloat = ceil(frame.width * scale)
+        let height: CGFloat = ceil(frame.width * scale)
         var cropFrame = CGRect.zero
-        cropFrame.size.width = ceil(frame.width * scale)
-        cropFrame.size.height = ceil(frame.height * scale)
-        cropFrame.origin.x = contentRect.minX + ceil((contentRect.width - frame.width) * 0.5)
-        cropFrame.origin.y = contentRect.minY + ceil((contentRect.height - frame.height) * 0.5)
+        cropFrame.size.width = width
+        cropFrame.size.height = height
+        cropFrame.origin.x = contentRect.minX + ceil((contentRect.width - width) * 0.5)
+        cropFrame.origin.y = contentRect.minY + ceil((contentRect.height - height) * 0.5)
         
         // Work out the point on the scroll content that the focusPoint is aiming at
         let contentTargetPoint = CGPoint(x: (foucsPoint.x + scrollView.contentOffset.x) * scale, y: (foucsPoint.y + scrollView.contentOffset.y) * scale)
@@ -777,13 +787,16 @@ extension CropView {
             return
         }
         matchForegroundToBackground()
-        UIView.animate(withDuration: 0.5,
-                       delay: 0.0,
-                       usingSpringWithDamping: 1.0,
-                       initialSpringVelocity: 0.7,
-                       options: .beginFromCurrentState,
-                       animations: translateBlock,
-                       completion: nil)
+        
+        delayFunc(seconds: 0.01) {
+            UIView.animate(withDuration: 0.5,
+                           delay: 0.0,
+                           usingSpringWithDamping: 1.0,
+                           initialSpringVelocity: 0.7,
+                           options: .beginFromCurrentState,
+                           animations: translateBlock,
+                           completion: nil)
+        }
     }
     
     func set(aspectRatio: CGSize, animated: Bool) {
@@ -1149,7 +1162,7 @@ extension CropView {
     }
 }
 
-// MARK: - Resettable State
+// MARK: - other
 
 extension CropView {
     func checkForCanReset() {
@@ -1170,6 +1183,11 @@ extension CropView {
         }
         set(canBeReset: canReset)
     }
+    
+    func delayFunc(seconds: TimeInterval, action: @escaping () -> Void) {
+        let delayTime = DispatchTime.now() + seconds
+        DispatchQueue.main.asyncAfter(deadline: delayTime, execute: action)
+    }
 }
 
 // MARK: - UIGestureRecognizerDelegate
@@ -1185,7 +1203,7 @@ extension CropView: UIGestureRecognizerDelegate {
             tappedEdge = cropEdge(forPoint: point)
         }
         else if recognizer.state == .ended {
-            set(editing: false, animated: true)
+            startResetTimer()
         }
         updateCropBoxFrame(GesturePoint: point)
     }
