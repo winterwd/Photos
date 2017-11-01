@@ -207,12 +207,7 @@ fileprivate extension PhotoAlbumViewController {
     
     func dismiss() {
         queue?.suspend()
-        if let nav = self.navigationController, nav.viewControllers.count > 1{
-            nav.popViewController(animated: false)
-        }
-        else {
-            self.dismiss(animated: true, completion: nil)
-        }
+        dismiss(animated: true, completion: nil)
     }
 }
 

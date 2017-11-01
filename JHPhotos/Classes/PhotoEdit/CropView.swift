@@ -369,13 +369,13 @@ extension CropView {
                 imageRect = CGRect(origin: CGPoint.zero, size: image.size)
             }
             
-            backgroundImageView.transform = .identity
-            backgroundContainerView.transform = .identity
             backgroundImageView.frame = imageRect
+            backgroundImageView.transform = .identity
             backgroundContainerView.frame = imageRect
+            backgroundContainerView.transform = .identity
             
-            foregroundImageView.transform = .identity
             foregroundImageView.frame = imageRect
+            foregroundImageView.transform = .identity
             
             // Reset the layout
             layoutInitialImage()
@@ -963,7 +963,7 @@ extension CropView {
         backgroundImageView.frame = CGRect(origin: CGPoint.zero, size: backgroundImageView.frame.size)
         
         // Rotate the foreground image view to match
-        foregroundContainerView.transform = CGAffineTransform.identity
+        foregroundContainerView.transform = .identity
         foregroundImageView.transform = rotation
         
         // Flip the content size of the scroll view to match the rotated bounds
@@ -1022,7 +1022,7 @@ extension CropView {
                                initialSpringVelocity: 0.8,
                                options: .beginFromCurrentState,
                                animations: { 
-                                let transform = CGAffineTransform(rotationAngle:  CGFloat.pi * 0.5 * (clockwise ? 1 : -1))
+                                let transform = CGAffineTransform(rotationAngle:  CGFloat.pi * 0.5 * CGFloat(clockwise ? 1 : -1))
                                 snapshotView.transform = transform.scaledBy(x: scale, y: scale)
                 }, completion: { (_) in
                     self.backgroundContainerView.isHidden = false
