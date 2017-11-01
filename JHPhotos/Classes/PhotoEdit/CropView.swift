@@ -368,12 +368,14 @@ extension CropView {
             if let image = self.image {
                 imageRect = CGRect(origin: CGPoint.zero, size: image.size)
             }
+            
+            backgroundImageView.transform = .identity
+            backgroundContainerView.transform = .identity
             backgroundImageView.frame = imageRect
-            backgroundImageView.transform = CGAffineTransform.identity
             backgroundContainerView.frame = imageRect
-            backgroundContainerView.transform = CGAffineTransform.identity
+            
+            foregroundImageView.transform = .identity
             foregroundImageView.frame = imageRect
-            foregroundImageView.transform = CGAffineTransform.identity
             
             // Reset the layout
             layoutInitialImage()

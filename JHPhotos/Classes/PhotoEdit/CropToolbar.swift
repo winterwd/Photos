@@ -47,6 +47,7 @@ class CropToolbar: UIView {
         let button = UIButton(type: .system)
         button.setImage(CropToolbar.doneImage(), for: .normal)
         button.tintColor = UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+        button.isEnabled = false
         button.tag = 1003
         return button
     }()
@@ -92,6 +93,7 @@ class CropToolbar: UIView {
     
     func set(resetButtonEnabled enabled: Bool) {
         resetButton.isEnabled = enabled
+        doneButton.isEnabled = enabled
     }
     
     override public func layoutSubviews() {

@@ -62,12 +62,9 @@ public final class CropViewController: UIViewController {
     var image: UIImage!
     var cropView: CropView!
     var toolbar: CropToolbar!
-    var toolbarSnapshotView: UIView?
     var aspectRatioPickerButtonHidden = false
     var prepareForTransitionHandler: (() -> Void)?
-    let transitioning: CropTransitioning = {
-        return CropTransitioning()
-    }()
+    let transitioning: CropTransitioning = CropTransitioning()
     var customAspectRatio = CGSize.zero
     
     var inTransition = false
@@ -202,8 +199,6 @@ fileprivate extension CropViewController {
     
     func resetButtonTapped() {
         let animated = cropView.angle == 0
-//        if resetAspectRatioEnabled() {
-//        }
         cropView.resetLayoutToDefault(animated: animated)
     }
     
