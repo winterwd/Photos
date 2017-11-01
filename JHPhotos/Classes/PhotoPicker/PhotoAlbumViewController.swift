@@ -103,6 +103,7 @@ public final class PhotoAlbumViewController: UICollectionViewController {
         if model.canSelected {
             let photoBrowser = PhotoBrowser.init(delgegate: self)
             photoBrowser.isDisplaySelectionButton = true
+            photoBrowser.isCanEditPhoto = true
             photoBrowser.setCurrentPageIndex(indexPath.item - 1)
             let nav = UINavigationController(rootViewController: photoBrowser)
             nav.modalTransitionStyle = .crossDissolve

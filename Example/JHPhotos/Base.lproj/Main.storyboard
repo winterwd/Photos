@@ -184,7 +184,7 @@
         <!--CropViewController-->
         <scene sceneID="YEE-Sb-lGf">
             <objects>
-                <viewController title="CropViewController" id="0hb-2O-0x1" customClass="TestViewController" customModule="JHPhotos_Example" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="CropViewController" id="0hb-2O-0x1" customClass="TestCropViewController" customModule="JHPhotos_Example" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="GV2-rH-XOm"/>
                         <viewControllerLayoutGuide type="bottom" id="l1c-W2-s02"/>
@@ -211,7 +211,12 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Crop" id="1tb-XA-hua">
-                        <barButtonItem key="leftBarButtonItem" systemItem="add" id="sS0-hs-gNs">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="BaJ-iU-cMb">
+                            <connections>
+                                <action selector="cancelAction:" destination="0hb-2O-0x1" id="OyS-aY-V4P"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="sS0-hs-gNs">
                             <connections>
                                 <action selector="addPhotoButtonTapped:" destination="0hb-2O-0x1" id="Wni-vO-okg"/>
                             </connections>

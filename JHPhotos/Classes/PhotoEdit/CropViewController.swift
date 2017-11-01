@@ -15,7 +15,8 @@ public protocol CropViewControllerDelegate: class {
     /// - Parameters:
     ///   - cropViewController: cropViewController
     ///   - didCancelled: 是否取消编辑
-    func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool)
+    /// - Returns: 是否调用 cropViewController 提供的'dismissAnimated(:)'
+    func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool) -> Bool
     
     /// 编辑完成回调
     ///
@@ -31,7 +32,7 @@ public protocol CropViewControllerDelegate: class {
 }
 
 public extension CropViewControllerDelegate {
-    func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool) {}
+    func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool) -> Bool { return false }
     func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool { return false }
 //    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage: UIImage, rect: CGRect, angle: Int) {}
 }
@@ -39,6 +40,10 @@ public extension CropViewControllerDelegate {
 public final class CropViewController: UIViewController {
     
     public weak var delegate: CropViewControllerDelegate?
+    
+    deinit {
+        print("CropViewController deinit")
+    }
     
     public convenience init(image originImage: UIImage) {
         self.init(image: originImage, delegate: nil)
@@ -175,14 +180,19 @@ public final class CropViewController: UIViewController {
 
 fileprivate extension CropViewController {
     func cancelButtonTapped() {
-        self.delegate?.cropViewController(self, didCancelled: true)
-        
-        if let nav = self.navigationController {
-            nav.popViewController(animated: true)
+        var delegateHandled = false
+        if let d = delegate {
+            delegateHandled = d.cropViewController(self, didCancelled: true)
         }
-        else {
-            self.modalTransitionStyle = .crossDissolve
-            self.presentingViewController?.dismiss(animated: true, completion: nil)
+        
+        if !delegateHandled {
+            if let nav = self.navigationController {
+                nav.popViewController(animated: true)
+            }
+            else {
+                self.modalTransitionStyle = .crossDissolve
+                self.presentingViewController?.dismiss(animated: true, completion: nil)
+            }
         }
     }
     
@@ -249,6 +259,7 @@ extension CropViewController {
         }
         
         viewController.present(self, animated: true) { [unowned self] in
+            fromView?.isHidden = false
             completion?()
             self.cropView.set(croppingViewsHidden: false, animated: true)
             if !fromFrame.isEmpty {
@@ -295,6 +306,9 @@ extension CropViewController: UIViewControllerTransitioningDelegate {
         transitioning.prepareForTransitionHandler = { [weak self] in
             if let strongSelf = self, let cropView = strongSelf.cropView {
                 let transition = strongSelf.transitioning
+                if !transition.isDissmissing {
+                    transition.fromView?.isHidden = true
+                }
                 transition.toFrame = cropView.convert(cropView.cropBoxFrame, to: strongSelf.view)
                 if transition.fromView != nil || !transition.fromFrame.isEmpty {
                     cropView.set(croppingViewsHidden: true)
@@ -316,6 +330,9 @@ extension CropViewController: UIViewControllerTransitioningDelegate {
         transitioning.prepareForTransitionHandler = { [weak self] in
             if let strongSelf = self, let cropView = strongSelf.cropView {
                 let transition = strongSelf.transitioning
+                if transition.isDissmissing {
+                    cropView.isHidden = true
+                }
                 transition.toFrame = cropView.convert(cropView.cropBoxFrame, to: strongSelf.view)
                 if transition.toView != nil || !transition.toFrame.isEmpty {
                     cropView.set(croppingViewsHidden: true)

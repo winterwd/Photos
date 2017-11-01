@@ -20,7 +20,7 @@
 		C8A34F601F56A2CA00F7B249 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8E19F041F553F74002405CC /* CropViewController.swift */; };
 		C8A34F611F56A2CA00F7B249 /* CropImageTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A34F5B1F564D9200F7B249 /* CropImageTool.swift */; };
 		C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A711591F0CBD33008C0B43 /* UploadViewController.swift */; };
-		C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */; };
+		C8EFCB421F4EC178003F5DEF /* TestCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB411F4EC0A4003F5DEF /* TestCropViewController.swift */; };
 		DB613E28EA37D7AEE8B2E8DC /* Pods_JHPhotos_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1FB4B95A24F1A4DBB403A3 /* Pods_JHPhotos_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -97,7 +97,7 @@
 		C8A711591F0CBD33008C0B43 /* UploadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
 		C8E19F041F553F74002405CC /* CropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
 		C8EFCB401F4EBFC7003F5DEF /* CropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
-		C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
+		C8EFCB411F4EC0A4003F5DEF /* TestCropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCropViewController.swift; sourceTree = "<group>"; };
 		C8EFCB431F4EC4B0003F5DEF /* CropToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropToolbar.swift; sourceTree = "<group>"; };
 		CAEE656F2FDC09718FC1CE8A /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		CC236F014BD469B1940743FA /* Pods-JHPhotos_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JHPhotos_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JHPhotos_Tests/Pods-JHPhotos_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -173,7 +173,7 @@
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				C8A711591F0CBD33008C0B43 /* UploadViewController.swift */,
-				C8EFCB411F4EC0A4003F5DEF /* TestViewController.swift */,
+				C8EFCB411F4EC0A4003F5DEF /* TestCropViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -537,7 +537,7 @@
 				C8A34F5E1F56A2CA00F7B249 /* CropToolbar.swift in Sources */,
 				C8A34F611F56A2CA00F7B249 /* CropImageTool.swift in Sources */,
 				C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */,
-				C8EFCB421F4EC178003F5DEF /* TestViewController.swift in Sources */,
+				C8EFCB421F4EC178003F5DEF /* TestCropViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				C8A34F601F56A2CA00F7B249 /* CropViewController.swift in Sources */,
 				C8A34F5D1F56A2CA00F7B249 /* CropView.swift in Sources */,

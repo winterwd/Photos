@@ -22,10 +22,13 @@ protocol JHPhoto {
     
     var emptyImage: Bool { get }
     func cancelAnyLoading()
+    
+    func updateCurrentImage(_ image: UIImage)
 }
 
 extension JHPhoto {
     func cancelAnyLoading() {}
+    func updateCurrentImage(_ image: UIImage) {}
 }
 
 public class Photo: NSObject, JHPhoto {
@@ -254,6 +257,11 @@ public class Photo: NSObject, JHPhoto {
     func unloadUnderlyingImage() {
         loadingInProgress = false
         self.underlyingImage = nil
+    }
+    
+    func updateCurrentImage(_ newImage: UIImage) {
+        image = newImage
+        self.underlyingImage = newImage
     }
 
     func loadUnderlyingImageAndNotify() {

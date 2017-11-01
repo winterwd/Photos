@@ -1,5 +1,5 @@
 //
-//  TestViewController.swift
+//  TestCropViewController.swift
 //  JHPhotos
 //
 //  Created by winter on 2017/8/24.
@@ -9,7 +9,7 @@
 import UIKit
 import JHPhotos
 
-class TestViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class TestCropViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -61,10 +61,20 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         if let image = imageView.image {
             let cropController = CropViewController(image: image, delegate: self)
             let viewFrame = self.view.convert(imageView.frame, to: self.navigationController?.view)
-            cropController.presentAnimated(fromParentViewController: self, fromImage: image, fromView: nil, fromFrame: viewFrame, angle: 0, toImageFrame: CGRect.zero, setup: { 
-                self.imageView.isHidden = true
-            }, completion: nil)
+            cropController.presentAnimated(fromParentViewController: self,
+                                           fromImage: image,
+                                           fromView: nil,
+                                           fromFrame: viewFrame,
+                                           angle: 0,
+                                           toImageFrame: CGRect.zero,
+                                           setup: {
+                                            self.imageView.isHidden = true
+                                            }, completion: nil)
         }
+    }
+    
+    @IBAction func cancelAction(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
     }
     
     @IBAction func addPhotoButtonTapped(_ sender: AnyObject?) {
@@ -85,7 +95,7 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     }
 }
 
-extension TestViewController: CropViewControllerDelegate {
+extension TestCropViewController: CropViewControllerDelegate {
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool {
         imageView.image = didCropToImage
@@ -93,7 +103,6 @@ extension TestViewController: CropViewControllerDelegate {
         
         imageView.isHidden = false
         cropViewController.dismissAnimated(fromParentViewController: self,
-                                           croppedImage: didCropToImage,
                                            toView: self.imageView,
                                            toFrame: CGRect.zero,
                                            setup: {

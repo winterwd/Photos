@@ -75,7 +75,7 @@ class ViewController: UIViewController {
     
     @IBAction func navButtonItemAction(_ sender: UIBarButtonItem) {
         if sender.tag == 3 {
-            self.navigationController?.pushViewController(TestViewController(), animated: true)
+            self.navigationController?.pushViewController(TestCropViewController(), animated: true)
         }
         else if sender.tag == 0 {
             if showSource == "相册" {

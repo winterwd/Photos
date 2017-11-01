@@ -42,8 +42,8 @@ public final class PhotoBrowser: UIViewController {
     }()
     
     // Paging & layout
-    fileprivate var visiblePages = NSMutableOrderedSet()
-    fileprivate var recycledPages = NSMutableOrderedSet()
+    fileprivate var visiblePages = NSMutableOrderedSet() // [ZoomingScrollView]
+    fileprivate var recycledPages = NSMutableOrderedSet() // [ZoomingScrollView]
     fileprivate var currentPageIndex: Int = 0
     fileprivate var previousPageIndex: Int = LONG_MAX
     fileprivate var previousLayoutBounds = CGRect.zero
@@ -70,13 +70,16 @@ public final class PhotoBrowser: UIViewController {
     
     var delayToHideElements: TimeInterval = 5
     fileprivate var controlVisibilityTimer: Timer!
+    
     fileprivate var previousButton: UIBarButtonItem!
     fileprivate var nextButton: UIBarButtonItem!
     fileprivate var cancelButton: UIBarButtonItem!
     fileprivate var selectedButton: UIButton! = {
-        let selectedButton = UIButton(type: .custom)
-        return selectedButton
+        let button = UIButton(type: .custom)
+        return button
     }()
+    fileprivate var editButton: UIBarButtonItem!
+    fileprivate var doneButton: UIBarButtonItem!
     
     // Appearance
     fileprivate var isPreviousNavBarHidden: Bool = false
@@ -186,8 +189,8 @@ public final class PhotoBrowser: UIViewController {
         
         if isDisplaySelectionButton {
             
-            let selectedIconNameONImage = UIImage.my_bundleImage(named: "\(selectedIconName)ON")
-            let selectedIconNameOFFImage = UIImage.my_bundleImage(named: "\(selectedIconName)OFF")
+            let selectedIconNameONImage = UIImage.my_bundleImage(named: selectedIconName + "ON")
+            let selectedIconNameOFFImage = UIImage.my_bundleImage(named: selectedIconName + "OFF")
             selectedButton.setImage(selectedIconNameONImage, for: .selected)
             selectedButton.setImage(selectedIconNameOFFImage, for: .normal)
             selectedButton.sizeToFit()
@@ -207,8 +210,23 @@ public final class PhotoBrowser: UIViewController {
         if isDisplayNavArrows {
             let previousButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)left")
             previousButton = UIBarButtonItem(image: previousButtonImage, style: .plain, target: self, action: #selector(gotoPreviousPage))
+            
             let nextButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)right")
             nextButton = UIBarButtonItem(image: nextButtonImage, style: .plain, target: self, action: #selector(gotoNextPage))
+            
+            if isCanEditPhoto {
+                editButton = UIBarButtonItem(title: "编辑", style: .plain, target: self, action: #selector(gotoEditImage))
+            }
+            
+            let button = UIButton(type: .system)
+            button.frame = CGRect(x: 0, y: 0, width: 60, height: 30)
+            button.backgroundColor = UIColor(red:0.07,green:0.39,blue:0.85,alpha:1.00)
+            button.layer.cornerRadius = 4
+            button.setTitle("完成", for: .normal)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+            button.setTitleColor(UIColor.white, for: .normal)
+            button.addTarget(self, action: #selector(doneEditImage), for: .touchUpInside)
+            doneButton = UIBarButtonItem(customView: button)
         }
         
         self.reloadData()
@@ -267,6 +285,11 @@ public final class PhotoBrowser: UIViewController {
         }
         else {
             items.append(flexSpace)
+        }
+        
+        if isCanEditPhoto {
+            items.insert(editButton, at: 0)
+            items.append(doneButton)
         }
         
         // toolbar visibility
@@ -553,7 +576,7 @@ public final class PhotoBrowser: UIViewController {
                 }
             }
         }
-        return photo;
+        return photo
     }
 
     fileprivate func thumbPhoto(atIndex index: Int) -> Photo? {
@@ -569,7 +592,7 @@ public final class PhotoBrowser: UIViewController {
                 photo = thumbPhotos[index] as? Photo
             }
         }
-        return photo;
+        return photo
     }
 
     fileprivate func  photoIsSelected(atIndex index: Int) -> Bool {
@@ -691,6 +714,25 @@ public final class PhotoBrowser: UIViewController {
         self.showNextPhoto(false)
     }
     
+    @objc fileprivate func gotoEditImage() {
+        if let currentPhoto = photo(atIndex: currentPageIndex), let image = currentPhoto.underlyingImage {
+            let cropController = CropViewController(image: image, delegate: self)
+            if let pageView = visiblePages.lastObject as? ZoomingScrollView {
+                let imageView = pageView.imageView()
+                let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
+
+                cropController.presentAnimated(fromParentViewController: self,
+                                               fromView: imageView,
+                                               fromFrame: viewFrame,
+                                               setup: nil, completion: nil)
+            }
+        }
+    }
+    
+    @objc fileprivate func doneEditImage() {
+    
+    }
+    
     fileprivate func  showPreviousPhoto(_ animated: Bool) {
         self.jumpToPage(currentPageIndex - 1, animated: animated);
     }
@@ -734,6 +776,44 @@ public final class PhotoBrowser: UIViewController {
                 delegate?.photoBrowser(self, actionButtonPressedForPhotoAtIndex: currentPageIndex)
             }
         }
+    }
+}
+
+// MARK: - CropViewControllerDelegate
+
+extension PhotoBrowser: CropViewControllerDelegate {
+    
+    public func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool {
+     
+        if let currentPhoto = photo(atIndex: currentPageIndex) {
+            currentPhoto.updateCurrentImage(didCropToImage)
+            if let pageView = visiblePages.lastObject as? ZoomingScrollView {
+                pageView.updateImage(didCropToImage)
+                let imageView = pageView.imageView()
+                let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
+                
+                cropViewController.dismissAnimated(fromParentViewController: self,
+                                                   toView: imageView,
+                                                   toFrame: viewFrame,
+                                                   setup: nil,
+                                                   completion: nil)
+            }
+        }
+        return true
+    }
+    
+    public func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool) -> Bool {
+        if let pageView = visiblePages.lastObject as? ZoomingScrollView {
+            let imageView = pageView.imageView()
+            let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
+            
+            cropViewController.dismissAnimated(fromParentViewController: self,
+                                               toView: imageView,
+                                               toFrame: viewFrame,
+                                               setup: nil,
+                                               completion: nil)
+        }
+        return true
     }
 }
 

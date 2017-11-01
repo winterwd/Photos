@@ -119,6 +119,31 @@ class ZoomingScrollView: UIScrollView {
         }
     }
     
+    func imageView() -> UIImageView {
+        return photoImageView!
+    }
+    
+    func updateImage(_ image: UIImage) {
+        // Reset
+        self.maximumZoomScale = 1;
+        self.minimumZoomScale = 1;
+        self.zoomScale = 1;
+        self.contentSize = CGSize(width: 0, height: 0);
+            
+        // set image
+        photoImageView.image = image
+        photoImageView.isHidden = false
+        
+        // setup photo frame
+        let photoImageViewFrame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        photoImageView.frame = photoImageViewFrame
+        self.contentSize = photoImageViewFrame.size
+        
+        // set zoom to mininum zoom
+        self.setMaxMinZoomScalesForCurrentBounds()
+        self.setNeedsLayout()
+    }
+    
     // Get and display image
     func displayImage() {
         if photoImageView.image == nil && photo != nil {
@@ -208,7 +233,7 @@ class ZoomingScrollView: UIScrollView {
         loadingIndicator.isHidden = false
         self.hideImageFailure()
     }
-
+    
     // MARK: - Setup
     
     fileprivate func initialZoomScaleWithMinScale() -> CGFloat {
