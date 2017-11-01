@@ -181,7 +181,7 @@ fileprivate extension CropViewController {
             nav.popViewController(animated: true)
         }
         else {
-            self.modalTransitionStyle = .coverVertical
+            self.modalTransitionStyle = .crossDissolve
             self.presentingViewController?.dismiss(animated: true, completion: nil)
         }
     }
@@ -328,7 +328,7 @@ extension CropViewController: UIViewControllerTransitioningDelegate {
             }
         }
         
-        transitioning.isDissmissing = false
+        transitioning.isDissmissing = true
         return transitioning
     }
 }
