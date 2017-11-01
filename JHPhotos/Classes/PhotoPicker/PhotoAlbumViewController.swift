@@ -59,6 +59,10 @@ public final class PhotoAlbumViewController: UICollectionViewController {
         return nvc
     }
 
+    deinit {
+        print("PhotoAlbumViewController deinit")
+    }
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         titleButton.backgroundColor = UIColor.clear
@@ -105,9 +109,10 @@ public final class PhotoAlbumViewController: UICollectionViewController {
             photoBrowser.isDisplaySelectionButton = true
             photoBrowser.isCanEditPhoto = true
             photoBrowser.setCurrentPageIndex(indexPath.item - 1)
-            let nav = UINavigationController(rootViewController: photoBrowser)
-            nav.modalTransitionStyle = .crossDissolve
-            self.present(nav, animated: true, completion: nil)
+//            let nav = UINavigationController(rootViewController: photoBrowser)
+//            nav.modalTransitionStyle = .crossDissolve
+//            self.present(nav, animated: true, completion: nil)
+            navigationController?.pushViewController(photoBrowser, animated: true)
         }
     }
 }
@@ -259,6 +264,10 @@ fileprivate extension PhotoAlbumViewController {
     
     @IBAction func uploadAction(_ sender: UIBarButtonItem) {
         sender.isEnabled = false
+        startUploadSelectPhoto()
+    }
+    
+    fileprivate func startUploadSelectPhoto() {
         _ = autoreleasepool {
             // hud... "请稍后..."
             
@@ -267,10 +276,16 @@ fileprivate extension PhotoAlbumViewController {
             cQueue.async {
                 var array: [Data] = []
                 for obj in self._uploadItems {
-                     let obj = obj as! PhotoAlbum
-                    PhotoAlbumTool.requestImageData(for: obj.asset, result: { (data) in
-                        if let data = data { array.append(data) }
-                    })
+                    if let obj = obj as? PhotoAlbum {
+                        if obj.isEdited {
+                            if let data = obj.editedImageData { array.append(data) }
+                        }
+                        else {
+                            PhotoAlbumTool.requestImageData(for: obj.asset, result: { (data) in
+                                if let data = data { array.append(data) }
+                            })
+                        }
+                    }
                 }
                 
                 DispatchQueue.main.async {
@@ -314,6 +329,16 @@ extension PhotoAlbumViewController: UIImagePickerControllerDelegate, UINavigatio
 // MARK: - JHPhotoBrowserDelegate
 
 extension PhotoAlbumViewController: JHPhotoBrowserDelegate {
+    
+    public func photoBrowserDidFinish(_ photoBrowser: PhotoBrowser) {
+        if selectedCount == 0 {
+            SystemHelper.showTip("你还没有选择图片哟！")
+            return
+        }
+        
+        startUploadSelectPhoto()
+    }
+    
     public func numberOfPhotosInPhotoBrowser(_ photoBrowser: PhotoBrowser) -> Int {
         return browserPhotos.count
     }
@@ -341,5 +366,23 @@ extension PhotoAlbumViewController: JHPhotoBrowserDelegate {
         self.addUploadItem(model)
         print("Photo at index \(photoAtIndex) selected \(selectedChanged ? "YES" : "NO")")
         return true
+    }
+    
+    public func photoBrowserDidEdit(_ photoBrowser: PhotoBrowser, photoAtIndex: Int) {
+        let photo = browserPhotos[photoAtIndex]
+        let album = albumList[photoAtIndex]
+        
+        if let image = photo.underlyingImage {
+            if let imageData = UIImagePNGRepresentation(image), let albumData = UIImageJPEGRepresentation(image, 0.01) {
+                album.isEdited = true
+                album.editedImageData = imageData
+                album.editedThumbImageData = albumData
+                
+                let indexPath = IndexPath(item: photoAtIndex, section: 0)
+                if let cell = collectionView?.cellForItem(at: indexPath) as? PhotoAlbumCell {
+                    cell.updatePhotoAlbum()
+                }
+            }
+        }
     }
 }

@@ -225,7 +225,7 @@ public final class PhotoBrowser: UIViewController {
             button.setTitle("完成", for: .normal)
             button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
             button.setTitleColor(UIColor.white, for: .normal)
-            button.addTarget(self, action: #selector(doneEditImage), for: .touchUpInside)
+            button.addTarget(self, action: #selector(doneButtonAction), for: .touchUpInside)
             doneButton = UIBarButtonItem(customView: button)
         }
         
@@ -638,14 +638,14 @@ public final class PhotoBrowser: UIViewController {
                     // preload index-1
                     if let p = self.photo(atIndex: pageIndex - 1), (p.underlyingImage == nil) {
                         p.loadUnderlyingImageAndNotify()
-                        print("Pre-loading image at index \(pageIndex - 1)")
+//                        print("Pre-loading image at index \(pageIndex - 1)")
                     }
                 }
                 if pageIndex < (self.numberOfPhotos() - 1) {
                     // preload index+1
                     if let p = self.photo(atIndex: pageIndex + 1), (p.underlyingImage == nil) {
                         p.loadUnderlyingImageAndNotify()
-                        print("Pre-loading image at index \(pageIndex + 1)")
+//                        print("Pre-loading image at index \(pageIndex + 1)")
                     }
                 }
             }
@@ -729,8 +729,8 @@ public final class PhotoBrowser: UIViewController {
         }
     }
     
-    @objc fileprivate func doneEditImage() {
-    
+    @objc fileprivate func doneButtonAction() {
+        delegate?.photoBrowserDidFinish(self)
     }
     
     fileprivate func  showPreviousPhoto(_ animated: Bool) {
@@ -786,7 +786,15 @@ extension PhotoBrowser: CropViewControllerDelegate {
     public func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool {
      
         if let currentPhoto = photo(atIndex: currentPageIndex) {
+            
+            // 更新编辑之后的图片
             currentPhoto.updateCurrentImage(didCropToImage)
+            delegate?.photoBrowserDidEdit(self, photoAtIndex: currentPageIndex)
+            
+            // 编辑后的图片 选中
+            selectedButton.isSelected = true
+            setPhotoSelected(true, index: currentPageIndex)
+            
             if let pageView = visiblePages.lastObject as? ZoomingScrollView {
                 pageView.updateImage(didCropToImage)
                 let imageView = pageView.imageView()
@@ -953,7 +961,7 @@ fileprivate extension PhotoBrowser {
                 recycledPages.add(page)
                 page.prepareForReuse()
                 page.removeFromSuperview()
-                print("Removed page at index \(pageIndex)")
+//                print("Removed page at index \(pageIndex)")
             }
         }
         visiblePages.minus(recycledPages)
@@ -961,6 +969,18 @@ fileprivate extension PhotoBrowser {
             // Only keep 2 recycled pages
             recycledPages.removeObject(at: 0)
         }
+        
+        if iFirstIndex == iLastIndex {
+            // if stay put
+            // recover selected button
+            if isDisplaySelectionButton {
+                if let page = self.dequeueRecycledPage() {
+                    page.selectedButton = selectedButton
+                    selectedButton.isSelected = photoIsSelected(atIndex: iLastIndex)
+                }
+            }
+        }
+        
         // add missing pages
         for index in iFirstIndex...iLastIndex {
             if !self.isDisplayingPage(forIndex: index) {
@@ -973,7 +993,7 @@ fileprivate extension PhotoBrowser {
                 visiblePages.add(page!)
                 self.configurePage(page, index: index)
                 pagingScrollView.addSubview(page!)
-                print("Added page at index \(index)")
+//                print("Added page at index \(index)")
                 
                 // Add selected button
                 if isDisplaySelectionButton {
@@ -1046,7 +1066,7 @@ fileprivate extension PhotoBrowser {
                 if let p = photo as? Photo {
                     p.unloadUnderlyingImage()
                     photos[i] = NSNull()
-                    print("Released underlying image at index \(i)")
+//                    print("Released underlying image at index \(i)")
                 }
             }
         }
@@ -1058,7 +1078,7 @@ fileprivate extension PhotoBrowser {
                 if let p = photo as? Photo {
                     p.unloadUnderlyingImage()
                     photos[i] = NSNull()
-                    print("Released underlying image at index \(i)")
+//                    print("Released underlying image at index \(i)")
                 }
             }
         }
@@ -1211,5 +1231,6 @@ extension PhotoBrowser: UIScrollViewDelegate {
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         // update nav when page changes
         self.updateNavigationAndTool()
+        self.tilePages()
     }
 }

@@ -14,6 +14,17 @@ class PhotoAlbum: NSObject {
     var isSelected = false
     var canSelected = false
     
+    var editedImageData: Data?
+    var editedThumbImageData: Data?
+    var isEdited = false {
+        didSet {
+            if isEdited {
+                isSelected = true
+                canSelected = true
+            }
+        }
+    }
+    
     init(_ a: PHAsset) {
         self.asset = a
     }
@@ -41,11 +52,29 @@ class PhotoAlbumCell: UICollectionViewCell {
     
     // MARK: - public
     
+    func updatePhotoAlbum() {
+        
+        if model.isEdited {
+            self.coverView.isHidden = model.canSelected
+            self.button.isSelected = model.isSelected
+            if let data = model.editedThumbImageData {
+                imageView.image = UIImage(data: data)
+            }
+        }
+    }
+    
     func setPhotoAlbum(_ model: PhotoAlbum, selectBlock: resultBlock?) {
         self.model = model
         self.block = selectBlock
         self.coverView.isHidden = model.canSelected
         self.button.isSelected = model.isSelected
+        
+        if model.isEdited {
+            if let data = model.editedThumbImageData {
+                imageView.image = UIImage(data: data)
+            }
+            return
+        }
         
         PhotoAlbumTool.requestImage(for: model.asset,
                                     size: self.imageView.frame.size,

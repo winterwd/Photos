@@ -13,7 +13,7 @@ public protocol JHPhotoBrowserDelegate: class {
     func photoBrowser(_ photoBrowser: PhotoBrowser, photoAtIndex: Int) -> Photo?
     
     func photoBrowser(_ photoBrowser: PhotoBrowser, thumbPhotoAtIndex: Int) -> Photo?
-    //    @objc optional func photoBrowser(_ photoBrowser: PhotoBrowser, captionViewForPhotoAtIndex: Int) -> String?
+    // func photoBrowser(_ photoBrowser: PhotoBrowser, captionViewForPhotoAtIndex: Int) -> String?
     func photoBrowser(_ photoBrowser: PhotoBrowser, titleForPhotoAtIndex: Int) -> String?
     
     func photoBrowser(_ photoBrowser: PhotoBrowser, didDisplayPhotoAtIndex: Int)
@@ -22,7 +22,11 @@ public protocol JHPhotoBrowserDelegate: class {
     func photoBrowser(_ photoBrowser: PhotoBrowser, isPhotoSelectedAtIndex: Int) -> Bool
     func photoBrowser(_ photoBrowser: PhotoBrowser, photoAtIndex: Int, selectedChanged: Bool) -> Bool
     
-    //    @objc optional func photoBrowserDidFinishModalPresentation(_ photoBrowser: PhotoBrowser)
+    // 直接点击 "完成"
+    func photoBrowserDidFinish(_ photoBrowser: PhotoBrowser)
+    
+    // 编辑后
+    func photoBrowserDidEdit(_ photoBrowser: PhotoBrowser, photoAtIndex: Int)
 }
 
 public extension JHPhotoBrowserDelegate {
@@ -32,4 +36,7 @@ public extension JHPhotoBrowserDelegate {
     func photoBrowser(_ photoBrowser: PhotoBrowser, actionButtonPressedForPhotoAtIndex: Int) {}
     func photoBrowser(_ photoBrowser: PhotoBrowser, isPhotoSelectedAtIndex: Int) -> Bool { return false }
     func photoBrowser(_ photoBrowser: PhotoBrowser, photoAtIndex: Int, selectedChanged: Bool) -> Bool { return true }
+    
+    func photoBrowserDidFinish(_ photoBrowser: PhotoBrowser){}
+    func photoBrowserDidEdit(_ photoBrowser: PhotoBrowser, photoAtIndex: Int){}
 }
