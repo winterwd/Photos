@@ -8,6 +8,11 @@
 
 import UIKit
 
+fileprivate func delayFunc(seconds: TimeInterval, action: @escaping () -> Void) {
+    let delayTime = DispatchTime.now() + seconds
+    DispatchQueue.main.asyncAfter(deadline: delayTime, execute: action)
+}
+
 class CropToolbar: UIView {
     
     var cancelBttonAction: (() -> Void)?
@@ -19,7 +24,7 @@ class CropToolbar: UIView {
     
     var cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(CropToolbar.cancelImage(), for: .normal)
+        button.setImage(CropToolbarImage.cancelImage(), for: .normal)
         button.tag = 1000
         return button
     }()
@@ -27,7 +32,7 @@ class CropToolbar: UIView {
     var rotateButton: UIButton = {
         let button = UIButton(type: .system)
         button.contentMode = .center
-        button.setImage(CropToolbar.rotateImage(), for: .normal)
+        button.setImage(CropToolbarImage.rotateImage(), for: .normal)
         button.tintColor = UIColor.white
         button.tag = 1001
         return button
@@ -36,7 +41,7 @@ class CropToolbar: UIView {
     var resetButton: UIButton = {
         let button = UIButton(type: .system)
         button.contentMode = .center
-        button.setImage(CropToolbar.resetImage(), for: .normal)
+        button.setImage(CropToolbarImage.resetImage(), for: .normal)
         button.tintColor = UIColor.white
         button.isEnabled = false
         button.tag = 1002
@@ -45,7 +50,7 @@ class CropToolbar: UIView {
     
     var doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(CropToolbar.doneImage(), for: .normal)
+        button.setImage(CropToolbarImage.doneImage(), for: .normal)
         button.tintColor = UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
         button.isEnabled = false
         button.tag = 1003
@@ -63,12 +68,12 @@ class CropToolbar: UIView {
     }
     
     private func setup() {
-        self.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
+        backgroundColor = UIColor(white: 0.12, alpha: 1.0)
         
-        self.addSubview(cancelButton)
-        self.addSubview(rotateButton)
-        self.addSubview(resetButton)
-        self.addSubview(doneButton)
+        addSubview(cancelButton)
+        addSubview(rotateButton)
+        addSubview(resetButton)
+        addSubview(doneButton)
         
         cancelButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
         rotateButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
@@ -77,9 +82,15 @@ class CropToolbar: UIView {
     }
     
     @objc private func buttonAction(_ sender: UIButton) {
+        sender.isEnabled = false
         switch sender.tag {
         case 1000:  cancelBttonAction?();  break
-        case 1001:  rotateBttonAction?();  break
+        case 1001:
+            rotateBttonAction?()
+            delayFunc(seconds: 0.4) {
+                sender.isEnabled = true
+            }
+            break
         case 1002:  resetBttonAction?();  break
         case 1003:  doneBttonAction?();  break
         default:
@@ -139,9 +150,9 @@ class CropToolbar: UIView {
     }
 }
 
-fileprivate extension CropToolbar {
+fileprivate struct CropToolbarImage {
     
-    class func doneImage() -> UIImage? {
+    static func doneImage() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: 17, height: 14), false, 0)
         let rectanglePath = UIBezierPath()
         rectanglePath.move(to: CGPoint(x: 1, y: 7))
@@ -157,7 +168,7 @@ fileprivate extension CropToolbar {
         return image
     }
     
-    class func cancelImage() -> UIImage? {
+    static func cancelImage() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: 16, height: 16), false, 0.0)
         let bezierPath = UIBezierPath()
         bezierPath.move(to: CGPoint(x: 14, y: 14))
@@ -179,7 +190,7 @@ fileprivate extension CropToolbar {
         return image
     }
     
-    class func rotateImage() -> UIImage? {
+    static func rotateImage() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: 18, height: 21), false, 0.0)
         
         let rectanglePath = UIBezierPath(rect: CGRect(x: 0, y: 9, width: 12, height: 12))
@@ -209,7 +220,7 @@ fileprivate extension CropToolbar {
         return image
     }
     
-    class func resetImage() -> UIImage? {
+    static func resetImage() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: 22, height: 18), false, 0.0)
         
         let bezierPath = UIBezierPath()

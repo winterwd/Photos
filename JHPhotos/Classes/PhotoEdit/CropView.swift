@@ -370,12 +370,11 @@ extension CropView {
             }
             
             backgroundImageView.frame = imageRect
-            backgroundImageView.transform = .identity
+            backgroundImageView.transform = CGAffineTransform.identity
             backgroundContainerView.frame = imageRect
-            backgroundContainerView.transform = .identity
-            
+            backgroundContainerView.transform = CGAffineTransform.identity
             foregroundImageView.frame = imageRect
-            foregroundImageView.transform = .identity
+            foregroundImageView.transform = CGAffineTransform.identity
             
             // Reset the layout
             layoutInitialImage()
@@ -415,7 +414,7 @@ extension CropView {
     
     /// 屏幕旋转 适配
     func performRelayoutForRotation() {
-        //TODO: performRelayoutForRotation
+        //TODO: Todo performRelayoutForRotation
     }
     
     func updateTo(imageCropFrame: CGRect) {
@@ -449,7 +448,9 @@ extension CropView {
         }
         // We can't simply match the frames since if the images are rotated, the frame property becomes unusable
         if let sView = backgroundContainerView.superview {
-            self.foregroundImageView.frame = sView.convert(backgroundContainerView.frame, to: foregroundContainerView)
+            let frame = sView.convert(backgroundContainerView.frame, to: foregroundContainerView)
+            print("foregroundImageView = \(frame)\nbackgroundViewFrame = \(backgroundContainerView.frame)\n")
+            foregroundImageView.frame = frame
         }
     }
 }
@@ -489,16 +490,16 @@ extension CropView {
         
         newCropBoxFrame.size.width = max(newCropBoxFrame.width, CropViewMinimunBoxSize)
         newCropBoxFrame.size.height = max(newCropBoxFrame.height, CropViewMinimunBoxSize)
-        self.cropBoxFrame = newCropBoxFrame
+        cropBoxFrame = newCropBoxFrame
         
-        foregroundContainerView.frame = newCropBoxFrame
-        gridOverlayView.frame = newCropBoxFrame
+        foregroundContainerView.frame = cropBoxFrame
+        gridOverlayView.frame = cropBoxFrame
         
-        scrollView.contentInset = UIEdgeInsetsMake(newCropBoxFrame.minY, newCropBoxFrame.minX, self.bounds.maxY - newCropBoxFrame.maxY, self.bounds.maxX - newCropBoxFrame.maxX)
+        scrollView.contentInset = UIEdgeInsetsMake(cropBoxFrame.minY, cropBoxFrame.minX, self.bounds.maxY - cropBoxFrame.maxY, self.bounds.maxX - cropBoxFrame.maxX)
         
         // if necessary, work out the new minimum size of the scroll view so it fills the crop box
         let imageSize = backgroundContainerView.bounds.size
-        let scale = max(newCropBoxFrame.size.height/imageSize.height, newCropBoxFrame.size.width/imageSize.width)
+        let scale = max(cropBoxFrame.size.height/imageSize.height, cropBoxFrame.size.width/imageSize.width)
         self.scrollView.minimumZoomScale = scale
         
         // make sure content isn't smaller than the crop box
@@ -908,7 +909,7 @@ extension CropView {
         
         // Convert the new angle to radians
         var angleInRadians: CGFloat = 0.0
-        switch newAngle {
+        switch angle {
         case 90:    angleInRadians = CGFloat.pi * 0.5;    break
         case -90:   angleInRadians = -CGFloat.pi * 0.5;   break
         case 180:   angleInRadians = CGFloat.pi;          break
@@ -932,13 +933,13 @@ extension CropView {
         
         // Work out the dimensions of the crop box when rotated
         var newCropFrame = CGRect.zero
-        if labs(angle) == labs(cropBoxLastEditedAngle) || (-labs(angle)) == (labs(cropBoxLastEditedAngle)-180)%360 {
+        if (labs(angle) == labs(cropBoxLastEditedAngle)) || ((-labs(angle)) == (labs(cropBoxLastEditedAngle)-180)%360) {
             newCropFrame.size = cropBoxLastEditedSize
             scrollView.zoomScale = cropBoxLastEditedZoomScale
             scrollView.minimumZoomScale = cropBoxLastEditedMinZoomScale
         }
         else {
-            newCropFrame.size = CGSize(width: floor(_cropBoxFrame.height * scale), height: floor(_cropBoxFrame.width * scale))
+            newCropFrame.size = CGSize(width: floor(cropBoxFrame.height * scale), height: floor(cropBoxFrame.width * scale))
             // Re-adjust the scrolling dimensions of the scroll view to match the new size
             scrollView.minimumZoomScale *= scale
             scrollView.zoomScale *= scale
@@ -963,7 +964,7 @@ extension CropView {
         backgroundImageView.frame = CGRect(origin: CGPoint.zero, size: backgroundImageView.frame.size)
         
         // Rotate the foreground image view to match
-        foregroundContainerView.transform = .identity
+        foregroundContainerView.transform = CGAffineTransform.identity
         foregroundImageView.transform = rotation
         
         // Flip the content size of the scroll view to match the rotated bounds
@@ -1185,7 +1186,7 @@ extension CropView {
         set(canBeReset: canReset)
     }
     
-    func delayFunc(seconds: TimeInterval, action: @escaping () -> Void) {
+    fileprivate func delayFunc(seconds: TimeInterval, action: @escaping () -> Void) {
         let delayTime = DispatchTime.now() + seconds
         DispatchQueue.main.asyncAfter(deadline: delayTime, execute: action)
     }
