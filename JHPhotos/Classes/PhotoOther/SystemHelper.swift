@@ -54,10 +54,10 @@ public class SystemHelper {
             return
         }
         
-        let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+        let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
         switch status {
         case .notDetermined: // 第一次授权
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { (granted) in
+            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { (granted) in
                 DispatchQueue.main.async {
                     if granted { success?() } // 同意授权
                     else {  failed?() }
@@ -78,7 +78,7 @@ public class SystemHelper {
     // MARK: - other
     
     private class func showSettingAlert(_ tip: String, cancel: SystemHelperResult? = nil) {
-        self.showActionAlert(tip, action: {_ in
+        self.showActionAlert(tip, action: {
             let app = UIApplication.shared
             if let settingsURL = URL(string: UIApplicationOpenSettingsURLString) {
                 if app.canOpenURL(settingsURL) {

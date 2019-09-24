@@ -262,7 +262,7 @@ fileprivate extension PhotoAlbumViewController {
         startUploadSelectPhoto()
     }
     
-    fileprivate func startUploadSelectPhoto() {
+    func startUploadSelectPhoto() {
         _ = autoreleasepool {
             // hud... "请稍后..."
             

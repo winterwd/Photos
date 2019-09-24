@@ -38,7 +38,7 @@ class ActivityCroppedImageProvider: UIActivityItemProvider {
         return UIImage()
     }
     
-    override func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivityType) -> Any? {
+    override func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivityType?) -> Any? {
         return self.cropedImage
     }
     

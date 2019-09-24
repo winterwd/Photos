@@ -30,11 +30,10 @@ public final class PhotoBrowser: UIViewController {
     fileprivate var thumbPhotos = [AnyObject?]()
     
     // Views
-    fileprivate var pagingScrollView: UIScrollView! = {
+    fileprivate var pagingScrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect.zero)
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         scrollView.isPagingEnabled = true;
-        scrollView.delegate = self as? UIScrollViewDelegate;
         scrollView.showsHorizontalScrollIndicator = false;
         scrollView.showsVerticalScrollIndicator = false;
         scrollView.backgroundColor = UIColor.black;
@@ -126,8 +125,9 @@ public final class PhotoBrowser: UIViewController {
                 if preserveCurrent && photo.isEqual(self.photo(atIndex: self.currentPageIndex)) {
                     continue // skip current
                 }
-                let p = photo as? Photo
-                p?.unloadUnderlyingImage()
+                if let p = photo as? Photo {
+                    p.unloadUnderlyingImage()
+                }
             }
         }
         
@@ -696,7 +696,7 @@ public final class PhotoBrowser: UIViewController {
         // change page
         if index < self.numberOfPhotos() {
             let pageFrame = self.frameForPage(atIndex: index)
-            pagingScrollView?.setContentOffset(CGPoint(x: pageFrame.minX - padding, y: 0), animated: animated)
+            pagingScrollView.setContentOffset(CGPoint(x: pageFrame.minX - padding, y: 0), animated: animated)
             self.updateNavigationAndTool()
         }
         // update timer to give more time
