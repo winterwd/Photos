@@ -249,7 +249,7 @@ fileprivate extension UploadPhotoView {
                 let nvc = PhotoAlbumViewController.photoAlbum(maxSelectCount: self.needUploadPhotoCount()) { [weak self] (datas) in
                     self?.addImageDatas(datas)
                 }
-                self.viewController?.present(nvc, animated: true, completion: nil)
+                self.jp_viewController?.present(nvc, animated: true, completion: nil)
             }
             
             SystemHelper.verifyPhotoLibraryAuthorization({ showPhotoAlbumViewController() })

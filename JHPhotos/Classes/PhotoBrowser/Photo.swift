@@ -55,7 +55,7 @@ public class Photo: NSObject, JHPhoto {
         self.image = image
     }
     
-    public init(url: URL) {
+    public init(url: URL?) {
         super.init()
         self.photoURL = url
     }

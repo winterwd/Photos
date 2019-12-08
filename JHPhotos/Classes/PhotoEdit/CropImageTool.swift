@@ -19,16 +19,16 @@ struct CroppedImageAttributes {
 // MARK: - ActivityCroppedImageProvider
 
 class ActivityCroppedImageProvider: UIActivityItemProvider {
-    var image: UIImage!
+    var image: UIImage
     var cropFrame = CGRect.zero
     var angle = 0
     var circular = false
     
-    fileprivate var cropedImage: UIImage!
+    fileprivate var cropedImage: UIImage?
     
     init(image: UIImage, cropFrame: CGRect, angle: Int, circular: Bool) {
-        super.init(placeholderItem: UIImage())
         self.image = image
+        super.init(placeholderItem: UIImage())
         self.cropFrame = cropFrame
         self.angle = angle
         self.circular = circular
@@ -44,12 +44,15 @@ class ActivityCroppedImageProvider: UIActivityItemProvider {
     
     override var item: Any {
         // If the user didn't touch the image, just forward along the original
-        if self.angle == 0 && self.cropFrame.equalTo(CGRect(origin: CGPoint.zero, size: self.image.size)) {
+        if self.angle == 0 && self.cropFrame.equalTo(CGRect(origin: .zero, size: self.image.size)) {
             self.cropedImage = self.image
-            return self.cropedImage
+            return self.image
         }
-        self.cropedImage = self.image.croppedImage(frame: self.cropFrame, angle: self.angle, circularClip: self.circular)
-        return self.cropedImage
+        let cropedImage = self.image.croppedImage(frame: cropFrame,
+                                                  angle: angle,
+                                                  circularClip: circular)
+        self.cropedImage = cropedImage
+        return cropedImage
     }
 }
 

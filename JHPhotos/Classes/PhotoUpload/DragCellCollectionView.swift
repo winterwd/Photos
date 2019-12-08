@@ -73,14 +73,13 @@ public final class DragCellCollectionView: UICollectionView {
     
     fileprivate var isWillDeleted: Bool = false
     
-    fileprivate lazy var deleteIcon: UIImageView = {
-        let imgView = UIImageView()
-        imgView.image = UIImage(named: "jp_icon_delete_dny")
-        return imgView
-    }()
+//    fileprivate lazy var deleteIcon: UIImageView = {
+//        let imgView = UIImageView()
+//        imgView.image = UIImage(named: "jp_icon_delete_dny")
+//        return imgView
+//    }()
     
-    
-    fileprivate lazy var deletedLab: UILabel = {
+    fileprivate lazy var deletedView: UILabel = {
         let label = UILabel(frame: CGRect.zero)
         label.alpha = 0.8
         label.text = "拖动到此处删除"
@@ -91,26 +90,26 @@ public final class DragCellCollectionView: UICollectionView {
         return label
     }()
     
-    fileprivate lazy var deletedView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red:0.89,green:0.29,blue:0.28,alpha:1.00)
-        
-        view.addSubview(deleteIcon)
-        view.addSubview(deletedLab)
-        
-        deleteIcon.snp.makeConstraints({ (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(10)
-            make.size.equalTo(CGSize(width: 20, height: 20))
-        })
-        
-        deletedLab.snp.makeConstraints({ (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(deleteIcon.snp.bottom).offset(6)
-        })
-        
-        return view
-    }()
+//    fileprivate lazy var deletedView: UIView = {
+//        let view = UIView()
+//        view.backgroundColor = UIColor(red:0.89,green:0.29,blue:0.28,alpha:1.00)
+//
+//        view.addSubview(deleteIcon)
+//        view.addSubview(deletedLab)
+//
+//        deleteIcon.snp.makeConstraints({ (make) in
+//            make.centerX.equalToSuperview()
+//            make.top.equalTo(10)
+//            make.size.equalTo(CGSize(width: 20, height: 20))
+//        })
+//
+//        deletedLab.snp.makeConstraints({ (make) in
+//            make.centerX.equalToSuperview()
+//            make.top.equalTo(deleteIcon.snp.bottom).offset(6)
+//        })
+//
+//        return view
+//    }()
     
     fileprivate var minimumPressDuration: CFTimeInterval = 0.5
     
@@ -187,8 +186,8 @@ fileprivate extension DragCellCollectionView {
                 self.snapMoveCell = moveCell
                 
                 topView.addSubview(self.deletedView)
-                self.deletedView.frame = CGRect(x: 0, y: topView.bounds.height, width: topView.bounds.width, height: 60.0 + kBottomSpace)
-                let deleteFrame = CGRect(x: 0, y: topView.bounds.height - (60.0 + kBottomSpace), width: topView.bounds.width, height: 60.0 + kBottomSpace)
+                self.deletedView.frame = CGRect(x: 0, y: topView.bounds.height, width: topView.bounds.width, height: 60.0 + jp_bottomSpace)
+                let deleteFrame = CGRect(x: 0, y: topView.bounds.height - (60.0 + jp_bottomSpace), width: topView.bounds.width, height: 60.0 + jp_bottomSpace)
                 
                 let amp: CGFloat = 5
                 let ampFrame = CGRect(x: frame.origin.x - amp/2.0, y: frame.origin.y - amp/2.0, width: frame.size.width + amp, height: frame.size.height + amp)
@@ -288,10 +287,10 @@ fileprivate extension DragCellCollectionView {
     
     func updateDeleteView(_ contain: Bool)  {
         isWillDeleted = contain
-        deletedLab.text = "拖动到此处删除"
+        deletedView.text = "拖动到此处删除"
         deletedView.backgroundColor = UIColor(red:0.89,green:0.29,blue:0.28,alpha:1.00)
         if contain {
-            deletedLab.text = "松手即可删除"
+            deletedView.text = "松手即可删除"
             deletedView.backgroundColor = UIColor(red:0.80,green:0.26,blue:0.26,alpha:1.00)
         }
     }

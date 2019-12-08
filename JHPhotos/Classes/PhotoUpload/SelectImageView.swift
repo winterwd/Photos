@@ -12,15 +12,6 @@ fileprivate let viewSpace: CGFloat = 15
 fileprivate let selectActionCount: CGFloat = 3
 fileprivate let selectActionHeight: CGFloat = 55
 
-fileprivate let jp_screenWidth = UIScreen.main.bounds.width
-fileprivate let jp_screenHeight = UIScreen.main.bounds.height
-// 刘海屏系列
-fileprivate let jp_iPhoneXs = Int(100 * jp_screenHeight / jp_screenWidth) == 216
-// 底部button距离
-let jp_bottomSpace: CGFloat = jp_iPhoneXs ? 34 : 0
-// 顶部导航栏高度
-let jp_navBarHeight: CGFloat = jp_iPhoneXs ? 88 : 64
-
 public class SelectImageView: UIView {
     
     public var block: JPhotoResult?

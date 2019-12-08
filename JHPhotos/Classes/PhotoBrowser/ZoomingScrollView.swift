@@ -8,9 +8,6 @@
 
 import UIKit
 
-fileprivate let jp_screenWidth = UIScreen.main.bounds.width
-fileprivate let jp_screenHeight = UIScreen.main.bounds.height
-
 class ZoomingScrollView: UIScrollView {
     
     // MARK: - property

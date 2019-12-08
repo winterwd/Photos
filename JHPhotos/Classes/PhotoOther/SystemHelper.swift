@@ -82,7 +82,9 @@ public class SystemHelper {
             let app = UIApplication.shared
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 if app.canOpenURL(settingsURL) {
-                    app.openURL(settingsURL)
+                    app.open(settingsURL,
+                             options: [:],
+                             completionHandler: nil)
                 }
             }
         }, cancel: cancel)
