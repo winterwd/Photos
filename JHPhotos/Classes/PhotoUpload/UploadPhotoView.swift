@@ -10,18 +10,21 @@ import UIKit
 
 public final class UploadPhotoView: UIView {
     
-    public weak var delegate: (JHUploadPhotoViewDelegate & JHUploadPhotoDataDelegate)?{
+    public weak var delegate: (JHUploadPhotoViewDelegate & JHUploadPhotoDataDelegate)? {
         didSet {
             if let obj = delegate {
-                viewController = SystemHelper.getCurrentPresentingVC(obj)
+                self.jp_viewController = SystemHelper.getCurrentPresentingVC(obj)
                 uploadPhotoMaxCount = obj.maxDisplayUPloadPhotoNumber()
             }
         }
     }
     public var isDirectDisplayPhotoAlbum = true // 是否直接进入相册选择照片
+    /// 选中图片数
+    public var hasSelectImageCnt = 0
     
-    fileprivate weak var viewController: UIViewController?
+    fileprivate weak var jp_viewController: UIViewController?
     
+    fileprivate let lineImageCount: CGFloat = 3
     fileprivate let minSpace: CGFloat = 5
     fileprivate let cellReuseIdentifier = "UploadImageCell"
     fileprivate var photoCollectionView: DragCellCollectionView!
@@ -34,11 +37,16 @@ public final class UploadPhotoView: UIView {
     
     fileprivate var uploadPhotoMaxCount = 0
     fileprivate var browserPhotos: [Photo] = []
-    fileprivate var uploadCellPhotos: [UploadCellImage] = []
+    fileprivate var uploadCellPhotos: [UploadCellImage] = [] {
+        didSet {
+            hasSelectImageCnt = uploadCellPhotos.count
+        }
+    }
     
     fileprivate lazy var addButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage.my_bundleImage(named: "icon_upload_add"), for: .normal)
+        button.setImage(UIImage.my_bundleImage(named: "jp_icon_upload_add"), for: .normal)
+        button.adjustsImageWhenHighlighted = false
         button.imageView?.contentMode = .scaleAspectFill
         return button
     }()
@@ -62,14 +70,13 @@ public final class UploadPhotoView: UIView {
         self.addSubview(view)
         
         let width = self.bounds.width
-        let itemW = (width-30.0) / 4.0
+        let itemW = (width-(2.0 * minSpace)) / lineImageCount
         viewLayout.itemSize = CGSize(width: itemW, height: itemW)
         photoCollectionView = DragCellCollectionView(frame: CGRect(x: 0, y: 0, width: width, height: itemW), collectionViewLayout: viewLayout)
         self.addSubview(photoCollectionView);
         photoCollectionView.myDelegate = self as DragCellCollectionViewDelegate
         photoCollectionView.myDataSource = self as DragCellCollectionViewDataSource
         photoCollectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
-        
         
         addButton.addTarget(self, action: #selector(startSelectImage), for: .touchUpInside)
         self.addSubview(addButton)
@@ -81,7 +88,7 @@ public final class UploadPhotoView: UIView {
         if selfWidth < 1 {
             let width = self.bounds.width
             selfWidth = width
-            let itemW = (width-(3.0 * minSpace)) / 4.0
+            let itemW = (width-(2.0 * minSpace)) / lineImageCount
             viewLayout.itemSize = CGSize(width: itemW, height: itemW)
             self.updateSelfViewHeight()
         }
@@ -89,9 +96,9 @@ public final class UploadPhotoView: UIView {
     
     // MARK: - public
     
-    public init(_ frame: CGRect, delegate: JHUploadPhotoViewDelegate & JHUploadPhotoViewDelegate) {
+    public init(_ frame: CGRect, delegate: JHUploadPhotoDataDelegate & JHUploadPhotoViewDelegate) {
         super.init(frame: frame)
-        self.delegate = delegate as? (JHUploadPhotoDataDelegate & JHUploadPhotoViewDelegate)
+        self.delegate = delegate
     }
 
     public func setupImageViews(_ imageUrls: [String]) {
@@ -101,11 +108,9 @@ public final class UploadPhotoView: UIView {
         
         uploadCellPhotos.removeAll()
         for url in imageUrls {
-            if let Url = NSURL(string: url) {
+            if let Url = URL(string: url) {
                 browserPhotos.append(Photo(url: Url))
                 uploadCellPhotos.append(UploadCellImage(url))
-                let data = Data()
-                self.delegate?.willUploadSingle(data)
             }
         }
         photoCollectionView.reloadData()
@@ -133,6 +138,19 @@ extension UploadPhotoView: DragCellCollectionViewDelegate, DragCellCollectionVie
     
     public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndex: Int, to destinationIndex: Int) {
         //print("moveItemAt = \(sourceIndex+1), to = \(destinationIndex+1)")
+        // UI更新位置，这里并不是交换
+        
+        let item = uploadCellPhotos[sourceIndex]
+        uploadCellPhotos.remove(at: sourceIndex)
+        uploadCellPhotos.insert(item, at: destinationIndex)
+
+        let bitem = browserPhotos[sourceIndex]
+        browserPhotos.remove(at: sourceIndex)
+        browserPhotos.insert(bitem, at: destinationIndex)
+//        if let image = item.cellImage {
+//           browserPhotos.insert(Photo(image: image), at: destinationIndex)
+//        }
+
         self.delegate?.moveItemAt(sourceIndex, to: destinationIndex)
     }
     
@@ -146,8 +164,8 @@ fileprivate extension UploadPhotoView {
     func updateSelfViewHeight() {
         let itemH = viewLayout.itemSize.height
         
-        let lineCount = uploadCellPhotos.count/4
-        let columnCount = uploadCellPhotos.count%4
+        let lineCount = uploadCellPhotos.count / Int(lineImageCount)
+        let columnCount = uploadCellPhotos.count % Int(lineImageCount)
         
         var extra = 1
         if needUploadPhotoCount() != 0 {
@@ -175,23 +193,34 @@ fileprivate extension UploadPhotoView {
         return max(0, num)
     }
     
-    func addImageDatas(_ datas: [Data]) {
-        if viewController == nil {
+    func addImageDatas(_ datas: [JPhoto]) {
+        if jp_viewController == nil {
             return
         }
+        let screen = UIScreen.main
+        let scale = screen.scale
+        let imageSize = max(screen.bounds.width, screen.bounds.height) * 1.5
+        let imageTargetSize = CGSize(width: imageSize * scale, height: imageSize * scale)
         
-        var cellImages: [UploadCellImage]! = []
-        for data in datas {
-            if let image = UIImage(data:data) {
-                browserPhotos.append(Photo(image: image))
-                cellImages.append(UploadCellImage(image))
-                self.delegate?.willUploadSingle(data)
+        var cellImages: [UploadCellImage] = []
+//        for (idx, photo) in datas.enumerated() {
+        for photo in datas {
+            if let data = photo.imageData {
+                browserPhotos.append(Photo(data: data))
+                cellImages.append(UploadCellImage(data))
             }
+            else if let asset = photo.asset {
+                browserPhotos.append(Photo(asset: asset, targetSize: imageTargetSize))
+                cellImages.append(UploadCellImage(asset))
+            }
+//            self.delegate?.willUploadSingle(photo, idx: idx)
         }
         let index = uploadCellPhotos.count
         uploadCellPhotos.insert(contentsOf: cellImages, at: index)
         updateSelfViewHeight()
         photoCollectionView.reloadData()
+        
+        self.delegate?.willUploadAll(datas)
     }
     
     func deleteImageCell(_ index: Int) {
@@ -205,27 +234,25 @@ fileprivate extension UploadPhotoView {
     // MARK: - action 选择图片
 
     @objc func startSelectImage() {
-        if let vc = viewController {
-            if !isDirectDisplayPhotoAlbum {
-                let selectImageView = SelectImageView(vc, maxSelectCount: needUploadPhotoCount())
-                selectImageView.showView()
-                selectImageView.block = { [unowned self] (datas) in
-                    print("selected Photo number is \(datas.count)")
-                    self.addImageDatas(datas)
-                }
-            }
-            else {
-                SystemHelper.verifyPhotoLibraryAuthorization(success: { [unowned self] () in
-                    let nvc = PhotoAlbumViewController.photoAlbum(maxSelectCount: self.needUploadPhotoCount(), block: { (datas) in
-                        print("selected \(datas.count) from album!")
-                        self.addImageDatas(datas)
-                    })
-                    self.viewController?.present(nvc, animated: true, completion: nil)
-                }, failed: nil)
+        guard let vc = jp_viewController else {
+            return print("UploadPhotoView delegate(viewController) must not be nil")
+        }
+        if !isDirectDisplayPhotoAlbum {
+            let selectImageView = SelectImageView(vc, maxSelectCount: needUploadPhotoCount())
+            selectImageView.showView()
+            selectImageView.block = { [weak self] (datas) in
+                self?.addImageDatas(datas)
             }
         }
         else {
-            print("UploadPhotoView delegate(viewController) must not be nil")
+            func showPhotoAlbumViewController()  {
+                let nvc = PhotoAlbumViewController.photoAlbum(maxSelectCount: self.needUploadPhotoCount()) { [weak self] (datas) in
+                    self?.addImageDatas(datas)
+                }
+                self.viewController?.present(nvc, animated: true, completion: nil)
+            }
+            
+            SystemHelper.verifyPhotoLibraryAuthorization({ showPhotoAlbumViewController() })
         }
     }
     
@@ -233,21 +260,47 @@ fileprivate extension UploadPhotoView {
         // 启动图片浏览器
         let photoBrowser = PhotoBrowser(delgegate: self)
         photoBrowser.setCurrentPageIndex(index)
+        photoBrowser.isShowDeleteBtn = true
         let nav = UINavigationController(rootViewController: photoBrowser)
         nav.modalTransitionStyle = .crossDissolve
-        self.viewController?.present(nav, animated: true, completion: nil)
+        self.jp_viewController?.present(nav, animated: true, completion: nil)
     }
 }
 
 extension UploadPhotoView: JHPhotoBrowserDelegate {
     public func numberOfPhotosInPhotoBrowser(_ photoBrowser: PhotoBrowser) -> Int {
         return browserPhotos.count
+//        return uploadCellPhotos.count
     }
     
     public func photoBrowser(_ photoBrowser: PhotoBrowser, photoAtIndex: Int) -> Photo? {
         if photoAtIndex < browserPhotos.count {
             return browserPhotos[photoAtIndex]
         }
+//        if photoAtIndex < uploadCellPhotos.count {
+//            let temp = uploadCellPhotos[photoAtIndex]
+//            if let image = temp.cellImage {
+//                return Photo(image: image)
+//            }
+//            else if let data = temp.cellImageData {
+//                return Photo(data: data)
+//            }
+//            else  if let string = temp.cellImageUrl, let url = URL(string: string) {
+//                return Photo(url: url)
+//            }
+//            else if let asset = temp.cellAsset {
+//                let screen = UIScreen.main
+//                let scale = screen.scale
+//                let imageSize = max(screen.bounds.width, screen.bounds.height) * 1.5
+//                let imageTargetSize = CGSize(width: imageSize * scale, height: imageSize * scale)
+//                return Photo(asset: asset, targetSize: imageTargetSize)
+//            }
+//            return nil
+//        }
         return nil
+    }
+    
+    public func photoBrowserDeleteImage(_ photoBrowser: PhotoBrowser, photoAtIndex: Int) {
+        deleteImageCell(photoAtIndex)
     }
 }

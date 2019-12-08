@@ -8,6 +8,9 @@
 
 import UIKit
 
+fileprivate let jp_screenWidth = UIScreen.main.bounds.width
+fileprivate let jp_screenHeight = UIScreen.main.bounds.height
+
 class ZoomingScrollView: UIScrollView {
     
     // MARK: - property
@@ -22,7 +25,7 @@ class ZoomingScrollView: UIScrollView {
         }
     }
     
-    fileprivate weak var photoBrowser: PhotoBrowser!
+    fileprivate weak var photoBrowser: PhotoBrowser?
     var index = LONG_MAX
     
     fileprivate var tapView: TapDetectingView! = {
@@ -35,7 +38,7 @@ class ZoomingScrollView: UIScrollView {
     fileprivate var photoImageView: TapDetectingImageView! = {
         let view = TapDetectingImageView(frame: CGRect.zero)
         view.contentMode = .center
-        view.backgroundColor = UIColor.black
+        view.backgroundColor = .black
         return view
     }()
     
@@ -83,7 +86,7 @@ class ZoomingScrollView: UIScrollView {
         self.delegate = self
         self.showsVerticalScrollIndicator = false
         self.showsHorizontalScrollIndicator = false
-        self.decelerationRate = UIScrollViewDecelerationRateFast
+        self.decelerationRate = UIScrollView.DecelerationRate.fast
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
@@ -110,7 +113,7 @@ class ZoomingScrollView: UIScrollView {
     }
     
     fileprivate func didSetPhoto(_ some: Photo?) {
-        if photoBrowser.imageForPhoto(some) != nil {
+        if photoBrowser?.imageForPhoto(some) != nil {
             self.displayImage()
         }
         else {
@@ -153,7 +156,7 @@ class ZoomingScrollView: UIScrollView {
             self.zoomScale = 1;
             self.contentSize = CGSize(width: 0, height: 0);
             
-            if let image = photoBrowser.imageForPhoto(photo) {
+            if let image = photoBrowser?.imageForPhoto(photo) {
                 // hide indocator
                 self.hideLoadingIndicator()
                 
@@ -162,9 +165,9 @@ class ZoomingScrollView: UIScrollView {
                 photoImageView.isHidden = false
                 
                 // setup photo frame
-                let photoImageViewFrame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-                photoImageView.frame = photoImageViewFrame
-                self.contentSize = photoImageViewFrame.size
+                let tempSize = image.size
+                photoImageView.frame = CGRect(origin: .zero, size: tempSize)
+                self.contentSize = tempSize
                 
                 // set zoom to mininum zoom
                 self.setMaxMinZoomScalesForCurrentBounds()
@@ -182,22 +185,25 @@ class ZoomingScrollView: UIScrollView {
         self.hideLoadingIndicator()
         photoImageView.image = nil
         
+        guard let _ = photo?.emptyImage else { return }
         // show if image is not empty
-        if let _ = photo?.emptyImage {
-            if loadingError == nil {
-                let image = UIImage.my_bundleImage(named: "icon_imageError")
-                loadingError = UIImageView(image: image)
-                loadingError?.isUserInteractionEnabled = false
-                loadingError?.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin]
-                loadingError?.sizeToFit()
-                self.addSubview(loadingError!)
-            }
-            let size = self.bounds.size
-            loadingError?.frame = CGRect(x: (size.width - (loadingError?.frame.size.width)!) / 2,
-                                         y: (size.height - (loadingError?.frame.size.height)!) / 2,
-                                         width: (loadingError?.frame.size.width)!,
-                                         height: (loadingError?.frame.size.height)!)
+        guard let loadingError = loadingError else {
+            let image = UIImage.my_bundleImage(named: "jp_icon_imageError")
+            let errorView = UIImageView(image: image)
+            errorView.isUserInteractionEnabled = false
+            errorView.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin]
+            errorView.sizeToFit()
+            self.addSubview(errorView)
+            self.loadingError = errorView
+            
+            return
         }
+        
+        let size = self.bounds.size
+        let loadingErrorSize = loadingError.frame.size
+        let x = (size.width - loadingErrorSize.width) / 2
+        let y = (size.height - loadingErrorSize.height) / 2
+        loadingError.frame = CGRect(origin: CGPoint(x: x, y: y), size: loadingErrorSize)
     }
     
     func hideImageFailure() {
@@ -213,8 +219,8 @@ class ZoomingScrollView: UIScrollView {
         // dict = ["progress": "0.8", "photo": photo]
         DispatchQueue.main.async { 
             if let dict = notification.userInfo as? [String: Any] {
-                if let p = dict["photo"] as? Photo, p.isEqual(self.photo) {
-                    let progress = dict["progress"] as! Float
+                if let p = dict["photo"] as? Photo, p.isEqual(self.photo),
+                     let progress = dict["progress"] as? Float {
                     self.loadingIndicator.setProgress(max(min(1.0, CGFloat(progress)), 0.0))
                 }
             }
@@ -238,17 +244,19 @@ class ZoomingScrollView: UIScrollView {
     
     fileprivate func initialZoomScaleWithMinScale() -> CGFloat {
         var zoomScale = self.minimumZoomScale
-        if photoImageView != nil && photoBrowser.isZoomPhotosToFill {
-            let boundsSize = self.bounds.size
-            let imageSize = photoImageView.image?.size
-            let boundsAR = boundsSize.width / boundsSize.height
-            let imageAR = (imageSize?.width)! / (imageSize?.height)!
-            let xScale = boundsSize.width / (imageSize?.width)!
-            let yScale = boundsSize.height / (imageSize?.height)!
-            if (abs(boundsAR - imageAR)) < 0.17 {
-                zoomScale = max(xScale, yScale)
-                zoomScale = min(max(self.minimumZoomScale, zoomScale), self.maximumZoomScale)
-            }
+        guard let photoBrowser = photoBrowser else { return zoomScale }
+        guard let imageSize = photoImageView.image?.size,
+            photoBrowser.isZoomPhotosToFill else {
+            return zoomScale
+        }
+        let boundsSize = self.bounds.size
+        let boundsAR = boundsSize.width / boundsSize.height
+        let imageAR = imageSize.width / imageSize.height
+        if (abs(boundsAR - imageAR)) < 0.17 {
+            let xScale = boundsSize.width / imageSize.width
+            let yScale = boundsSize.height / imageSize.height
+            zoomScale = min(xScale, yScale)
+            zoomScale = min(max(self.minimumZoomScale, zoomScale), self.maximumZoomScale)
         }
         return zoomScale
     }
@@ -264,7 +272,7 @@ class ZoomingScrollView: UIScrollView {
         }
         
         // reset position
-        photoImageView.frame = CGRect(x: 0, y: 0, width: photoImageView.frame.size.width, height: photoImageView.frame.size.height)
+        photoImageView.frame = CGRect(origin: .zero, size: photoImageView.bounds.size)
         
         // sizes
         let boundsSize = self.bounds.size
@@ -273,6 +281,7 @@ class ZoomingScrollView: UIScrollView {
         // calculate min
         let xScale = boundsSize.width / imageSize.width
         let yScale = boundsSize.height / imageSize.height
+
         var minScale = min(xScale, yScale)
         
         // calculate max
@@ -344,7 +353,7 @@ class ZoomingScrollView: UIScrollView {
             frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2.0
         }
         else {
-            frameToCenter.origin.x = 0
+            frameToCenter.origin.y = 0
         }
         
         // center
@@ -362,16 +371,16 @@ extension ZoomingScrollView: UIScrollViewDelegate {
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        photoBrowser.cancelControlHiding()
+        photoBrowser?.cancelControlHiding()
     }
     
     func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
         self.isScrollEnabled = true // reset
-        photoBrowser.cancelControlHiding()
+        photoBrowser?.cancelControlHiding()
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        photoBrowser.hideControlsAfterDelay()
+        photoBrowser?.hideControlsAfterDelay()
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
@@ -387,11 +396,14 @@ extension ZoomingScrollView: TapDetectingViewDelegate, TapDetectingImageViewDele
     // action
     
     func handleSingleTap(_ touchPoint: CGPoint) {
-        photoBrowser.controlAllAontrols()
+        photoBrowser?.controlAllAontrols()
     }
     
     func handleDoubleTap(_ touchPoint: CGPoint) {
-        NSObject.cancelPreviousPerformRequests(withTarget: photoBrowser)
+        if let photoBrowser = photoBrowser {
+            NSObject.cancelPreviousPerformRequests(withTarget: photoBrowser)
+        }
+        
         // zoom
         if (self.zoomScale != self.minimumZoomScale) && (self.zoomScale != self.initialZoomScaleWithMinScale()) {
             // zoom out
@@ -411,7 +423,7 @@ extension ZoomingScrollView: TapDetectingViewDelegate, TapDetectingImageViewDele
     // TapDetectingImageViewDelegate
     
     func imageView(_ imageView: UIImageView, singleTapDetected touchPoint: CGPoint) {
-        photoBrowser.controlAllAontrols()
+        photoBrowser?.controlAllAontrols()
     }
     
     func imageView(_ imageView: UIImageView, doubleTapDetected touchPoint: CGPoint) {

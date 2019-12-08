@@ -17,12 +17,12 @@ public final class PhotoBrowser: UIViewController {
     fileprivate weak var delegate: JHPhotoBrowserDelegate?
 
     var isZoomPhotosToFill: Bool = true // display Photo zoom to fill
-    var isDisplayNavArrows: Bool = true // 底部工具栏 图片方向
     var isDisplaySelectionButton: Bool = false 
     var isEnableSwipeToDismiss: Bool = true // 向上/下轻扫 退出
     var isAlwaysShowControls: Bool = false // 总是显示导航栏和工具栏
     var isSingleTapToHideNavbar = true // 单击隐藏/显示导航栏
     var isCanEditPhoto = false // 是否可以编辑当前图片（是否显示编辑按钮）
+    var isShowDeleteBtn = false  // （是否显示删除图片按钮）
     
     // Data
     fileprivate var photoCount: Int = NSNotFound
@@ -49,7 +49,7 @@ public final class PhotoBrowser: UIViewController {
     fileprivate var pageIndexBeforeRotation: Int = 0
     
     // Navigation & controls
-    fileprivate var toolbar: UIToolbar! = {
+    fileprivate var toolbar: UIToolbar = {
         let toolBar = UIToolbar(frame: CGRect.zero)
         toolBar.tintColor = UIColor.white
         toolBar.barTintColor = nil
@@ -64,15 +64,14 @@ public final class PhotoBrowser: UIViewController {
     // Icon should be located in the app's main bundle
     // var customImageSelectedIconName: String?
     
-    fileprivate let arrowPathFormat: String = "icon_itemArrow_"
-    fileprivate let selectedIconName: String = "icon_imageSelected_"
+    fileprivate let arrowPathFormat: String = "jp_icon_itemArrow_"
+    fileprivate let selectedIconName: String = "jp_icon_imageSelected_"
     
     var delayToHideElements: TimeInterval = 5
     fileprivate var controlVisibilityTimer: Timer!
     
-    fileprivate var previousButton: UIBarButtonItem!
-    fileprivate var nextButton: UIBarButtonItem!
     fileprivate var cancelButton: UIBarButtonItem!
+    fileprivate var deleteButton: UIBarButtonItem!
     fileprivate var selectedButton: UIButton! = {
         let button = UIButton(type: .custom)
         return button
@@ -202,22 +201,16 @@ public final class PhotoBrowser: UIViewController {
         }
         
         if isEnableSwipeToDismiss {
-            let swipe = UISwipeGestureRecognizer.init(target: self, action: #selector(dismissButtonPressed(sender:)))
+            let swipe = UISwipeGestureRecognizer.init(target: self, action: #selector(dismissButtonPressed(_:)))
             swipe.direction = [.down, .up]
             self.view.addGestureRecognizer(swipe)
         }
         
-        if isDisplayNavArrows {
-            let previousButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)left")
-            previousButton = UIBarButtonItem(image: previousButtonImage, style: .plain, target: self, action: #selector(gotoPreviousPage))
-            
-            let nextButtonImage = UIImage.my_bundleImage(named: "\(arrowPathFormat)right")
-            nextButton = UIBarButtonItem(image: nextButtonImage, style: .plain, target: self, action: #selector(gotoNextPage))
-            
-            if isCanEditPhoto {
-                editButton = UIBarButtonItem(title: "编辑", style: .plain, target: self, action: #selector(gotoEditImage))
-            }
-            
+        if isCanEditPhoto {
+            editButton = UIBarButtonItem(title: "编辑", style: .plain, target: self, action: #selector(gotoEditImage))
+        }
+        
+        if isDisplaySelectionButton {
             let button = UIButton(type: .system)
             button.frame = CGRect(x: 0, y: 0, width: 60, height: 30)
             button.backgroundColor = UIColor(red:0.07,green:0.39,blue:0.85,alpha:1.00)
@@ -235,22 +228,31 @@ public final class PhotoBrowser: UIViewController {
     private func performLayout() {
         // setup
         isPerformingLayout = true
-        let numberOfPhotos = self.numberOfPhotos()
         
         visiblePages.removeAllObjects()
         recycledPages.removeAllObjects()
         
         // navigation buttons
         if let vc = self.navigationController?.viewControllers.first, vc.isEqual(self) {
-            cancelButton = UIBarButtonItem.init(title: "返回", style: .plain, target: self, action: #selector(dismissButtonPressed(sender:)))
-            cancelButton.setBackgroundImage(nil, for: .normal, barMetrics: .default)
-            cancelButton.setBackgroundImage(nil, for: .normal, barMetrics: .compactPrompt)
-            cancelButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .default)
-            cancelButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .compactPrompt)
-            cancelButton.setTitleTextAttributes(nil, for: .normal)
-            cancelButton.setTitleTextAttributes(nil, for: .highlighted)
+//            cancelButton = UIBarButtonItem(title: "", style: .plain, target: self, action: #selector(dismissButtonPressed(_:)))
+            let image = UIImage(named: "jp_icon_nav_back")
+            cancelButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(dismissButtonPressed(_:)))
+//            cancelButton.setBackgroundImage(nil, for: .normal, barMetrics: .default)
+//            cancelButton.setBackgroundImage(nil, for: .normal, barMetrics: .compactPrompt)
+//            cancelButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .default)
+//            cancelButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .compactPrompt)
+//            cancelButton.setTitleTextAttributes(nil, for: .normal)
+//            cancelButton.setTitleTextAttributes(nil, for: .highlighted)
             
             self.navigationItem.leftBarButtonItem = cancelButton
+            
+            if isShowDeleteBtn { //添加删除按钮
+                let btn = UIButton(type: .custom)
+                btn.setImage(UIImage(named: "icon_trash_delete"), for: .normal)
+                btn.addTarget(self, action: #selector(deleteButtonPress), for: .touchUpInside)
+                deleteButton = UIBarButtonItem(customView: btn)
+                self.navigationItem.rightBarButtonItem = deleteButton
+            }
         }
         else {
             if let vcs = self.navigationController?.viewControllers {
@@ -258,7 +260,7 @@ public final class PhotoBrowser: UIViewController {
                 
                 previousViewControllerBackButton = previousVC.navigationItem.backBarButtonItem; // remember previous
                 
-                let newBackButton = UIBarButtonItem.init(title: "返回", style: .plain, target: self, action: #selector(dismissButtonPressed(sender:)))
+                let newBackButton = UIBarButtonItem(title: "", style: .plain, target: self, action: #selector(dismissButtonPressed(_:)))
                 newBackButton.setBackgroundImage(nil, for: .normal, barMetrics: .default)
                 newBackButton.setBackgroundImage(nil, for: .normal, barMetrics: .compactPrompt)
                 newBackButton.setBackgroundImage(nil, for: .highlighted, barMetrics: .default)
@@ -270,25 +272,17 @@ public final class PhotoBrowser: UIViewController {
         }
         
         // toolbar items
-        let fixedSpace = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: self, action: nil)
-        fixedSpace.width = 32
         let flexSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         var items: [UIBarButtonItem] = []
         
-        // middle -Nav
-        if isDisplayNavArrows && numberOfPhotos > 1 {
-            items.append(flexSpace)
-            items.append(previousButton)
-            items.append(flexSpace)
-            items.append(nextButton)
-            items.append(flexSpace)
-        }
-        else {
-            items.append(flexSpace)
-        }
         
         if isCanEditPhoto {
+            items.append(flexSpace)
             items.insert(editButton, at: 0)
+//            items.append(doneButton)
+        }
+        else if isDisplaySelectionButton {
+            items.insert(flexSpace, at: 0)
             items.append(doneButton)
         }
         
@@ -296,7 +290,7 @@ public final class PhotoBrowser: UIViewController {
         toolbar.items = items
         var hideToolbar = true
         for item in toolbar.items! {
-            if !item.isEqual(fixedSpace) && !item.isEqual(flexSpace) {
+            if !item.isEqual(flexSpace) {
                 hideToolbar = false
                 break
             }
@@ -425,7 +419,7 @@ public final class PhotoBrowser: UIViewController {
         super.viewWillDisappear(animated)
     }
     
-    override public func willMove(toParentViewController parent: UIViewController?) {
+    override public func willMove(toParent parent: UIViewController?) {
         if parent != nil && isHasBelongedToViewController {
             let e = NSException(name:NSExceptionName(rawValue: "PhotoBrowser Instance Reuse"),
                                 reason:"PhotoBrowser instances cannot be reused.",
@@ -434,7 +428,7 @@ public final class PhotoBrowser: UIViewController {
         }
     }
     
-    override public func didMove(toParentViewController parent: UIViewController?) {
+    override public func didMove(toParent parent: UIViewController?) {
         if parent == nil {
             isHasBelongedToViewController = true
         }
@@ -552,12 +546,12 @@ public final class PhotoBrowser: UIViewController {
     }
     
     fileprivate func numberOfPhotos() -> Int {
-        if photoCount == NSNotFound {
+//        if photoCount == NSNotFound {
             photoCount = delegate?.numberOfPhotosInPhotoBrowser(self) ?? 0
-        }
-        if photoCount == NSNotFound {
-            photoCount = 0
-        }
+//        }
+//        if photoCount == NSNotFound {
+//            photoCount = 0
+//        }
         return photoCount
     }
     
@@ -686,10 +680,6 @@ public final class PhotoBrowser: UIViewController {
             }
         }
         else { self.title = "" }
-        
-        // buttons
-        previousButton?.isEnabled = currentPageIndex > 0
-        nextButton?.isEnabled = (currentPageIndex < numberOfPhotos - 1)
     }
     
     func  jumpToPage(_ index: Int, animated: Bool) {
@@ -715,18 +705,18 @@ public final class PhotoBrowser: UIViewController {
     }
     
     @objc fileprivate func gotoEditImage() {
-        if let currentPhoto = photo(atIndex: currentPageIndex), let image = currentPhoto.underlyingImage {
-            let cropController = CropViewController(image: image, delegate: self)
-            if let pageView = visiblePages.lastObject as? ZoomingScrollView {
-                let imageView = pageView.imageView()
-                let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
-
-                cropController.presentAnimated(fromParentViewController: self,
-                                               fromView: imageView,
-                                               fromFrame: viewFrame,
-                                               setup: nil, completion: nil)
-            }
-        }
+//        if let currentPhoto = photo(atIndex: currentPageIndex), let image = currentPhoto.underlyingImage {
+//            let cropController = CropViewController(image: image, delegate: self)
+//            if let pageView = visiblePages.lastObject as? ZoomingScrollView {
+//                let imageView = pageView.imageView()
+//                let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
+//
+//                cropController.presentAnimated(fromParentViewController: self,
+//                                               fromView: imageView,
+//                                               fromFrame: viewFrame,
+//                                               setup: nil, completion: nil)
+//            }
+//        }
     }
     
     @objc fileprivate func doneButtonAction() {
@@ -759,7 +749,7 @@ public final class PhotoBrowser: UIViewController {
     }
     
     // MARK: - Actions
-    @objc fileprivate func dismissButtonPressed(sender: Any) {
+    @objc fileprivate func dismissButtonPressed(_ sender: Any) {
         // Only if we're modal and there's a done button
         if cancelButton != nil {
             // dismiss view controller
@@ -777,53 +767,66 @@ public final class PhotoBrowser: UIViewController {
             }
         }
     }
+    
+    @objc fileprivate func deleteButtonPress() {
+        // 删除预览数组中该图片
+        photos.remove(at: currentPageIndex)
+        delegate?.photoBrowserDeleteImage(self , photoAtIndex: currentPageIndex)
+        if photos.count == 0 {
+            self.dismiss(animated: true, completion: nil)
+        }else {
+            reloadData()
+            updateNavigationAndTool()
+        }
+        
+    }
 }
 
 // MARK: - CropViewControllerDelegate
 
-extension PhotoBrowser: CropViewControllerDelegate {
-    
-    public func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool {
-     
-        if let currentPhoto = photo(atIndex: currentPageIndex) {
-            
-            // 更新编辑之后的图片
-            currentPhoto.updateCurrentImage(didCropToImage)
-            delegate?.photoBrowserDidEdit(self, photoAtIndex: currentPageIndex)
-            
-            // 编辑后的图片 选中
-            selectedButton.isSelected = true
-            setPhotoSelected(true, index: currentPageIndex)
-            
-            if let pageView = visiblePages.lastObject as? ZoomingScrollView {
-                pageView.updateImage(didCropToImage)
-                let imageView = pageView.imageView()
-                let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
-                
-                cropViewController.dismissAnimated(fromParentViewController: self,
-                                                   toView: imageView,
-                                                   toFrame: viewFrame,
-                                                   setup: nil,
-                                                   completion: nil)
-            }
-        }
-        return true
-    }
-    
-    public func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool) -> Bool {
-        if let pageView = visiblePages.lastObject as? ZoomingScrollView {
-            let imageView = pageView.imageView()
-            let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
-            
-            cropViewController.dismissAnimated(fromParentViewController: self,
-                                               toView: imageView,
-                                               toFrame: viewFrame,
-                                               setup: nil,
-                                               completion: nil)
-        }
-        return true
-    }
-}
+//extension PhotoBrowser: CropViewControllerDelegate {
+//
+//    public func cropViewController(_ cropViewController: CropViewController, didCropToImage: UIImage, rect: CGRect, angle: Int) -> Bool {
+//
+//        if let currentPhoto = photo(atIndex: currentPageIndex) {
+//
+//            // 更新编辑之后的图片
+//            currentPhoto.updateCurrentImage(didCropToImage)
+//            delegate?.photoBrowserDidEdit(self, photoAtIndex: currentPageIndex)
+//
+//            // 编辑后的图片 选中
+//            selectedButton.isSelected = true
+//            setPhotoSelected(true, index: currentPageIndex)
+//
+//            if let pageView = visiblePages.lastObject as? ZoomingScrollView {
+//                pageView.updateImage(didCropToImage)
+//                let imageView = pageView.imageView()
+//                let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
+//
+//                cropViewController.dismissAnimated(fromParentViewController: self,
+//                                                   toView: imageView,
+//                                                   toFrame: viewFrame,
+//                                                   setup: nil,
+//                                                   completion: nil)
+//            }
+//        }
+//        return true
+//    }
+//
+//    public func cropViewController(_ cropViewController: CropViewController, didCancelled: Bool) -> Bool {
+//        if let pageView = visiblePages.lastObject as? ZoomingScrollView {
+//            let imageView = pageView.imageView()
+//            let viewFrame = view.convert(imageView.frame, to: navigationController?.view)
+//
+//            cropViewController.dismissAnimated(fromParentViewController: self,
+//                                               toView: imageView,
+//                                               toFrame: viewFrame,
+//                                               setup: nil,
+//                                               completion: nil)
+//        }
+//        return true
+//    }
+//}
 
 // MARK: - control
 
@@ -912,7 +915,7 @@ extension PhotoBrowser {
     }
     
     func areControlsHidden() -> Bool {
-        return toolbar?.alpha == 0
+        return toolbar.alpha <= 0.0
     }
     
     @objc fileprivate func hideControls() {
@@ -1132,8 +1135,8 @@ fileprivate extension PhotoBrowser {
     }
     
     func frameForToolbar(_ orientation: UIInterfaceOrientation) -> CGRect {
-        var height: CGFloat = 44
-        if UI_USER_INTERFACE_IDIOM() == .phone && UIInterfaceOrientationIsLandscape(orientation) {
+        var height: CGFloat = jp_bottomSpace + 44
+        if UI_USER_INTERFACE_IDIOM() == .phone && orientation.isLandscape {
             height = 32
         }
         return CGRect(x: 0, y: self.view.bounds.height - height, width: self.view.bounds.width, height: height)

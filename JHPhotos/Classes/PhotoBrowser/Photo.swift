@@ -36,32 +36,18 @@ public class Photo: NSObject, JHPhoto {
     var emptyImage: Bool = true
     
     private var image: UIImage?
-    private var photoURL: NSURL?
+    private var photoURL: URL?
     private var asset: PHAsset?
-    private var assetTargetSize: CGSize! = CGSize.zero
+    private var assetTargetSize: CGSize = .zero
     
     private var hasCancelRequest: Bool = false
-    private var kingfisherImageOperation: RetrieveImageDownloadTask?
+    private var kingfisherImageOperation: DownloadTask?
     private var loadingInProgress: Bool = false
     private var assetRequestID: PHImageRequestID! = PHInvalidImageRequestID
     
 //    private var timerCount = 0
 //    private let TestConfigure = true
-    
-    // MARK: - class
-    
-    class public func photo(image: UIImage) -> Photo {
-        return Photo(image: image)
-    }
-    
-    class public func photo(url: NSURL) -> Photo {
-        return Photo(url: url)
-    }
 
-    class public func photo(asset: PHAsset, targetSize: CGSize) -> Photo {
-        return Photo(asset: asset, targetSize: targetSize)
-    }
-    
     // MARK: - init
     
     public init(image: UIImage) {
@@ -69,9 +55,14 @@ public class Photo: NSObject, JHPhoto {
         self.image = image
     }
     
-    public init(url: NSURL) {
+    public init(url: URL) {
         super.init()
         self.photoURL = url
+    }
+    
+    public init(data: Data) {
+        super.init()
+        self.image = UIImage(data: data)
     }
     
     public init(asset: PHAsset, targetSize: CGSize) {
@@ -120,6 +111,7 @@ public class Photo: NSObject, JHPhoto {
 //    }
 
     private func _handleKingfisherResult(_ result: UIImage?, url: URL?) {
+        guard let url = url else { return }
         if hasCancelRequest {
             // 已经取消了请求
             return
@@ -132,40 +124,31 @@ public class Photo: NSObject, JHPhoto {
         else {
             // 图片未下载
             let downloader = KingfisherManager.shared.downloader
-            kingfisherImageOperation = downloader.downloadImage(with: url!,
-                                                                retrieveImageTask: nil,
+            kingfisherImageOperation = downloader.downloadImage(with: url,
                                                                 options: nil,
-                                                                progressBlock: { [weak self] (receivedSize, totalSize) in
-                                                                    if totalSize > 0 {
-                                                                        if let strongSelf = self {
-                                                                            let progress = Float(receivedSize) / Float(totalSize)
-                                                                            let dict = ["progress": progress, "photo": strongSelf] as [String : Any]
-                                                                            NotificationCenter.default.post(name: PHOTO_PROGRESS_NOTIFICATION, object: nil, userInfo: dict)
-                                                                        }
-                                                                    }
-                                                                },
-                                                                completionHandler: { [weak self] (image, error, imageUrl, data) in
-                                                                    if let strongSelf = self {
-                                                                        if error != nil {
-                                                                            print("Kingfisher failed to download image: \(String(describing: error))")
-                                                                            strongSelf.kingfisherImageOperation = nil
-                                                                            strongSelf.imageLoadingComplete()
-                                                                        }
-                                                                        strongSelf.kingfisherImageOperation = nil
-                                                                        strongSelf.underlyingImage = image
-                                                                        DispatchQueue.main.async {
-                                                                            strongSelf.imageLoadingComplete()
-                                                                        }
-                                                                    }
-                                                                    else {
-                                                                        print("Kingfisher failed to download image: \(String(describing: error))")
-                                                                    }
-                                                                })
-//            print("downloadImage Operation \(String(describing: kingfisherImageOperation))");
+                                                                progressBlock: { [weak self] (receivedSize, totalSize)  in
+                                                                    guard totalSize > 0 else { return }
+                                                                    guard let strongSelf = self else { return }
+                                                                    let progress = Float(receivedSize) / Float(totalSize)
+                                                                    let dict = ["progress": progress, "photo": strongSelf] as [String : Any]
+                                                                    NotificationCenter.default.post(name: PHOTO_PROGRESS_NOTIFICATION, object: nil, userInfo: dict)
+                }, completionHandler: { [weak self] (result) in
+                    guard let strongSelf = self else { return }
+                    switch result {
+                    case .success(let value):
+                        strongSelf.kingfisherImageOperation = nil
+                        strongSelf.underlyingImage = value.image
+                        DispatchQueue.main.async {
+                            strongSelf.imageLoadingComplete()
+                        }
+                    case .failure(let error):
+                        print("Kingfisher failed to download image: \(String(describing: error))")
+                    }
+            })
         }
     }
     
-    fileprivate func _performLoadUnderlyingImageAndNotifyWithWebURL(url: NSURL) {
+    fileprivate func _performLoadUnderlyingImageAndNotifyWithWebURL(url: URL) {
         
 //        guard !TestConfigure else {
 //            Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(fakeLoad(timer:)), userInfo: nil, repeats: true)
@@ -175,42 +158,35 @@ public class Photo: NSObject, JHPhoto {
         hasCancelRequest = false
         let kfManager = KingfisherManager.shared
         let cache = kfManager.cache
-        let optionsInfo: KingfisherOptionsInfo = [.targetCache(cache), .backgroundDecode]
-        let resource = ImageResource(downloadURL: url as URL)
+        let optionsInfo: KingfisherOptionsInfo = KingfisherManager.shared.defaultOptions + [.targetCache(cache), .backgroundDecode]
+        let resource = ImageResource(downloadURL: url)
+        
         // 先使用缓存，没有缓存再去下载
         kfManager.retrieveImage(with: resource,
                                 options: optionsInfo,
                                 progressBlock: { [weak self] (receivedSize, totalSize) in
-                                    if let strongSelf = self {
-                                        if totalSize > 0 {
-                                            let progress = Float(receivedSize) / Float(totalSize)
-                                            let dict = ["progress": progress, "photo": strongSelf] as [String : Any]
-                                            NotificationCenter.default.post(name: PHOTO_PROGRESS_NOTIFICATION, object: nil, userInfo: dict)
-                                        }
-                                    }
-                                },
-                                completionHandler:{ [weak self] (image, error, cacheType, Url) in
-                                    if let strongSelf = self {
-                                        DispatchQueue.main.async {
-                                            if error == nil {
-                                                strongSelf._handleKingfisherResult(image, url: Url)
-                                            }
-                                            else {
-                                                strongSelf._handleKingfisherResult(nil, url: Url)
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        print("Kingfisher failed to download image: \(String(describing: error))")
-                                    }
-                                })
+                                    guard totalSize > 0 else { return }
+                                    guard let strongSelf = self else { return }
+                                    let progress = Float(receivedSize) / Float(totalSize)
+                                    let dict = ["progress": progress, "photo": strongSelf] as [String : Any]
+                                    NotificationCenter.default.post(name: PHOTO_PROGRESS_NOTIFICATION, object: nil, userInfo: dict)
+        }) { [weak self] (result) in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let value):
+                strongSelf._handleKingfisherResult(value.image, url: value.source.url)
+            case .failure(let error):
+                strongSelf._handleKingfisherResult(nil, url: url)
+                print("Kingfisher failed to download image: \(String(describing: error))")
+            }
+        }
     }
     
-    fileprivate func _performLoadUnderlyingImageAndNotifyWithLocalFileURL(url: NSURL) {
+    fileprivate func _performLoadUnderlyingImageAndNotifyWithLocalFileURL(url: URL) {
         DispatchQueue.global(qos: .default).async {
             autoreleasepool(invoking: { [weak self] () -> Void in
                 if let strongSelf = self {
-                    if let image = UIImage(contentsOfFile: url.path!) {
+                    if let image = UIImage(contentsOfFile: url.path) {
                         strongSelf.underlyingImage = image
                     }
                     else {
@@ -294,7 +270,7 @@ public class Photo: NSObject, JHPhoto {
         }
         else if let photoURL = photoURL {
             // Check what type of url it is
-            if photoURL.isFileReferenceURL() {
+            if photoURL.isFileURL {
                 // load from local file async
                 self._performLoadUnderlyingImageAndNotifyWithLocalFileURL(url: photoURL)
             }
@@ -303,9 +279,9 @@ public class Photo: NSObject, JHPhoto {
                 self._performLoadUnderlyingImageAndNotifyWithWebURL(url: photoURL)
             }
         }
-        else if asset != nil {
+        else if let asset = asset {
             // load from photos asset
-            self._performLoadUnderlyingImageAndNotifyWithAsset(asset: asset!, targetSize: assetTargetSize)
+            self._performLoadUnderlyingImageAndNotifyWithAsset(asset: asset, targetSize: assetTargetSize)
         }
         else {
             // image is empty

@@ -72,15 +72,44 @@ public final class DragCellCollectionView: UICollectionView {
     fileprivate var destinationIndexPath: IndexPath?
     
     fileprivate var isWillDeleted: Bool = false
-    fileprivate lazy var deletedView: UILabel = {
+    
+    fileprivate lazy var deleteIcon: UIImageView = {
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "jp_icon_delete_dny")
+        return imgView
+    }()
+    
+    
+    fileprivate lazy var deletedLab: UILabel = {
         let label = UILabel(frame: CGRect.zero)
         label.alpha = 0.8
         label.text = "拖动到此处删除"
         label.textAlignment = .center
         label.textColor = UIColor.white
         label.font = UIFont.systemFont(ofSize: 12.0)
-        label.backgroundColor = UIColor(red:0.89,green:0.29,blue:0.28,alpha:1.00)
+        label.backgroundColor = .clear
         return label
+    }()
+    
+    fileprivate lazy var deletedView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(red:0.89,green:0.29,blue:0.28,alpha:1.00)
+        
+        view.addSubview(deleteIcon)
+        view.addSubview(deletedLab)
+        
+        deleteIcon.snp.makeConstraints({ (make) in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(10)
+            make.size.equalTo(CGSize(width: 20, height: 20))
+        })
+        
+        deletedLab.snp.makeConstraints({ (make) in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(deleteIcon.snp.bottom).offset(6)
+        })
+        
+        return view
     }()
     
     fileprivate var minimumPressDuration: CFTimeInterval = 0.5
@@ -158,8 +187,8 @@ fileprivate extension DragCellCollectionView {
                 self.snapMoveCell = moveCell
                 
                 topView.addSubview(self.deletedView)
-                self.deletedView.frame = CGRect(x: 0, y: topView.bounds.height, width: topView.bounds.width, height: 60.0)
-                let deleteFrame = CGRect(x: 0, y: topView.bounds.height - 60.0, width: topView.bounds.width, height: 60.0)
+                self.deletedView.frame = CGRect(x: 0, y: topView.bounds.height, width: topView.bounds.width, height: 60.0 + kBottomSpace)
+                let deleteFrame = CGRect(x: 0, y: topView.bounds.height - (60.0 + kBottomSpace), width: topView.bounds.width, height: 60.0 + kBottomSpace)
                 
                 let amp: CGFloat = 5
                 let ampFrame = CGRect(x: frame.origin.x - amp/2.0, y: frame.origin.y - amp/2.0, width: frame.size.width + amp, height: frame.size.height + amp)
@@ -239,8 +268,8 @@ fileprivate extension DragCellCollectionView {
                 }
                 // 计算碰撞
                 let center = self.convert(cell.center, to: topView)
-                let spacX = fabs(view.center.x - center.x)
-                let spacY = fabs(view.center.y - center.y)
+                let spacX = abs(view.center.x - center.x)
+                let spacY = abs(view.center.y - center.y)
                 // 当前截图view 与可见cell 的中心距离 是否重合
                 let containCell = spacX <= view.bounds.width/2.0 && spacY <= view.bounds.height/2.0
                 if containCell {
@@ -259,10 +288,10 @@ fileprivate extension DragCellCollectionView {
     
     func updateDeleteView(_ contain: Bool)  {
         isWillDeleted = contain
-        deletedView.text = "拖动到此处删除"
+        deletedLab.text = "拖动到此处删除"
         deletedView.backgroundColor = UIColor(red:0.89,green:0.29,blue:0.28,alpha:1.00)
         if contain {
-            deletedView.text = "松手即可删除"
+            deletedLab.text = "松手即可删除"
             deletedView.backgroundColor = UIColor(red:0.80,green:0.26,blue:0.26,alpha:1.00)
         }
     }

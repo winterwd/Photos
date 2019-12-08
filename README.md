@@ -22,7 +22,7 @@ pod "JHPhotos"
 
 ## Author
 
-winterWD, winter.wei@hey900.com
+winter.wd, winterw201501@gmail.com
 
 ## License
 

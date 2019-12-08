@@ -27,6 +27,9 @@ public protocol JHPhotoBrowserDelegate: class {
     
     // 编辑后
     func photoBrowserDidEdit(_ photoBrowser: PhotoBrowser, photoAtIndex: Int)
+    
+    // 删除图片
+    func photoBrowserDeleteImage(_ photoBrowser: PhotoBrowser, photoAtIndex: Int)
 }
 
 public extension JHPhotoBrowserDelegate {
@@ -39,4 +42,6 @@ public extension JHPhotoBrowserDelegate {
     
     func photoBrowserDidFinish(_ photoBrowser: PhotoBrowser){}
     func photoBrowserDidEdit(_ photoBrowser: PhotoBrowser, photoAtIndex: Int){}
+    
+    func photoBrowserDeleteImage(_ photoBrowser: PhotoBrowser, photoAtIndex: Int){}
 }

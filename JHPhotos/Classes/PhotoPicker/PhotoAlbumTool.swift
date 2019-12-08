@@ -9,25 +9,24 @@
 import UIKit
 import Photos
 
-class PhotoListAlbum: NSObject {
+struct PhotoListAlbum: Equatable {
+    static func == (lhs: PhotoListAlbum, rhs: PhotoListAlbum) -> Bool {
+        return lhs.headImageAsset == rhs.headImageAsset &&
+            lhs.assetCollection == rhs.assetCollection &&
+            lhs.title == rhs.title &&
+            lhs.count == rhs.count
+    }
+    
     var title: String?
     var count: Int = 0
-    var headImageAsset: PHAsset!
-    var assetCollection: PHAssetCollection!
+    var headImageAsset: PHAsset
+    var assetCollection: PHAssetCollection
     
     init(title: String?, count: Int, head: PHAsset, collection: PHAssetCollection) {
-        super.init()
         self.title = title
         self.count = count
         self.headImageAsset = head
         self.assetCollection = collection
-    }
-    
-    override func isEqual(_ object: Any?) -> Bool {
-        if let obj = object as? PhotoListAlbum {
-            return self.title == obj.title && self.count == obj.count
-        }
-        return false
     }
 }
 
@@ -36,7 +35,7 @@ class PhotoAlbumTool {
     // MARK: - public
 
     /// 获取Photo内所有相册
-    class func getPhotoAlbumList() -> [PhotoListAlbum]? {
+    class func getPhotoAlbumList() -> [PhotoListAlbum] {
         var photoAblums: [PhotoListAlbum] = []
         let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
         smartAlbums.enumerateObjects({ (collection, idx, stop) in
@@ -45,9 +44,9 @@ class PhotoAlbumTool {
                 collection.localizedTitle == "Videos" ||
                 collection.localizedTitle == "Slo-mo") {
                 let assets = self.getAssets(in: collection, ascending: false)
-                if assets.count > 0 {
+                if let first = assets.first {
                     let title = self.transformCNAblumTitle(collection.localizedTitle)
-                    let album = PhotoListAlbum(title: title, count: assets.count, head: assets.first!, collection: collection)
+                    let album = PhotoListAlbum(title: title, count: assets.count, head: first, collection: collection)
                     photoAblums.append(album)
                 }
             }
@@ -61,13 +60,14 @@ class PhotoAlbumTool {
                 collection.localizedTitle == "Videos" ||
                 collection.localizedTitle == "Slo-mo") {
                 let assets = self.getAssets(in: collection, ascending: false)
-                if assets.count > 0 {
+                if let first = assets.first {
                     let title = self.transformCNAblumTitle(collection.localizedTitle)
-                    let album = PhotoListAlbum(title: title, count: assets.count, head: assets.first!, collection: collection)
+                    let album = PhotoListAlbum(title: title, count: assets.count, head: first, collection: collection)
                     photoAblums.append(album)
                 }
             }
         })
+        
         return photoAblums
     }
     
@@ -178,7 +178,7 @@ class PhotoAlbumTool {
             }
             else {
                 if let image = UIImage(data: data) {
-                    self.compressObjImageQuality(image, toKByte: maxLength, result: result)
+                    self.compressObjImageQuality(image, maxLength: maxLength, result: result)
                 }
             }
         }
@@ -186,16 +186,21 @@ class PhotoAlbumTool {
     
     class func compressImageQuality(_ image: UIImage, toKByte maxLengthKb: Int, result: @escaping (_ image: UIImage?) -> Void) {
         let maxLength = maxLengthKb * 1000
-        self.compressObjImageQuality(image, toKByte: maxLength) { (data) in
+        self.compressObjImageQuality(image, maxLength: maxLength) { (data) in
             if let image = UIImage(data: data!) {
                 result(image)
             }
         }
     }
     
-    class func compressObjImageQuality(_ image: UIImage, toKByte maxLength: Int, result: ((_ data: Data?) -> Void)?) {
+    class func compressObjImageQuality(_ image: UIImage, toKByte maxLengthKb: Int, result: ((_ data: Data?) -> Void)?) {
+        let maxLength = maxLengthKb * 1000
+        compressObjImageQuality(image, maxLength: maxLength, result: result)
+    }
+    
+    private class func compressObjImageQuality(_ image: UIImage, maxLength: Int, result: ((_ data: Data?) -> Void)?) {
         var compression: CGFloat = 1.0
-        if var data = UIImageJPEGRepresentation(image, compression) {
+        if var data = image.jpegData(compressionQuality: compression) {
             if data.count < maxLength {
                 result?(data)
                 return
@@ -206,7 +211,10 @@ class PhotoAlbumTool {
             var min: CGFloat = 0.0
             for _ in 0...5 {
                 compression = (max + min) / 2.0
-                data = UIImageJPEGRepresentation(image, compression)!
+                if let temp = image.jpegData(compressionQuality: compression) {
+                    data = temp
+                }
+                else { break }
                 if data.count < Int(Double(maxLength) * 0.9) {
                     min = compression
                 }
@@ -231,9 +239,14 @@ class PhotoAlbumTool {
                                       height: CGFloat(Int(Float(resultImage.size.height) * sqrtf(ratio))))
                     UIGraphicsBeginImageContext(size)
                     resultImage.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-                    resultImage = UIGraphicsGetImageFromCurrentImageContext()!
+                    if let image = UIGraphicsGetImageFromCurrentImageContext() {
+                        resultImage = image
+                    }
                     UIGraphicsEndImageContext()
-                    data = UIImageJPEGRepresentation(resultImage, compression)!
+                    if let temp = resultImage.jpegData(compressionQuality: compression) {
+                        data = temp
+                    }
+                    else  { break }
                 }
             }
             result?(data)

@@ -7,18 +7,38 @@
 //
 
 import UIKit
+import Photos
 import Foundation
 
+public struct JPhoto {
+    var imageData: Data?
+    var asset: PHAsset?
+    
+    init(_ imageData: Data, asset: PHAsset? = nil) {
+        self.imageData = imageData
+        self.asset = asset
+    }
+    
+    init(_ asset: PHAsset, imageData: Data? = nil) {
+        self.imageData = imageData
+        self.asset = asset
+    }
+}
+
+public typealias JPhotoResult = (_ photoAlbums: [JPhoto]) -> Void
 public typealias UploadProgress = (_ progress: Progress) -> Void
 public typealias UploadResult = (_ success: Bool) -> Void
 
-public protocol JHUploadPhotoDataDelegate: class {
+public protocol JHUploadPhotoDataDelegate {
     
-    /// 将要上传 单张 图片data到服务器上
-    func willUploadSingle(_ imageData: Data)
+    /// 将要上传选中图片 (单张)
+//    func willUploadSingle(_ photo: JPhoto, idx: Int)
+    
+    /// 将要上传 选中 图片 到服务器上
+    func willUploadAll(_ photos: [JPhoto])
     
     /// 上传图片data到服务器上
-    func startUpload(_ imageData: Data, params: [String : String], progress: UploadProgress?, result: UploadResult?)
+//    func startUpload(_ imageData: Data, params: [String : String], progress: UploadProgress?, result: UploadResult?)
 }
 
 public protocol JHUploadPhotoViewDelegate: class {
@@ -40,9 +60,23 @@ public protocol JHUploadPhotoViewDelegate: class {
 
 public extension JHUploadPhotoDataDelegate {
     
-    func willUploadSingle(_ imageData: Data) {}
+    func willUploadAll(_ photos: [JPhoto]) {}
+    func willUploadSingle(_ photo: JPhoto, idx: Int) {}
     
     func startUpload(_ imageData: Data, params: [String : String], progress: UploadProgress?, result: UploadResult?) {}
+    
+    /// async
+    func getImageDataFromJPhoto(_ photo: JPhoto, result: @escaping (Data?) -> Void ) {
+        if let data = photo.imageData {
+            return result(data)
+        }
+        guard let asset = photo.asset else { return result(nil) }
+        _ = autoreleasepool {
+            DispatchQueue.global(qos: .default).async {
+                PhotoAlbumTool.requestImageData(for: asset, result: result)
+            }
+        }
+    }
 }
 
 public extension JHUploadPhotoViewDelegate {

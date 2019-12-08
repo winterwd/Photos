@@ -38,7 +38,7 @@ class ActivityCroppedImageProvider: UIActivityItemProvider {
         return UIImage()
     }
     
-    override func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivityType?) -> Any? {
+    override func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
         return self.cropedImage
     }
     
@@ -70,8 +70,8 @@ extension UIImage {
             // map the image to a view and then use Core Animation to manipulate its rotation
             if angle != 0 {
                 let imageView = UIImageView(image: self)
-                imageView.layer.minificationFilter = kCAFilterNearest
-                imageView.layer.magnificationFilter = kCAFilterNearest
+                imageView.layer.minificationFilter = CALayerContentsFilter.nearest
+                imageView.layer.magnificationFilter = CALayerContentsFilter.nearest
                 imageView.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 180 * CGFloat(angle))
                 let rotatedRect = imageView.bounds.applying(imageView.transform)
                 let containerView = UIView(frame: CGRect(origin: CGPoint.zero, size: rotatedRect.size))

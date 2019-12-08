@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,6 +20,7 @@
 		C8A34F601F56A2CA00F7B249 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8E19F041F553F74002405CC /* CropViewController.swift */; };
 		C8A34F611F56A2CA00F7B249 /* CropImageTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A34F5B1F564D9200F7B249 /* CropImageTool.swift */; };
 		C8A7115A1F0CBD33008C0B43 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A711591F0CBD33008C0B43 /* UploadViewController.swift */; };
+		C8D92F9F239CD854002F2C46 /* jpAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C8D92F9E239CD854002F2C46 /* jpAssets.xcassets */; };
 		C8EFCB421F4EC178003F5DEF /* TestCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EFCB411F4EC0A4003F5DEF /* TestCropViewController.swift */; };
 		DB613E28EA37D7AEE8B2E8DC /* Pods_JHPhotos_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1FB4B95A24F1A4DBB403A3 /* Pods_JHPhotos_Example.framework */; };
 /* End PBXBuildFile section */
@@ -51,25 +52,9 @@
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		6F130EE563C7D4ADEEAF3ECC /* Pods-JHPhotos_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JHPhotos_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-JHPhotos_Example/Pods-JHPhotos_Example.release.xcconfig"; sourceTree = "<group>"; };
 		C85808F51F4D7C7A00A21B06 /* CropOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropOverlayView.swift; sourceTree = "<group>"; };
-		C88E36BD1F0C80B400B875D4 /* icon_upload_camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_camera@2x.png"; sourceTree = "<group>"; };
-		C88E36BE1F0C80B400B875D4 /* icon_upload_camera@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_camera@3x.png"; sourceTree = "<group>"; };
-		C88E36BF1F0C80B400B875D4 /* icon_upload_delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_delete@2x.png"; sourceTree = "<group>"; };
-		C88E36C01F0C80B400B875D4 /* icon_upload_delete@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_delete@3x.png"; sourceTree = "<group>"; };
-		C88E36C11F0C80B400B875D4 /* icon_upload_more@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_more@2x.png"; sourceTree = "<group>"; };
-		C88E36C21F0C80B400B875D4 /* icon_upload_more@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_more@3x.png"; sourceTree = "<group>"; };
-		C88E36C31F0C80B400B875D4 /* icon_upload_more_s@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_more_s@2x.png"; sourceTree = "<group>"; };
-		C88E36C41F0C80B400B875D4 /* icon_upload_more_s@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_more_s@3x.png"; sourceTree = "<group>"; };
-		C88E36CB1F0C80B400B875D4 /* icon_imageError@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageError@2x.png"; sourceTree = "<group>"; };
-		C88E36CC1F0C80B400B875D4 /* icon_imageError@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageError@3x.png"; sourceTree = "<group>"; };
-		C88E36CF1F0C80B400B875D4 /* icon_imageSelected_ON@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageSelected_ON@2x.png"; sourceTree = "<group>"; };
-		C88E36D01F0C80B400B875D4 /* icon_imageSelected_ON@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageSelected_ON@3x.png"; sourceTree = "<group>"; };
 		C88E36D11F0C80B400B875D4 /* PhotoAlbum.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = PhotoAlbum.storyboard; path = ../../Assets/PhotoAlbum.storyboard; sourceTree = "<group>"; };
 		C88E36D21F0C80B400B875D4 /* PhotoAlbumSelectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = PhotoAlbumSelectCell.xib; path = ../../Assets/PhotoAlbumSelectCell.xib; sourceTree = "<group>"; };
 		C88E36D31F0C80B400B875D4 /* PhotoAlbumSelectView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = PhotoAlbumSelectView.xib; path = ../../Assets/PhotoAlbumSelectView.xib; sourceTree = "<group>"; };
-		C88E36D41F0C80B400B875D4 /* icon_itemArrow_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_itemArrow_left@2x.png"; sourceTree = "<group>"; };
-		C88E36D51F0C80B400B875D4 /* icon_itemArrow_left@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_itemArrow_left@3x.png"; sourceTree = "<group>"; };
-		C88E36D61F0C80B400B875D4 /* icon_itemArrow_right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_itemArrow_right@2x.png"; sourceTree = "<group>"; };
-		C88E36D71F0C80B400B875D4 /* icon_itemArrow_right@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_itemArrow_right@3x.png"; sourceTree = "<group>"; };
 		C88E36DA1F0C80B400B875D4 /* JHPhotoBrowserProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JHPhotoBrowserProtocol.swift; sourceTree = "<group>"; };
 		C88E36DB1F0C80B400B875D4 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		C88E36DC1F0C80B400B875D4 /* PhotoBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoBrowser.swift; sourceTree = "<group>"; };
@@ -87,14 +72,11 @@
 		C88E36EB1F0C80B400B875D4 /* SelectImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectImageView.swift; sourceTree = "<group>"; };
 		C88E36ED1F0C80B400B875D4 /* UploadPhotoProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoProtocol.swift; sourceTree = "<group>"; };
 		C88E36EE1F0C80B400B875D4 /* UploadPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoView.swift; sourceTree = "<group>"; };
-		C89C9A7B1F1465EB00B22D29 /* icon_upload_add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_add@2x.png"; sourceTree = "<group>"; };
-		C89C9A7C1F1465EB00B22D29 /* icon_upload_add@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_upload_add@3x.png"; sourceTree = "<group>"; };
-		C89C9A7D1F146A8A00B22D29 /* icon_imageSelected_OFF@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageSelected_OFF@3x.png"; sourceTree = "<group>"; };
-		C89C9A7E1F146A8A00B22D29 /* icon_imageSelected_OFF@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_imageSelected_OFF@2x.png"; sourceTree = "<group>"; };
 		C8A34F5B1F564D9200F7B249 /* CropImageTool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropImageTool.swift; sourceTree = "<group>"; };
 		C8A49EF61F457BF8002B8856 /* DragCellCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCellCollectionView.swift; sourceTree = "<group>"; };
 		C8A49EF71F457F8C002B8856 /* UploadImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageCell.swift; sourceTree = "<group>"; };
 		C8A711591F0CBD33008C0B43 /* UploadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
+		C8D92F9E239CD854002F2C46 /* jpAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = jpAssets.xcassets; sourceTree = "<group>"; };
 		C8E19F041F553F74002405CC /* CropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
 		C8EFCB401F4EBFC7003F5DEF /* CropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
 		C8EFCB411F4EC0A4003F5DEF /* TestCropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCropViewController.swift; sourceTree = "<group>"; };
@@ -243,26 +225,7 @@
 		C88E36BC1F0C80B400B875D4 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				C89C9A7B1F1465EB00B22D29 /* icon_upload_add@2x.png */,
-				C89C9A7C1F1465EB00B22D29 /* icon_upload_add@3x.png */,
-				C88E36BD1F0C80B400B875D4 /* icon_upload_camera@2x.png */,
-				C88E36BE1F0C80B400B875D4 /* icon_upload_camera@3x.png */,
-				C88E36BF1F0C80B400B875D4 /* icon_upload_delete@2x.png */,
-				C88E36C01F0C80B400B875D4 /* icon_upload_delete@3x.png */,
-				C88E36C11F0C80B400B875D4 /* icon_upload_more@2x.png */,
-				C88E36C21F0C80B400B875D4 /* icon_upload_more@3x.png */,
-				C88E36C31F0C80B400B875D4 /* icon_upload_more_s@2x.png */,
-				C88E36C41F0C80B400B875D4 /* icon_upload_more_s@3x.png */,
-				C88E36CB1F0C80B400B875D4 /* icon_imageError@2x.png */,
-				C88E36CC1F0C80B400B875D4 /* icon_imageError@3x.png */,
-				C89C9A7E1F146A8A00B22D29 /* icon_imageSelected_OFF@2x.png */,
-				C89C9A7D1F146A8A00B22D29 /* icon_imageSelected_OFF@3x.png */,
-				C88E36CF1F0C80B400B875D4 /* icon_imageSelected_ON@2x.png */,
-				C88E36D01F0C80B400B875D4 /* icon_imageSelected_ON@3x.png */,
-				C88E36D41F0C80B400B875D4 /* icon_itemArrow_left@2x.png */,
-				C88E36D51F0C80B400B875D4 /* icon_itemArrow_left@3x.png */,
-				C88E36D61F0C80B400B875D4 /* icon_itemArrow_right@2x.png */,
-				C88E36D71F0C80B400B875D4 /* icon_itemArrow_right@3x.png */,
+				C8D92F9E239CD854002F2C46 /* jpAssets.xcassets */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -378,12 +341,11 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 1030;
-				ORGANIZATIONNAME = DJ;
+				ORGANIZATIONNAME = W;
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						DevelopmentTeam = L27NWNZJ2R;
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 1030;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -393,7 +355,7 @@
 				};
 			};
 			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "JHPhotos" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -419,6 +381,7 @@
 			files = (
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
+				C8D92F9F239CD854002F2C46 /* jpAssets.xcassets in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -474,15 +437,12 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JHPhotos_Example/Pods-JHPhotos_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/JHPhotos/JHPhotos.framework",
-				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JHPhotos_Example/Pods-JHPhotos_Example-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JHPhotos.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JHPhotos_Example/Pods-JHPhotos_Example-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -647,7 +607,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -658,14 +619,17 @@
 			baseConfigurationReference = D4BC88ACF5DCABF0BDBD2AB1 /* Pods-JHPhotos_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = L27NWNZJ2R;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = JHPhotos/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -674,14 +638,17 @@
 			baseConfigurationReference = 6F130EE563C7D4ADEEAF3ECC /* Pods-JHPhotos_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = L27NWNZJ2R;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = JHPhotos/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -698,7 +665,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -714,7 +685,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

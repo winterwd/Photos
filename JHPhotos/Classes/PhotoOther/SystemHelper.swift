@@ -20,7 +20,7 @@ public class SystemHelper {
     /// - Parameters:
     ///   - success: 验证成功后回调
     ///   - failed: 验证失败后回调
-    public class func verifyPhotoLibraryAuthorization(success: SystemHelperResult? = nil, failed: SystemHelperResult? = nil) {
+    public class func verifyPhotoLibraryAuthorization(_ success: SystemHelperResult? = nil, failed: SystemHelperResult? = nil) {
         let status = PHPhotoLibrary.authorizationStatus()
         switch status {
         case .notDetermined: // 第一次授权
@@ -47,7 +47,7 @@ public class SystemHelper {
     /// - Parameters:
     ///   - success: 验证成功后回调
     ///   - failed: 验证失败后回调
-    public class func verifyCameraAuthorization(success: SystemHelperResult? = nil, failed: SystemHelperResult? = nil) {
+    public class func verifyCameraAuthorization(_ success: SystemHelperResult? = nil, failed: SystemHelperResult? = nil) {
         if !UIImagePickerController.isSourceTypeAvailable(.camera) {
             self.showTip("该设备不支持拍照！")
             failed?()
@@ -80,7 +80,7 @@ public class SystemHelper {
     private class func showSettingAlert(_ tip: String, cancel: SystemHelperResult? = nil) {
         self.showActionAlert(tip, action: {
             let app = UIApplication.shared
-            if let settingsURL = URL(string: UIApplicationOpenSettingsURLString) {
+            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 if app.canOpenURL(settingsURL) {
                     app.openURL(settingsURL)
                 }
@@ -146,10 +146,11 @@ public class SystemHelper {
     /// - Returns: 返回当前正在显示的ViewController
     public class func presentingViewController() -> UIViewController? {
         var window = UIApplication.shared.keyWindow
-        if window?.windowLevel != 0.0 {
+        let defaultLevel = UIWindow.Level(0.0)
+        if window?.windowLevel != defaultLevel {
             let windows = UIApplication.shared.windows
             for obj in windows {
-                if obj.windowLevel == 0.0 {
+                if obj.windowLevel == defaultLevel {
                     window = obj
                     break
                 }
@@ -160,12 +161,10 @@ public class SystemHelper {
             while result.presentedViewController != nil {
                 result = result.presentedViewController!
             }
-            if result is UITabBarController {
-                let temp = result as! UITabBarController
+            if let temp = result as? UITabBarController {
                 result = (temp.viewControllers?[temp.selectedIndex])!
             }
-            if result is UINavigationController {
-                let temp = result as! UINavigationController
+            if let temp = result as? UINavigationController {
                 result = temp.topViewController!
             }
             return result
@@ -182,7 +181,9 @@ public class SystemHelper {
         if let url = bundle.url(forResource: "JHPhotos", withExtension: "bundle") {
             return Bundle(url: url)
         }
-        return nil
+        else {
+            return Bundle.main
+        }
     }
 }
 

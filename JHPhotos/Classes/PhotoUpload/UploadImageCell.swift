@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 import Kingfisher
 
 struct UploadCellImage {
@@ -14,6 +15,7 @@ struct UploadCellImage {
     var cellImage: UIImage?
     var cellImageData: Data?
     var cellImageUrl: String?
+    var cellAsset: PHAsset?
     
     init(_ url: String?) {
         cellImageUrl = url
@@ -25,6 +27,10 @@ struct UploadCellImage {
     
     init(_ image: UIImage?) {
         cellImage = image
+    }
+    
+    init(_ asset: PHAsset?) {
+        cellAsset = asset
     }
 }
 
@@ -41,7 +47,8 @@ class UploadImageCell: UICollectionViewCell {
     
     lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleToFill
+        imageView.cornerRadius = 8
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -58,7 +65,7 @@ class UploadImageCell: UICollectionViewCell {
 //    lazy var deleteButton: UIButton = {
 //        let button = UIButton(type: UIButtonType.custom)
 //        button.isHidden = true
-//        button.setImage(UIImage.my_bundleImage(named: "icon_upload_delete"), for: .normal)
+//        button.setImage(UIImage.my_bundleImage(named: "jp_icon_upload_delete"), for: .normal)
 //        button.imageEdgeInsets = UIEdgeInsetsMake(-14, 14, 0, 0)
 //        return button
 //    }()
@@ -135,6 +142,17 @@ class UploadImageCell: UICollectionViewCell {
 //            coverView.isHidden = true
 //            progressView.isHidden = true
 //            hideDeleteBtn = false
+        }
+        else if let asset = cellImage.cellAsset {
+            PhotoAlbumTool.requestImage(for: asset,
+                                        size: CGSize(width: 200, height: 200),
+                                        resizeMode: .exact,
+                                        contentMode: .aspectFill) { [weak self] (image) in
+                                            if let strongSelf = self {
+                                                strongSelf.imageView.image = image
+                                                
+                                            }
+            }
         }
 //        deleteButton.isHidden = hideDeleteBtn
     }

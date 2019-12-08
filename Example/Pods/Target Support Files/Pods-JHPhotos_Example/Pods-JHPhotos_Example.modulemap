@@ -1,6 +1,0 @@
-framework module Pods_JHPhotos_Example {
-  umbrella header "Pods-JHPhotos_Example-umbrella.h"
-
-  export *
-  module * { export * }
-}

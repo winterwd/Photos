@@ -9,8 +9,15 @@
 import UIKit
 import Photos
 
-class PhotoAlbum: NSObject {
-    var asset: PHAsset!
+class PhotoAlbum: Equatable {
+    static func == (lhs: PhotoAlbum, rhs: PhotoAlbum) -> Bool {
+        return lhs.asset.isEqual(rhs.asset) &&
+            lhs.isSelected == rhs.isSelected &&
+            lhs.canSelected == rhs.canSelected &&
+            lhs.isEdited == rhs.isEdited
+    }
+    
+    var asset: PHAsset
     var isSelected = false
     var canSelected = false
     
@@ -25,6 +32,7 @@ class PhotoAlbum: NSObject {
         }
     }
     
+    var tempImage: UIImage?
     init(_ a: PHAsset) {
         self.asset = a
     }
@@ -34,7 +42,7 @@ class PhotoAlbumCell: UICollectionViewCell {
     
     typealias resultBlock = (_ obj: PhotoAlbum?) -> Void
     // MARK: - private
-    fileprivate var block: (resultBlock)?
+    fileprivate var block: resultBlock?
     fileprivate var model: PhotoAlbum!
     
     @IBOutlet weak var imageView: UIImageView!
@@ -76,12 +84,17 @@ class PhotoAlbumCell: UICollectionViewCell {
             return
         }
         
+        if let image = model.tempImage {
+            return imageView.image = image
+        }
+        
         PhotoAlbumTool.requestImage(for: model.asset,
                                     size: self.imageView.frame.size,
                                     resizeMode: .exact,
                                     contentMode: .aspectFill) { [weak self] (image) in
                                         if let strongSelf = self {
                                             strongSelf.imageView.image = image
+                                            strongSelf.model.tempImage = image
                                         }
                                     }
     }

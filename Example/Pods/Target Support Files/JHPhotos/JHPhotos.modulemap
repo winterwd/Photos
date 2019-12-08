@@ -1,6 +1,0 @@
-framework module JHPhotos {
-  umbrella header "JHPhotos-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -2,7 +2,6 @@ use_frameworks!
 
 target 'JHPhotos_Example' do
   pod 'JHPhotos', :path => '../JHPhotos.podspec'
-#pod 'Kingfisher'
   
   target 'JHPhotos_Tests' do
     inherit! :search_paths

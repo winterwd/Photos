@@ -13,8 +13,8 @@ class CircularProgressLayer: CALayer {
     
     // MARK: - property
     
-    fileprivate var trackTintColor: UIColor = UIColor.init(white: 1, alpha: 0.3)
-    fileprivate var progressTintColor: UIColor = UIColor.white
+    fileprivate var trackTintColor: UIColor = UIColor.white.withAlphaComponent(0.3)
+    fileprivate var progressTintColor: UIColor = .white
     fileprivate var innerTintColor: UIColor?
     
     fileprivate var thicknessRatio: CGFloat = 0.15
@@ -143,7 +143,7 @@ class CircularProgressView: UIView, CAAnimationDelegate {
     
     func setProgress(_ progress: CGFloat, animated: Bool, initialDelay: CFTimeInterval) {
         let pinnedProgress = min(max(progress, 0), 1)
-        let duration = fabs(circularProgressLayer.progress - pinnedProgress)
+        let duration = abs(circularProgressLayer.progress - pinnedProgress)
         self.setProgress(progress, animated: animated, initialDelay: 0.0, withDuration: CFTimeInterval(duration))
     }
     
@@ -155,8 +155,8 @@ class CircularProgressView: UIView, CAAnimationDelegate {
         if animated {
             let ani = CABasicAnimation(keyPath: "progress")
             ani.duration = duration
-            ani.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-            ani.fillMode = kCAFillModeForwards
+            ani.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+            ani.fillMode = CAMediaTimingFillMode.forwards
             ani.fromValue = NSNumber(value: Float(circularProgressLayer.progress))
             ani.toValue = NSNumber(value: Float(pinnedProgress))
             ani.beginTime = CACurrentMediaTime() + initialDelay

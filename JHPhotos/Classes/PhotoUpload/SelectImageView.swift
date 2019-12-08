@@ -8,40 +8,56 @@
 
 import UIKit
 
-fileprivate let viewSpace: CGFloat = 10
+fileprivate let viewSpace: CGFloat = 15
 fileprivate let selectActionCount: CGFloat = 3
-fileprivate let selectActionHeight: CGFloat = 45
+fileprivate let selectActionHeight: CGFloat = 55
 
-fileprivate let screenWidth = UIScreen.main.bounds.width
-fileprivate let screenHeight = UIScreen.main.bounds.height
+fileprivate let jp_screenWidth = UIScreen.main.bounds.width
+fileprivate let jp_screenHeight = UIScreen.main.bounds.height
+// 刘海屏系列
+fileprivate let jp_iPhoneXs = Int(100 * jp_screenHeight / jp_screenWidth) == 216
+// 底部button距离
+let jp_bottomSpace: CGFloat = jp_iPhoneXs ? 34 : 0
+// 顶部导航栏高度
+let jp_navBarHeight: CGFloat = jp_iPhoneXs ? 88 : 64
 
 public class SelectImageView: UIView {
     
-    public var block: ((_ imageDatas: [Data]) -> Void)?
+    public var block: JPhotoResult?
     
     fileprivate var selectButton: UIButton!
     fileprivate var maxSelectCount = 0
     fileprivate weak var delegate: UIViewController?
     
-    fileprivate let lineColor = UIColor.lightGray
+    fileprivate let lineColor = UIColor(red: 0.898, green: 0.898, blue: 0.898, alpha: 1)
     fileprivate let textColor = UIColor(red: 0.1333, green: 0.1333, blue: 0.1333, alpha: 1)
 
     fileprivate lazy var selectView: UIView = {
-        let height = selectActionCount * selectActionHeight + viewSpace
-        let view = UIView(frame: CGRect(x: 0, y: screenHeight, width: screenWidth, height: height))
-        view.backgroundColor = UIColor.clear
+        let height = selectActionCount * selectActionHeight + viewSpace + jp_bottomSpace
+        let frame = CGRect(x: 0, y: jp_screenHeight, width: jp_screenWidth, height: height)
+        let view = UIView(frame: frame)
+        view.backgroundColor = UIColor(red: 0.945, green: 0.945, blue: 0.945, alpha: 1)
+        
+        let maskPath = UIBezierPath(roundedRect: view.bounds,
+                                    byRoundingCorners: UIRectCorner(rawValue: UIRectCorner.topLeft.rawValue | UIRectCorner.topRight.rawValue),
+                                    cornerRadii: CGSize(width: 15, height: 15))
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = view.bounds
+        maskLayer.path = maskPath.cgPath
+        view.layer.mask = maskLayer
         return view
     }()
     
     fileprivate lazy var coverView: UIControl = {
-        let view = UIControl(frame: CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight))
+        let view = UIControl(frame: CGRect(x: 0, y: 0, width: jp_screenWidth, height: jp_screenHeight))
         view.backgroundColor = UIColor.black
         view.alpha = 0
         return view
     }()
     
     override init(frame: CGRect) {
-        super.init(frame: CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight))
+        super.init(frame: CGRect(x: 0, y: 0, width: jp_screenWidth, height: jp_screenHeight))
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -51,7 +67,7 @@ public class SelectImageView: UIView {
     // MARK: - public
     
     public init(_ delegate: UIViewController, maxSelectCount count: Int) {
-        super.init(frame:  CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight))
+        super.init(frame:  CGRect(x: 0, y: 0, width: jp_screenWidth, height: jp_screenHeight))
         self.delegate = delegate
         self.maxSelectCount = count
         self.backgroundColor = UIColor.clear
@@ -64,7 +80,7 @@ public class SelectImageView: UIView {
             window.addSubview(self)
             
             self.setFrameY(y: 0)
-            let y = screenHeight - selectView.frame.height
+            let y = jp_screenHeight - selectView.frame.height
             let frame = CGRect(origin: CGPoint(x: 0, y: y), size: selectView.frame.size)
             UIView.animate(withDuration: 0.25, animations: { 
                 self.selectView.frame = frame
@@ -76,7 +92,7 @@ public class SelectImageView: UIView {
 
 fileprivate extension SelectImageView {
     
-    func handleSelectImageDatas(_ datas: [Data]) {
+    func handleSelectImageDatas(_ datas: [JPhoto]) {
         block?(datas)
         self.removeFromSuperview()
     }
@@ -102,26 +118,30 @@ fileprivate extension SelectImageView {
                 self.removeFromSuperview()
             }
             else {
-                self.setFrameY(y: screenHeight)
+                self.setFrameY(y: jp_screenHeight)
             }
         }
     }
     
-    func selectViewItem(_ frame: CGRect) -> UIButton {
+    func selectViewItem(_ frame: CGRect, showLine: Bool) -> UIButton {
         let view = UIView(frame: frame)
         view.backgroundColor = UIColor.white
-        
-        let line = UIView(frame: CGRect(x: 0, y: frame.height - 0.5, width: frame.width, height: 0.5))
-        line.backgroundColor = lineColor
         
         let button = UIButton(type: .custom)
         button.frame = view.bounds
         button.setTitleColor(textColor, for: .normal)
         button.setTitleColor(textColor.withAlphaComponent(0.6), for: .highlighted)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        button.backgroundColor = .white
         
         view.addSubview(button)
-        view.addSubview(line)
+        
+        if showLine {
+            let line = UIView(frame: CGRect(x: 0, y: frame.height - 0.5, width: frame.width, height: 0.5))
+            line.backgroundColor = lineColor
+            view.addSubview(line)
+        }
+        
         self.selectView.addSubview(view)
         return button
     }
@@ -131,13 +151,16 @@ fileprivate extension SelectImageView {
         self.addSubview(coverView)
         self.addSubview(selectView)
         
-        let buttonTitles = ["从手机相册选择", "拍照", "取消"]
+        let buttonTitles = ["拍照", "从手机相册选择", "取消"]
         for i in 0..<Int(selectActionCount) {
             var y = CGFloat(i) * selectActionHeight
+            var height = selectActionHeight
             if i == Int(selectActionCount) - 1 {
                 y += viewSpace
+                height += jp_bottomSpace
             }
-            let button = self.selectViewItem(CGRect(x: 0, y: y, width: screenWidth, height: selectActionHeight))
+            let itemFrame = CGRect(x: 0, y: y, width: jp_screenWidth, height: height)
+            let button = self.selectViewItem(itemFrame, showLine: i == 0)
             if i == Int(selectActionCount) - 1 {
                 selectButton = button
             }
@@ -159,35 +182,39 @@ fileprivate extension SelectImageView {
         
         self.hideAndRemove(false)
         
-        if buttonIndex == 1 {
+        if buttonIndex == 0 {
             // 拍照
-            SystemHelper.verifyCameraAuthorization(success: { [unowned self] () in
+            func takePhoto() {
                 let imagePickerVC = UIImagePickerController()
                 imagePickerVC.sourceType = .camera
                 imagePickerVC.allowsEditing = true
-                imagePickerVC.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
-                self.delegate?.present(imagePickerVC, animated: true, completion: nil)
-            }, failed: nil)
+                imagePickerVC.delegate = self
+                delegate?.present(imagePickerVC, animated: true, completion: nil)
+            }
+            
+            SystemHelper.verifyCameraAuthorization({ takePhoto() })
         }
         else {
             // 相册
-            SystemHelper.verifyPhotoLibraryAuthorization(success: { [unowned self] () in
-                let vc = PhotoAlbumViewController.photoAlbum(maxSelectCount: self.maxSelectCount, block: { [unowned self] (datas) in
-                    self.handleSelectImageDatas(datas)
+            func selectPhoto() {
+                let vc = PhotoAlbumViewController.photoAlbum(maxSelectCount: maxSelectCount, block: { [weak self] (datas) in
+                    self?.handleSelectImageDatas(datas)
                 })
-                self.delegate?.present(vc, animated: true, completion: nil)
-            }, failed: nil)
+                delegate?.present(vc, animated: true, completion: nil)
+            }
+            
+            SystemHelper.verifyPhotoLibraryAuthorization({ selectPhoto() })
         }
     }
 }
 
 extension SelectImageView: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let image = info[UIImagePickerControllerEditedImage] as! UIImage
-        if let imageData = UIImageJPEGRepresentation(image, 0.5) {
-            picker.dismiss(animated: true) { [unowned self] () in
-                self.handleSelectImageDatas([imageData])
-                self.removeFromSuperview()
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
+        if let imageData = image.jpegData(compressionQuality: 0.5) {
+            picker.dismiss(animated: true) { [weak self] () in
+                self?.handleSelectImageDatas([JPhoto(imageData)])
+                self?.removeFromSuperview()
             }
             return
         }
@@ -195,8 +222,8 @@ extension SelectImageView: UIImagePickerControllerDelegate, UINavigationControll
     }
     
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true) { [unowned self] () in
-            self.removeFromSuperview()
+        picker.dismiss(animated: true) { [weak self] () in
+            self?.removeFromSuperview()
         }
     }
 }

@@ -142,7 +142,7 @@ public class CropView: UIView {
         scrollView.touchedEnd = { [weak self] in self?.startResetTimer() }
         
         backgroundImageView = UIImageView(image: image)
-        backgroundImageView.layer.minificationFilter = kCAFilterLinear
+        backgroundImageView.layer.minificationFilter = CALayerContentsFilter.linear
         
         backgroundContainerView = UIView(frame: backgroundImageView.frame)
         backgroundContainerView.addSubview(backgroundImageView)
@@ -157,7 +157,7 @@ public class CropView: UIView {
         
         self.addSubview(foregroundContainerView)
         foregroundImageView = UIImageView(image: image)
-        foregroundImageView.layer.minificationFilter = kCAFilterLinear
+        foregroundImageView.layer.minificationFilter = CALayerContentsFilter.linear
         foregroundContainerView.addSubview(foregroundImageView)
         
         self.addSubview(gridOverlayView)
@@ -495,7 +495,7 @@ extension CropView {
         foregroundContainerView.frame = cropBoxFrame
         gridOverlayView.frame = cropBoxFrame
         
-        scrollView.contentInset = UIEdgeInsetsMake(cropBoxFrame.minY, cropBoxFrame.minX, self.bounds.maxY - cropBoxFrame.maxY, self.bounds.maxX - cropBoxFrame.maxX)
+        scrollView.contentInset = UIEdgeInsets(top: cropBoxFrame.minY, left: cropBoxFrame.minX, bottom: self.bounds.maxY - cropBoxFrame.maxY, right: self.bounds.maxX - cropBoxFrame.maxX)
         
         // if necessary, work out the new minimum size of the scroll view so it fills the crop box
         let imageSize = backgroundContainerView.bounds.size

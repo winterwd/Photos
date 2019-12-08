@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol TapDetectingViewDelegate: class{
+protocol TapDetectingViewDelegate: class {
     func view(_ view: UIView, singleTapDetected touch: UITouch)
     func view(_ view: UIView, doubleTapDetected touch: UITouch)
 //    @objc optional func view(_ view: UIView, tripleTapDetected touch: UITouch)

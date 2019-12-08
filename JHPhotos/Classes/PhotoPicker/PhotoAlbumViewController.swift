@@ -17,17 +17,16 @@ public final class PhotoAlbumViewController: UICollectionViewController {
     // MARK: - public property
     
     public var maxSelectCount: Int = 3
-    public var resultBlock: ((_ imageDatas: [Data]) -> Void)?
+    public var resultClosure: JPhotoResult?
     
     // MARK: - private property
     
     @IBOutlet fileprivate weak var titleButton: RightImageButton!
     @IBOutlet fileprivate weak var viewFlowLayout: UICollectionViewFlowLayout!
     
-    fileprivate var queue: DispatchQueue? = nil
     fileprivate var selectedCount = 0 // 已经选中的照片数
     
-    fileprivate var _uploadItems = NSMutableArray()
+    fileprivate var _uploadItems = NSMutableArray() // PhotoAlbum
     fileprivate var selectedPhotoStatus: [Bool] = [] // 照片是否被选中状态
     
     fileprivate var currentPhotoListAlbum: PhotoListAlbum?
@@ -51,11 +50,11 @@ public final class PhotoAlbumViewController: UICollectionViewController {
         }
     }
     
-    public class func photoAlbum(maxSelectCount count: Int, block: ((_ imageDatas: [Data]) -> Void)?) -> UINavigationController {
+    public class func photoAlbum(maxSelectCount count: Int, block: @escaping JPhotoResult) -> UINavigationController {
         let nvc = UIStoryboard(name: "PhotoAlbum", bundle: SystemHelper.getMyLibraryBundle()).instantiateInitialViewController() as! UINavigationController
         let vc = nvc.topViewController as! PhotoAlbumViewController
         vc.maxSelectCount = count
-        vc.resultBlock = block
+        vc.resultClosure = block
         return nvc
     }
 
@@ -86,11 +85,12 @@ public final class PhotoAlbumViewController: UICollectionViewController {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: albumPickerIdentifier, for: indexPath) as! PhotoAlbumCell
             let model = albumList[indexPath.item - 1]
             model.canSelected = selectedCount < maxSelectCount || model.isSelected
-            cell.setPhotoAlbum(model, selectBlock: { [unowned self] (album) in
-                if album != nil {
-                    self.addUploadItem(album!)
+            cell.setPhotoAlbum(model, selectBlock: { [weak self] (album) in
+                guard let strongSlef = self else { return }
+                if let album = album {
+                    strongSlef.addUploadItem(album)
                 }
-                else { SystemHelper.showTip("你最多只能选择\(self.maxSelectCount)张图片！") }
+                else { SystemHelper.showTip("你最多只能选择\(strongSlef.maxSelectCount)张图片！") }
             })
             return cell
         }
@@ -105,9 +105,8 @@ public final class PhotoAlbumViewController: UICollectionViewController {
         }
         let model = albumList[indexPath.item - 1]
         if model.canSelected {
-            let photoBrowser = PhotoBrowser.init(delgegate: self)
+            let photoBrowser = PhotoBrowser(delgegate: self)
             photoBrowser.isDisplaySelectionButton = true
-            photoBrowser.isCanEditPhoto = true
             photoBrowser.setCurrentPageIndex(indexPath.item - 1)
 //            let nav = UINavigationController(rootViewController: photoBrowser)
 //            nav.modalTransitionStyle = .crossDissolve
@@ -167,9 +166,7 @@ fileprivate extension PhotoAlbumViewController {
             _uploadItems.remove(obj)
         }
         
-        if let index = self.albumList.index(where: { (item) -> Bool in
-            return obj.isEqual(item)
-        }) {
+        if let index = self.albumList.firstIndex(of: obj) {
             self.selectedPhotoStatus[index] = obj.isSelected
         }
     }
@@ -206,7 +203,6 @@ fileprivate extension PhotoAlbumViewController {
     }
     
     func dismiss() {
-        queue?.suspend()
         dismiss(animated: true, completion: nil)
     }
 }
@@ -221,13 +217,15 @@ fileprivate extension PhotoAlbumViewController {
             return
         }
         
-        SystemHelper.verifyCameraAuthorization(success: { [unowned self] () in
+        func showImagePickerVC() {
             let imagePickerVC = UIImagePickerController()
             imagePickerVC.sourceType = .camera
             imagePickerVC.allowsEditing = false
-            imagePickerVC.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
+            imagePickerVC.delegate = self
             self.present(imagePickerVC, animated: true, completion: nil)
-        }, failed: nil)
+        }
+        
+        SystemHelper.verifyCameraAuthorization({ showImagePickerVC() })
     }
     
     @IBAction func cancelAction(_ sender: UIBarButtonItem) {
@@ -237,11 +235,12 @@ fileprivate extension PhotoAlbumViewController {
     @IBAction func selectPhotoAlbumAction(_ sender: RightImageButton) {
         self.changeButtonState(sender)
         if sender.isSelected {
+            guard let albumList = currentPhotoListAlbum else { return }
             albumSelectView.show(atView: self.view,
-                                 selectedAlbumList: currentPhotoListAlbum!,
-                                 block: { [unowned self] (obj) in
-                                            self.changeButtonState(sender)
-                                            self.updatePhotoListAlbum(obj)
+                                 selectedAlbumList: albumList,
+                                 block: { [weak self] (obj) in
+                                            self?.changeButtonState(sender)
+                                            self?.updatePhotoListAlbum(obj)
                                         })
         }
         else {
@@ -252,7 +251,7 @@ fileprivate extension PhotoAlbumViewController {
     
     func changeButtonState(_ sender: RightImageButton) {
         sender.isSelected = !sender.isSelected
-        let hlImageName = sender.isSelected ? "icon_upload_more_s" : "icon_upload_more"
+        let hlImageName = sender.isSelected ? "jp_icon_upload_more_s" : "jp_icon_upload_more"
         sender.setImage(UIImage.my_bundleImage(named: hlImageName), for: .normal)
         sender.setImage(UIImage.my_bundleImage(named: hlImageName), for: .highlighted)
     }
@@ -263,48 +262,34 @@ fileprivate extension PhotoAlbumViewController {
     }
     
     func startUploadSelectPhoto() {
-        _ = autoreleasepool {
-            // hud... "请稍后..."
-            
-            let cQueue = DispatchQueue.global(qos: .default)
-            queue = cQueue
-            cQueue.async {
-                var array: [Data] = []
-                for obj in self._uploadItems {
-                    if let obj = obj as? PhotoAlbum {
-                        if obj.isEdited {
-                            if let data = obj.editedImageData { array.append(data) }
-                        }
-                        else {
-                            PhotoAlbumTool.requestImageData(for: obj.asset, result: { (data) in
-                                if let data = data { array.append(data) }
-                            })
-                        }
-                    }
-                }
-                
-                DispatchQueue.main.async {
-                    self.resultBlock?(array)
-                    self.dismiss()
-                }
+        var array: [JPhoto] = []
+        for obj in self._uploadItems {
+            guard let obj = obj as? PhotoAlbum else { break }
+            if obj.isEdited {
+                if let data = obj.editedImageData { array.append(JPhoto(data)) }
+            }
+            else {
+                array.append(JPhoto(obj.asset))
             }
         }
+        self.resultClosure?(array)
+        self.dismiss()
     }
 }
 
 // MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
 
 extension PhotoAlbumViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
-        if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
-            if let imageData = UIImageJPEGRepresentation(image, 0.5) {
-                resultBlock?([imageData])
+        if let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+            if let imageData = image.jpegData(compressionQuality: 0.5) {
+                resultClosure?([JPhoto(imageData)])
             }
         }
-        else if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
-            if let imageData = UIImageJPEGRepresentation(image, 0.5) {
-                resultBlock?([imageData])
+        else if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage{
+            if let imageData = image.jpegData(compressionQuality: 0.5) {
+                resultClosure?([JPhoto(imageData)])
             }
         }
         else {
@@ -368,7 +353,7 @@ extension PhotoAlbumViewController: JHPhotoBrowserDelegate {
         let album = albumList[photoAtIndex]
         
         if let image = photo.underlyingImage {
-            if let imageData = UIImagePNGRepresentation(image), let albumData = UIImageJPEGRepresentation(image, 0.01) {
+            if let imageData = image.jpegData(compressionQuality: 1), let albumData = image.jpegData(compressionQuality: 0.01) {
                 album.isEdited = true
                 album.editedImageData = imageData
                 album.editedThumbImageData = albumData

@@ -8,24 +8,18 @@
 
 import UIKit
 
-let PhotoAlbumSelectCellHeight: CGFloat = 62
-let albumCellIdentifier = "albumSelectCell"
-
 class PhotoAlbumSelectView: UIView {
     
     // MARK: - property
     
-    fileprivate var block: ((_ obj: PhotoListAlbum?) -> Void)? = nil
+    fileprivate var block: ((_ obj: PhotoListAlbum?) -> Void)?
     fileprivate var currentAlbum: PhotoListAlbum?
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeightConstraints: NSLayoutConstraint!
     
     lazy var albums: [PhotoListAlbum] = {
-        if let a = PhotoAlbumTool.getPhotoAlbumList() {
-            return a
-        }
-        return []
+        return PhotoAlbumTool.getPhotoAlbumList()
     }()
     
     lazy var coverView: UIControl = {
@@ -34,6 +28,9 @@ class PhotoAlbumSelectView: UIView {
         return cover
     }()
     
+    fileprivate let navBarHeight = jp_navBarHeight
+    fileprivate let photoAlbumSelectCellHeight = 62
+    fileprivate let albumCellIdentifier = "albumSelectCell"
     
     // MARK: - private method
     
@@ -41,7 +38,8 @@ class PhotoAlbumSelectView: UIView {
         super.awakeFromNib()
         
         let size = UIScreen.main.bounds.size
-        self.frame = CGRect(x: 0, y: 64, width: size.width, height: size.height - 64)
+        let y = navBarHeight
+        self.frame = CGRect(x: 0, y: y, width: size.width, height: size.height - y)
         self.setupSubViews()
     }
     
@@ -57,7 +55,8 @@ class PhotoAlbumSelectView: UIView {
         super.layoutSubviews()
         
         let size = UIScreen.main.bounds.size
-        self.frame = CGRect(x: 0, y: 64, width: size.width, height: size.height - 64)
+        let y = navBarHeight
+        self.frame = CGRect(x: 0, y: y, width: size.width, height: size.height - y)
         self.coverView.frame = self.bounds
     }
     
@@ -78,13 +77,14 @@ class PhotoAlbumSelectView: UIView {
     }
     
     func show(atView view: UIView, selectedAlbumList album: PhotoListAlbum, block: ((_ obj: PhotoListAlbum?) -> Void)?) {
-        tableViewHeightConstraints.constant = CGFloat(albums.count) * PhotoAlbumSelectCellHeight
+        let albumsCellHeight = CGFloat(self.albums.count * self.photoAlbumSelectCellHeight)
+        tableViewHeightConstraints.constant = min(bounds.size.height, albumsCellHeight)
         
         self.block = block
         currentAlbum = album
         view.addSubview(self)
         
-        if let index = albums.index(of: album) {
+        if let index = albums.firstIndex(of: album) {
             let indexPath = IndexPath(row: index, section: 0)
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
         }
